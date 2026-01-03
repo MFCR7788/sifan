@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import StoreShowcase from '@/components/StoreShowcase';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -169,6 +170,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Store Showcase Section */}
+      <StoreShowcase />
 
       {/* CTA Section */}
       <section id="contact" className="py-20 px-4 relative">
