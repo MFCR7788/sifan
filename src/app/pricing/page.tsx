@@ -4,14 +4,18 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface PricingData {
-  [key: string]: any;
+  '功能名称': string;
+  '单价（元）': string | number;
+  '基础版3.0系统': string;
+  '旗舰版3.0系统': string;
+  '描述'?: string;
 }
 
 export default function PricingPage() {
   const [data, setData] = useState<PricingData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [filter, setFilter] = useState<'all' | 'basic' | 'premium'>('all');
 
   useEffect(() => {
     fetchPricingData();
@@ -32,6 +36,23 @@ export default function PricingPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const filteredData = filter === 'all' ? data : data.filter((item) => {
+    if (filter === 'basic') return item['基础版3.0系统'] !== '×';
+    if (filter === 'premium') return item['旗舰版3.0系统'] !== '×';
+    return true;
+  });
+
+  // 获取基础版和旗舰版的年费
+  const getBasicAnnualFee = () => {
+    const item = data.find((d) => d['功能名称'] === '次年人工售后服务费');
+    return item?.['基础版3.0系统'] || '-';
+  };
+
+  const getPremiumAnnualFee = () => {
+    const item = data.find((d) => d['功能名称'] === '次年人工售后服务费');
+    return item?.['旗舰版3.0系统'] || '-';
   };
 
   if (loading) {
@@ -70,10 +91,6 @@ export default function PricingPage() {
       </div>
     );
   }
-
-  // 获取所有列名作为过滤器选项
-  const allKeys = data.length > 0 ? Object.keys(data[0]) : [];
-  const priceKey = allKeys.find(key => key.includes('价') || key.includes('price') || key.includes('Price'));
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -118,116 +135,183 @@ export default function PricingPage() {
       </nav>
 
       {/* Header */}
-      <section className="pt-32 pb-12 px-4">
+      <section className="pt-32 pb-8 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
               产品报价方案
             </span>
           </h1>
-          <p className="text-xl text-gray-400">
+          <p className="text-xl text-gray-400 mb-8">
             选择最适合您需求的解决方案
           </p>
+
+          {/* Filter Buttons */}
+          <div className="flex justify-center gap-4 mb-8">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-6 py-2 rounded-full font-semibold transition-colors ${
+                filter === 'all'
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
+            >
+              全部功能
+            </button>
+            <button
+              onClick={() => setFilter('basic')}
+              className={`px-6 py-2 rounded-full font-semibold transition-colors ${
+                filter === 'basic'
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
+            >
+              基础版
+            </button>
+            <button
+              onClick={() => setFilter('premium')}
+              className={`px-6 py-2 rounded-full font-semibold transition-colors ${
+                filter === 'premium'
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
+            >
+              旗舰版
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* Pricing Table */}
-      <section className="pb-20 px-4">
+      {/* Pricing Cards */}
+      <section className="pb-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
-            {/* Table Header */}
-            <div className="bg-gradient-to-r from-cyan-500/20 to-blue-600/20 p-4 overflow-x-auto">
-              <table className="w-full min-w-[800px]">
-                <thead>
-                  <tr className="text-left">
-                    {allKeys.map((key) => (
-                      <th key={key} className="px-4 py-3 text-cyan-400 font-semibold">
-                        {key}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-              </table>
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Basic Card */}
+            <div className="p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-colors">
+              <h3 className="text-3xl font-bold mb-2 text-cyan-400">基础版3.0系统</h3>
+              <p className="text-gray-400 mb-6">适合小型企业</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-white">2980</span>
+                <span className="text-xl text-gray-400">元/年</span>
+              </div>
+              <button className="w-full px-6 py-3 bg-white/10 border border-cyan-500 rounded-lg font-semibold hover:bg-cyan-500 hover:text-white transition-colors">
+                选择基础版
+              </button>
             </div>
 
-            {/* Table Body */}
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[800px]">
-                <tbody>
-                  {data.map((row, index) => (
-                    <tr
-                      key={index}
-                      className={`border-b border-white/10 hover:bg-white/5 transition-colors ${
-                        index % 2 === 0 ? 'bg-white/[0.02]' : ''
-                      }`}
-                    >
-                      {allKeys.map((key) => {
-                        const value = row[key];
-                        const isPrice = key === priceKey && typeof value === 'string' && value.includes('¥');
+            {/* Premium Card */}
+            <div className="p-8 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 backdrop-blur-sm rounded-2xl border-2 border-cyan-500 relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="px-4 py-1 bg-cyan-500 text-white text-sm rounded-full font-semibold">
+                  推荐选择
+                </span>
+              </div>
+              <h3 className="text-3xl font-bold mb-2 text-cyan-400">旗舰版3.0系统</h3>
+              <p className="text-gray-400 mb-6">适合中大型企业</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-white">12980</span>
+                <span className="text-xl text-gray-400">元/年</span>
+              </div>
+              <button className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                选择旗舰版
+              </button>
+            </div>
+          </div>
 
-                        return (
-                          <td
-                            key={key}
-                            className={`px-4 py-4 ${
-                              isPrice ? 'text-cyan-400 font-bold text-lg' : 'text-gray-300'
-                            }`}
-                          >
-                            {value}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
+          {/* Pricing Table */}
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[600px]">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="px-6 py-4 text-left text-cyan-400 font-semibold">功能名称</th>
+                    <th className="px-6 py-4 text-center text-cyan-400 font-semibold">基础版3.0</th>
+                    <th className="px-6 py-4 text-center text-cyan-400 font-semibold">旗舰版3.0</th>
+                    <th className="px-6 py-4 text-right text-cyan-400 font-semibold">单价</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.map((item, index) => {
+                    const isPrice = typeof item['单价（元）'] === 'number' && item['单价（元）'] > 0;
+                    const basicSupport = item['基础版3.0系统'] === '√' || item['基础版3.0系统'] === '支持';
+                    const premiumSupport = item['旗舰版3.0系统'] === '√' || item['旗舰版3.0系统'] === '支持';
+
+                    return (
+                      <tr
+                        key={index}
+                        className={`border-b border-white/10 hover:bg-white/5 transition-colors ${
+                          index % 2 === 0 ? '' : 'bg-white/[0.02]'
+                        }`}
+                      >
+                        <td className="px-6 py-4">
+                          <div className="font-semibold text-white">{item['功能名称']}</div>
+                          {item['描述'] && (
+                            <div className="text-sm text-gray-500 mt-1">{item['描述']}</div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {basicSupport ? (
+                            <span className="text-cyan-400 font-bold text-lg">✓</span>
+                          ) : item['基础版3.0系统'] === '×' ? (
+                            <span className="text-gray-600">-</span>
+                          ) : (
+                            <span className="text-gray-300">{item['基础版3.0系统']}</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {premiumSupport ? (
+                            <span className="text-cyan-400 font-bold text-lg">✓</span>
+                          ) : item['旗舰版3.0系统'] === '×' ? (
+                            <span className="text-gray-600">-</span>
+                          ) : (
+                            <span className="text-gray-300">{item['旗舰版3.0系统']}</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          {isPrice ? (
+                            <span className="text-cyan-400 font-bold">
+                              ¥{item['单价（元）']}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Quick Comparison */}
-          <div className="mt-12 grid md:grid-cols-3 gap-6">
-            {data.slice(0, 3).map((row, index) => (
-              <div
-                key={index}
-                className={`p-6 rounded-2xl border ${
-                  index === 1
-                    ? 'bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border-cyan-500/50'
-                    : 'bg-white/5 border-white/10'
-                }`}
-              >
-                {index === 1 && (
-                  <div className="mb-4">
-                    <span className="px-3 py-1 bg-cyan-500 text-white text-sm rounded-full">
-                      推荐
-                    </span>
-                  </div>
-                )}
-                <h3 className="text-xl font-bold mb-2">
-                  {row[allKeys[0]] || `方案 ${index + 1}`}
-                </h3>
-                <div className="text-3xl font-bold text-cyan-400 mb-4">
-                  {priceKey && row[priceKey] ? row[priceKey] : '自定义'}
-                </div>
-                <ul className="space-y-2 text-gray-300">
-                  {allKeys.slice(1, 4).map((key) => (
-                    <li key={key} className="flex items-start gap-2">
-                      <svg className="w-5 h-5 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span>
-                        <span className="text-gray-500">{key}:</span> {row[key]}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <button className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold hover:opacity-90 transition-opacity">
-                  选择此方案
-                </button>
+      {/* Stats */}
+      <section className="py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+              <div className="text-3xl font-bold text-cyan-400 mb-2">{filteredData.length}</div>
+              <div className="text-gray-400">功能数量</div>
+            </div>
+            <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+              <div className="text-3xl font-bold text-cyan-400 mb-2">
+                {data.filter(d => d['基础版3.0系统'] !== '×').length}
               </div>
-            ))}
+              <div className="text-gray-400">基础版功能</div>
+            </div>
+            <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+              <div className="text-3xl font-bold text-cyan-400 mb-2">
+                {data.filter(d => d['旗舰版3.0系统'] !== '×').length}
+              </div>
+              <div className="text-gray-400">旗舰版功能</div>
+            </div>
+            <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+              <div className="text-3xl font-bold text-cyan-400 mb-2">
+                {data.filter(d => typeof d['单价（元）'] === 'number' && d['单价（元）'] > 0).length}
+              </div>
+              <div className="text-gray-400">付费功能</div>
+            </div>
           </div>
         </div>
       </section>
