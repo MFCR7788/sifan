@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import CompanyProfile from '@/components/CompanyProfile';
 import StoreShowcase from '@/components/StoreShowcase';
 
 export default function Home() {
@@ -29,11 +28,14 @@ export default function Home() {
               <Link href="/" className="text-white hover:text-cyan-400 transition-colors">
                 首页
               </Link>
+              <Link href="/about" className="text-white hover:text-cyan-400 transition-colors">
+                关于我们
+              </Link>
               <Link href="/pricing" className="text-white hover:text-cyan-400 transition-colors">
                 产品报价
               </Link>
-              <Link href="#features" className="text-white hover:text-cyan-400 transition-colors">
-                功能特性
+              <Link href="/franchise" className="text-white hover:text-cyan-400 transition-colors">
+                招商加盟
               </Link>
               <Link href="#contact" className="text-white hover:text-cyan-400 transition-colors">
                 联系我们
@@ -68,11 +70,14 @@ export default function Home() {
               <Link href="/" className="block text-white hover:text-cyan-400 transition-colors">
                 首页
               </Link>
+              <Link href="/about" className="block text-white hover:text-cyan-400 transition-colors">
+                关于我们
+              </Link>
               <Link href="/pricing" className="block text-white hover:text-cyan-400 transition-colors">
                 产品报价
               </Link>
-              <Link href="#features" className="block text-white hover:text-cyan-400 transition-colors">
-                功能特性
+              <Link href="/franchise" className="block text-white hover:text-cyan-400 transition-colors">
+                招商加盟
               </Link>
               <Link href="#contact" className="block text-white hover:text-cyan-400 transition-colors">
                 联系我们
@@ -107,16 +112,16 @@ export default function Home() {
               >
                 查看产品报价
               </Link>
-              <button className="px-8 py-4 border border-cyan-500 rounded-full font-semibold text-lg hover:bg-cyan-500/10 transition-colors">
+              <Link
+                href="/about"
+                className="px-8 py-4 border border-cyan-500 rounded-full font-semibold text-lg hover:bg-cyan-500/10 transition-colors"
+              >
                 了解更多
-              </button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Company Profile Section */}
-      <CompanyProfile />
 
       {/* Features Section */}
       <section id="features" className="py-20 px-4 relative">
