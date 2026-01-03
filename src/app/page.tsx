@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import CompanyProfile from '@/components/CompanyProfile';
 import StoreShowcase from '@/components/StoreShowcase';
 
 export default function Home() {
@@ -113,6 +114,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Company Profile Section */}
+      <CompanyProfile />
 
       {/* Features Section */}
       <section id="features" className="py-20 px-4 relative">
