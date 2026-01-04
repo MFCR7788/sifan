@@ -40,8 +40,11 @@ export default function PricingPage() {
   };
 
   const filteredData = filter === 'all' ? data : data.filter((item) => {
-    if (filter === 'basic') return item['基础版3.0系统'] !== '×';
-    if (filter === 'premium') return item['旗舰版3.0系统'] !== '×';
+    const basicValue = String(item['基础版3.0系统'] || '');
+    const premiumValue = String(item['旗舰版3.0系统'] || '');
+
+    if (filter === 'basic') return basicValue !== '×' && basicValue.trim() !== '×';
+    if (filter === 'premium') return premiumValue !== '×' && premiumValue.trim() !== '×';
     if (filter === 'ultimate') return true; // 至尊版显示所有功能
     return true;
   });
@@ -270,22 +273,24 @@ export default function PricingPage() {
                       </tr>
                     );
                   })}
-                  {/* 上门指导1个月 - 仅至尊版支持 */}
-                  <tr className="border-b border-white/10 bg-gradient-to-r from-cyan-500/10 to-transparent">
-                    <td className="px-6 py-4">
-                      <div className="font-semibold text-white">上门指导1个月</div>
-                      <div className="text-sm text-cyan-400 mt-1">专属顾问上门服务</div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className="text-gray-600">-</span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className="text-gray-600">-</span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className="text-cyan-400 font-bold text-lg">✓</span>
-                    </td>
-                  </tr>
+                  {/* 上门指导1个月 - 仅至尊版支持，只在筛选至尊版或全部时显示 */}
+                  {(filter === 'ultimate' || filter === 'all') && (
+                    <tr className="border-b border-white/10 bg-gradient-to-r from-cyan-500/10 to-transparent">
+                      <td className="px-6 py-4">
+                        <div className="font-semibold text-white">上门指导1个月</div>
+                        <div className="text-sm text-cyan-400 mt-1">专属顾问上门服务</div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="text-gray-600">-</span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="text-gray-600">-</span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="text-cyan-400 font-bold text-lg">✓</span>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
