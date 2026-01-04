@@ -8,6 +8,7 @@ interface PricingData {
   '单价（元）': string | number;
   '基础版3.0系统': string;
   '旗舰版3.0系统': string;
+  '至尊版3.0系统'?: string;
   '描述'?: string;
 }
 
@@ -15,7 +16,7 @@ export default function PricingPage() {
   const [data, setData] = useState<PricingData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<'all' | 'basic' | 'premium'>('all');
+  const [filter, setFilter] = useState<'all' | 'basic' | 'premium' | 'ultimate'>('all');
 
   useEffect(() => {
     fetchPricingData();
@@ -41,6 +42,7 @@ export default function PricingPage() {
   const filteredData = filter === 'all' ? data : data.filter((item) => {
     if (filter === 'basic') return item['基础版3.0系统'] !== '×';
     if (filter === 'premium') return item['旗舰版3.0系统'] !== '×';
+    if (filter === 'ultimate') return true; // 至尊版显示所有功能
     return true;
   });
 
@@ -109,7 +111,7 @@ export default function PricingPage() {
           </p>
 
           {/* Filter Buttons */}
-          <div className="flex justify-center gap-4 mb-8">
+          <div className="flex justify-center gap-4 mb-8 flex-wrap">
             <button
               onClick={() => setFilter('all')}
               className={`px-6 py-2 rounded-full font-semibold transition-colors ${
@@ -140,6 +142,16 @@ export default function PricingPage() {
             >
               旗舰版
             </button>
+            <button
+              onClick={() => setFilter('ultimate')}
+              className={`px-6 py-2 rounded-full font-semibold transition-colors ${
+                filter === 'ultimate'
+                  ? 'bg-purple-500 text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
+            >
+              至尊版
+            </button>
           </div>
         </div>
       </section>
@@ -147,7 +159,7 @@ export default function PricingPage() {
       {/* Pricing Cards */}
       <section className="pb-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
             {/* Basic Card */}
             <div className="p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-colors">
               <h3 className="text-3xl font-bold mb-2 text-cyan-400">基础版3.0系统</h3>
@@ -178,6 +190,24 @@ export default function PricingPage() {
                 选择旗舰版
               </button>
             </div>
+
+            {/* Ultimate Card */}
+            <div className="p-8 bg-gradient-to-br from-purple-500/20 to-pink-600/20 backdrop-blur-sm rounded-2xl border-2 border-purple-500 relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="px-4 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-full font-semibold">
+                  旗舰尊享
+                </span>
+              </div>
+              <h3 className="text-3xl font-bold mb-2 text-purple-400">至尊版3.0系统</h3>
+              <p className="text-gray-400 mb-6">适合集团企业</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-white">29800</span>
+                <span className="text-xl text-gray-400">元/年</span>
+              </div>
+              <button className="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                选择至尊版
+              </button>
+            </div>
           </div>
 
           {/* Pricing Table */}
@@ -189,14 +219,15 @@ export default function PricingPage() {
                     <th className="px-6 py-4 text-left text-cyan-400 font-semibold">功能名称</th>
                     <th className="px-6 py-4 text-center text-cyan-400 font-semibold">基础版3.0</th>
                     <th className="px-6 py-4 text-center text-cyan-400 font-semibold">旗舰版3.0</th>
-                    <th className="px-6 py-4 text-right text-cyan-400 font-semibold">单价</th>
+                    <th className="px-6 py-4 text-center text-cyan-400 font-semibold">至尊版3.0</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredData.map((item, index) => {
-                    const isPrice = typeof item['单价（元）'] === 'number' && item['单价（元）'] > 0;
                     const basicSupport = item['基础版3.0系统'] === '√' || item['基础版3.0系统'] === '支持';
                     const premiumSupport = item['旗舰版3.0系统'] === '√' || item['旗舰版3.0系统'] === '支持';
+                    // 至尊版所有功能都支持
+                    const ultimateSupport = true;
 
                     return (
                       <tr
@@ -229,18 +260,32 @@ export default function PricingPage() {
                             <span className="text-gray-300">{item['旗舰版3.0系统']}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right">
-                          {isPrice ? (
-                            <span className="text-cyan-400 font-bold">
-                              ¥{item['单价（元）']}
-                            </span>
+                        <td className="px-6 py-4 text-center">
+                          {ultimateSupport ? (
+                            <span className="text-cyan-400 font-bold text-lg">✓</span>
                           ) : (
-                            <span className="text-gray-500">-</span>
+                            <span className="text-gray-600">-</span>
                           )}
                         </td>
                       </tr>
                     );
                   })}
+                  {/* 上门指导1个月 - 仅至尊版支持 */}
+                  <tr className="border-b border-white/10 bg-gradient-to-r from-cyan-500/10 to-transparent">
+                    <td className="px-6 py-4">
+                      <div className="font-semibold text-white">上门指导1个月</div>
+                      <div className="text-sm text-cyan-400 mt-1">专属顾问上门服务</div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className="text-gray-600">-</span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className="text-gray-600">-</span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className="text-cyan-400 font-bold text-lg">✓</span>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -253,7 +298,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
-              <div className="text-3xl font-bold text-cyan-400 mb-2">{filteredData.length}</div>
+              <div className="text-3xl font-bold text-cyan-400 mb-2">{filteredData.length + 1}</div>
               <div className="text-gray-400">功能数量</div>
             </div>
             <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
@@ -269,10 +314,10 @@ export default function PricingPage() {
               <div className="text-gray-400">旗舰版功能</div>
             </div>
             <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
-              <div className="text-3xl font-bold text-cyan-400 mb-2">
-                {data.filter(d => typeof d['单价（元）'] === 'number' && d['单价（元）'] > 0).length}
+              <div className="text-3xl font-bold text-purple-400 mb-2">
+                {filteredData.length + 1}
               </div>
-              <div className="text-gray-400">付费功能</div>
+              <div className="text-gray-400">至尊版功能</div>
             </div>
           </div>
         </div>
