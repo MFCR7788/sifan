@@ -37,7 +37,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-1">公司地址</h3>
-                    <p className="text-gray-400">北京市朝阳区科技园区1号</p>
+                    <p className="text-gray-400">浙江省杭州市上城区元宇宙基地5幢115室</p>
                   </div>
                 </div>
 
@@ -63,8 +63,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-1">电子邮箱</h3>
-                    <p className="text-gray-400">contact@company.com</p>
-                    <p className="text-gray-400">business@company.com</p>
+                    <p className="text-gray-400">229888777@qq.com</p>
                   </div>
                 </div>
 
