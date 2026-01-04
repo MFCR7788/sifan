@@ -22,8 +22,15 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600 hover:from-cyan-300 hover:to-cyan-500 transition-all">
-              科技公司
+            <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+              <img
+                src="/小超人.png"
+                alt="小超人LOGO"
+                className="w-10 h-10 object-contain"
+              />
+              <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600 hover:from-cyan-300 hover:to-cyan-500 transition-all">
+                魔法超人
+              </span>
             </Link>
           </div>
 
