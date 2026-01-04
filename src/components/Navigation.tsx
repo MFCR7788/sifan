@@ -29,7 +29,7 @@ export default function Navigation() {
                 className="w-10 h-10 object-contain"
               />
               <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600 hover:from-cyan-300 hover:to-cyan-500 transition-all">
-                魔法超人
+                魔法超人AI
               </span>
             </Link>
           </div>
