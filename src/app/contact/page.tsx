@@ -1,6 +1,60 @@
+'use client';
+
+import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus('success');
+        setFormData({ name: '', phone: '', email: '', message: '' });
+        // 3秒后重置状态
+        setTimeout(() => setSubmitStatus('idle'), 3000);
+      } else {
+        setSubmitStatus('error');
+        setErrorMessage(result.error || '提交失败，请稍后重试');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      setErrorMessage('网络错误，请检查网络连接');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-black">
       <Navigation />
@@ -87,7 +141,7 @@ export default function ContactPage() {
             <div>
               <h2 className="text-3xl font-bold text-white mb-8">留言咨询</h2>
 
-              <form className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
                     姓名
@@ -95,8 +149,11 @@ export default function ContactPage() {
                   <input
                     type="text"
                     id="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white"
                     placeholder="请输入您的姓名"
+                    required
                   />
                 </div>
 
@@ -107,8 +164,11 @@ export default function ContactPage() {
                   <input
                     type="tel"
                     id="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white"
                     placeholder="请输入您的联系电话"
+                    required
                   />
                 </div>
 
@@ -119,8 +179,11 @@ export default function ContactPage() {
                   <input
                     type="email"
                     id="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white"
                     placeholder="请输入您的邮箱"
+                    required
                   />
                 </div>
 
@@ -130,17 +193,34 @@ export default function ContactPage() {
                   </label>
                   <textarea
                     id="message"
+                    value={formData.message}
+                    onChange={handleChange}
                     rows={6}
                     className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white"
                     placeholder="请输入您的问题或建议"
+                    required
                   />
                 </div>
 
+                {/* 状态提示 */}
+                {submitStatus === 'success' && (
+                  <div className="p-4 bg-green-500/20 border border-green-500/50 rounded-lg">
+                    <p className="text-green-400 text-center font-semibold">✓ 留言提交成功！</p>
+                  </div>
+                )}
+
+                {submitStatus === 'error' && (
+                  <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
+                    <p className="text-red-400 text-center font-semibold">✗ {errorMessage}</p>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-cyan-500 to-cyan-700 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-cyan-800 transition-all transform hover:scale-[1.02]"
+                  disabled={isSubmitting}
+                  className="w-full py-3 bg-gradient-to-r from-cyan-500 to-cyan-700 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-cyan-800 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  提交留言
+                  {isSubmitting ? '提交中...' : '提交留言'}
                 </button>
               </form>
             </div>
