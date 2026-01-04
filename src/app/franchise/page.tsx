@@ -5,13 +5,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 export default function FranchisePage() {
-  const [activeTab, setActiveTab] = useState<'policy' | 'investment' | 'process' | 'support'>('policy');
+  const [activeTab, setActiveTab] = useState<'policy' | 'investment' | 'process' | 'support' | 'implementation'>('policy');
 
   const tabs = [
     { id: 'policy', label: '加盟政策' },
     { id: 'investment', label: '投资构成' },
     { id: 'process', label: '加盟流程' },
     { id: 'support', label: '品牌支持' },
+    { id: 'implementation', label: '落地方案' },
   ];
 
   return (
@@ -77,6 +78,7 @@ export default function FranchisePage() {
             {activeTab === 'investment' && <InvestmentContent />}
             {activeTab === 'process' && <ProcessContent />}
             {activeTab === 'support' && <SupportContent />}
+            {activeTab === 'implementation' && <ImplementationContent />}
           </div>
         </div>
       </section>
@@ -347,6 +349,152 @@ function SupportContent() {
           <p>• 超任务完成门店：奖励10000元/店</p>
           <p>• 少于任务数：扣5000元/店</p>
           <p className="text-sm text-gray-500">*例如：任务数设定5家，完成5家奖25000元，完成6家奖35000元</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ImplementationContent() {
+  return (
+    <div className="space-y-8">
+      <h3 className="text-2xl font-bold text-cyan-400 mb-6">区域合伙落地方案</h3>
+
+      {/* Phase 1 */}
+      <div className="p-6 bg-white/5 rounded-xl">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center text-xl font-bold">
+            1
+          </div>
+          <h4 className="text-xl font-bold">第一阶段：系统接入与基础建设（1-3个月）</h4>
+        </div>
+        <div className="space-y-4 text-gray-300">
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">数字化档案建立</h5>
+            <p>完成区域内所有销售网点基础信息标准化录入，包括门店位置、面积、负责人、员工信息、主营品类、客户画像等，通过魔法超人平台建立数字化档案库。</p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">全域一盘货系统部署</h5>
+            <p>打通抖店、快手、小红书、视频号、美团、淘宝、拼多多等多平台订单抓取功能，实现多平台订单自动同步；建立"总仓-分仓-网点"三级库存体系，实现库存智能统筹。</p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">专属团队搭建</h5>
+            <p>采用"总部统筹+区域落地"架构，配备运营总监、区域经理、培训师、客服专员等岗位，完成岗前集训（1周）和在岗带教（1个月）。</p>
+          </div>
+          <div className="p-4 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">阶段目标</h5>
+            <p className="text-white font-medium">完成核心销售网点全接入，网点单店平均销量提升15%-20%</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Phase 2 */}
+      <div className="p-6 bg-white/5 rounded-xl">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center text-xl font-bold">
+            2
+          </div>
+          <h4 className="text-xl font-bold">第二阶段：增量策略实施（3-6个月）</h4>
+        </div>
+        <div className="space-y-4 text-gray-300">
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">分销裂变体系搭建</h5>
+            <p>搭建"总部-区域-网点-团长"四级分销体系，设置阶梯式佣金规则；开通快团团功能，发动员工、老客户成为分销团长，实现客源裂变式增长。</p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">全渠道订单赋能</h5>
+            <p>多平台订单自动抓取、同步至系统后台，实时同步订单状态；就近网点智能发货，避免缺货和积压问题；设置库存预警阈值，自动提醒补货。</p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">流量整合导入</h5>
+            <p>整合抖音、快手、小红书等平台公域流量精准导流；优化美团、饿了么本地生活服务；搭建微信私域社群，实现"私域沉淀-分销拓客-复购转化"良性循环。</p>
+          </div>
+          <div className="p-4 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">阶段目标</h5>
+            <p className="text-white font-medium">所有销售网点标准化运营，整体销量提升30%-40%，培养3-5家标杆示范网点</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Phase 3 */}
+      <div className="p-6 bg-white/5 rounded-xl">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center text-xl font-bold">
+            3
+          </div>
+          <h4 className="text-xl font-bold">第三阶段：模式沉淀与规模复制（6-12个月）</h4>
+        </div>
+        <div className="space-y-4 text-gray-300">
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">抖音生态专项运营</h5>
+            <p>搭建抖店云连锁，实现多网点抖音店铺统一管理、商品同步、库存统筹；提供抖音矩阵代运营服务，包括账号定位、内容策划、视频拍摄剪辑、直播运营等。</p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">本地化服务升级</h5>
+            <p>通过平台数据洞察区域消费偏好，指导商家优化商品结构；开展本地社群运营、同城直播等特色服务，提升本地客户粘性和复购率。</p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">方法论沉淀与复制</h5>
+            <p>总结试点成功经验，形成可复制的"区域赋能方法论"；输出标准化运营手册、培训课件和案例库；向更多区域推广复制，扩大市场份额。</p>
+          </div>
+          <div className="p-4 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 rounded-lg">
+            <h5 className="font-semibold text-cyan-400 mb-2">阶段目标</h5>
+            <p className="text-white font-medium">构建"线下网点数字化运营+私域流量沉淀+全渠道增量"全新模式，实现销量持续增长与品牌竞争力升级</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Support Guarantee */}
+      <div className="p-6 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 rounded-xl">
+        <h4 className="font-bold text-lg mb-4 text-cyan-400">赋能保障与风险管控</h4>
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold mb-2">资源保障</h5>
+            <p className="text-sm text-gray-400">成立专项赋能小组，双牵头保障技术迭代、流量资源供给、运营团队投入</p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold mb-2">考核保障</h5>
+            <p className="text-sm text-gray-400">建立核心考核指标，与服务费、分成直接挂钩，确保赋能效果</p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-lg">
+            <h5 className="font-semibold mb-2">退出保障</h5>
+            <p className="text-sm text-gray-400">6个月内未达增量目标70%，可协商终止合作，退还50%未执行服务费</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Profit Model */}
+      <div className="p-6 bg-white/5 rounded-xl">
+        <h4 className="font-bold text-lg mb-4 text-cyan-400">盈利模式</h4>
+        <div className="space-y-3 text-gray-300">
+          <div className="flex items-start gap-3">
+            <span className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0 text-cyan-400 text-sm">1</span>
+            <div>
+              <p className="font-medium">基础服务费</p>
+              <p className="text-sm text-gray-400">3000元/年/店，覆盖系统使用、基础培训、客服支持</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0 text-cyan-400 text-sm">2</span>
+            <div>
+              <p className="font-medium">增量分成</p>
+              <p className="text-sm text-gray-400">提取通过平台实现的增量销售额的3%-5%作为平台服务费</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0 text-cyan-400 text-sm">3</span>
+            <div>
+              <p className="font-medium">供应链佣金</p>
+              <p className="text-sm text-gray-400">整合魔法超人供应链资源，按采购额收取3%-8%佣金</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0 text-cyan-400 text-sm">4</span>
+            <div>
+              <p className="font-medium">抖音生态专项服务费</p>
+              <p className="text-sm text-gray-400">抖店云连锁搭建费300-500元/店，年度运营费8-10万元；抖音矩阵代运营5-8万元/年/账号</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
