@@ -176,7 +176,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-1">联系电话</h3>
-                  <p className="text-gray-300">4000678558-0</p>
+                  <p className="text-gray-300">400-0678-558</p>
                 </div>
               </div>
             </div>

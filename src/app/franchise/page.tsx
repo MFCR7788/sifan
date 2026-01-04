@@ -94,7 +94,7 @@ export default function FranchisePage() {
               立即联系我们，开启您的创业之旅
             </p>
             <button className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold text-lg hover:opacity-90 transition-opacity">
-              联系我们：4000678558-0
+              联系我们：400-0678-558
             </button>
           </div>
         </div>

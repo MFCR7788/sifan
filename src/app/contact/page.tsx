@@ -50,8 +50,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-1">联系电话</h3>
-                    <p className="text-gray-400">400-123-4567</p>
-                    <p className="text-gray-400">010-88888888</p>
+                    <p className="text-gray-400">400-0678-558</p>
                   </div>
                 </div>
 
