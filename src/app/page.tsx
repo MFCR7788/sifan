@@ -1,91 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import Navigation from '@/components/Navigation';
 import StoreShowcase from '@/components/StoreShowcase';
 
 export default function Home() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">M</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
-                MagicAI
-              </span>
-            </div>
-
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-8">
-              <Link href="/" className="text-white hover:text-cyan-400 transition-colors">
-                首页
-              </Link>
-              <Link href="/about" className="text-white hover:text-cyan-400 transition-colors">
-                关于我们
-              </Link>
-              <Link href="/pricing" className="text-white hover:text-cyan-400 transition-colors">
-                产品报价
-              </Link>
-              <Link href="/franchise" className="text-white hover:text-cyan-400 transition-colors">
-                招商加盟
-              </Link>
-              <Link href="#contact" className="text-white hover:text-cyan-400 transition-colors">
-                联系我们
-              </Link>
-            </div>
-
-            {/* CTA Button */}
-            <div className="hidden md:block">
-              <button className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:opacity-90 transition-opacity">
-                立即体验
-              </button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 space-y-3">
-              <Link href="/" className="block text-white hover:text-cyan-400 transition-colors">
-                首页
-              </Link>
-              <Link href="/about" className="block text-white hover:text-cyan-400 transition-colors">
-                关于我们
-              </Link>
-              <Link href="/pricing" className="block text-white hover:text-cyan-400 transition-colors">
-                产品报价
-              </Link>
-              <Link href="/franchise" className="block text-white hover:text-cyan-400 transition-colors">
-                招商加盟
-              </Link>
-              <Link href="#contact" className="block text-white hover:text-cyan-400 transition-colors">
-                联系我们
-              </Link>
-            </div>
-          )}
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 relative overflow-hidden">
