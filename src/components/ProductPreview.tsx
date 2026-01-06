@@ -106,14 +106,15 @@ export default function ProductPreview() {
                   了解更多
                 </Link>
               ) : (
-                <button
+                <Link
+                  href="/pricing?plan=ultimate"
                   className={`
-                    w-full py-3 px-6 rounded-full font-medium transition-all duration-200
+                    block w-full py-3 px-6 rounded-full font-medium transition-all duration-200 text-center
                     bg-gray-900 text-white hover:bg-gray-800 hover:scale-105
                   `}
                 >
                   了解更多
-                </button>
+                </Link>
               )}
             </div>
           ))}
