@@ -20,7 +20,7 @@ export default function LoginPage() {
 
 		try {
 			await login(email, password);
-			router.push('/profile');
+			router.push('/dashboard');
 		} catch (err: any) {
 			setError(err.message || '登录失败');
 		} finally {
