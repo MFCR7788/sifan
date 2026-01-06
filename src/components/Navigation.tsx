@@ -7,10 +7,10 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { name: '首页', href: '/' },
-  { name: '关于', href: '/about' },
   { name: '产品', href: '/pricing' },
   { name: '定制方案', href: '/configurator' },
   { name: '加盟', href: '/franchise' },
+  { name: '关于', href: '/about' },
   { name: '联系', href: '/contact' },
 ];
 
