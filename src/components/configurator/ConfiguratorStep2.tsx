@@ -93,7 +93,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       : [...currentModules, moduleId];
 
     // Calculate new price
-    const basePrice = config.platform === 'brand-chain' ? 2980 : config.platform === 'multi-store' ? 1200 : 300;
+    const basePrice = config.platform === 'brand-chain' ? 2580 : config.platform === 'multi-store' ? 1200 : 300;
     const moduleMultiplier = updatedModules.length > 0
       ? coreModules
           .filter(m => updatedModules.includes(m.id))

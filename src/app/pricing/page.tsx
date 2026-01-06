@@ -5,11 +5,10 @@ import Navigation from '@/components/Navigation';
 
 interface PricingData {
   '功能名称': string;
-  '单价（元）': string | number;
+  '价格/月': number;
   '基础版3.0系统': string;
   '旗舰版3.0系统': string;
-  '至尊版3.0系统'?: string;
-  '描述'?: string;
+  '至尊版3.0': string;
 }
 
 export default function PricingPage() {
@@ -48,7 +47,7 @@ export default function PricingPage() {
       id: 'basic' as const,
       name: '基础版',
       version: '3.0',
-      price: '2980',
+      price: '2580',
       description: '适合门店、个体户',
       color: 'text-gray-900',
       badge: ''
@@ -76,7 +75,7 @@ export default function PricingPage() {
   const getPlanValue = (item: PricingData, planId: 'basic' | 'premium' | 'ultimate') => {
     if (planId === 'basic') return item['基础版3.0系统'];
     if (planId === 'premium') return item['旗舰版3.0系统'];
-    if (planId === 'ultimate') return '√';
+    if (planId === 'ultimate') return item['至尊版3.0'];
     return '';
   };
 
@@ -166,6 +165,7 @@ export default function PricingPage() {
             <div className="space-y-4">
               {filteredFeatures.map((item, index) => {
                 const value = getPlanValue(item, selectedPlan);
+                const monthlyPrice = item['价格/月'] as number;
                 return (
                   <div
                     key={index}
@@ -173,8 +173,8 @@ export default function PricingPage() {
                   >
                     <div className="flex-1">
                       <div className="text-lg font-medium text-gray-900">{item['功能名称']}</div>
-                      {item['描述'] && (
-                        <div className="text-sm text-gray-500 mt-1">{item['描述']}</div>
+                      {monthlyPrice > 0 && (
+                        <div className="text-sm text-gray-500 mt-1">¥{monthlyPrice}/月</div>
                       )}
                     </div>
                     <div className="ml-4 flex-shrink-0">
@@ -193,22 +193,6 @@ export default function PricingPage() {
                   </div>
                 );
               })}
-              {/* 至尊版专属功能 */}
-              {selectedPlan === 'ultimate' && (
-                <div className="flex items-start justify-between py-4 border-b border-gray-200 bg-gray-50 px-4 rounded-xl">
-                  <div className="flex-1">
-                    <div className="text-lg font-medium text-gray-900">上门指导1个月</div>
-                    <div className="text-sm text-gray-500 mt-1">专属顾问上门服务</div>
-                  </div>
-                  <div className="ml-4 flex-shrink-0">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-900 text-white">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>

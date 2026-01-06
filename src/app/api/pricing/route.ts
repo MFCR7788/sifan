@@ -6,7 +6,7 @@ import { join } from 'path';
 export async function GET() {
   try {
     // 读取本地Excel文件
-    const filePath = join(process.cwd(), 'assets', '魔法超人3.0系统报价_产品报价表_表格 (1).xlsx');
+    const filePath = join(process.cwd(), 'assets', '新零售产品报价单.xlsx');
     const buffer = await readFile(filePath);
 
     // 解析Excel

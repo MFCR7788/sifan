@@ -29,7 +29,7 @@ const businessScenarios = [
     icon: '🏢',
     description: '适合集团企业',
     features: ['全渠道分销体系', '数据驱动运营', '供应链协同'],
-    price: 2980
+    price: 2580
   }
 ];
 
