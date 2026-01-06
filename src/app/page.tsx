@@ -27,14 +27,12 @@ export default function Home() {
 
         {/* Content Overlay */}
         <div className="relative z-10 text-center mt-32 md:mt-40">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold text-gray-900 tracking-tight">
             魔法超人
           </h1>
-          <div className="inline-block mt-4">
-            <p className="px-6 py-2 bg-gray-900 text-white text-xl md:text-2xl max-w-2xl mx-auto">
-              智能驱动，未来已来
-            </p>
-          </div>
+          <p className="mt-4 text-white font-semibold text-xl md:text-2xl max-w-2xl mx-auto">
+            智能驱动，未来已来
+          </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/pricing"
@@ -44,7 +42,7 @@ export default function Home() {
             </Link>
             <Link
               href="/about"
-              className="text-blue-600 hover:underline text-sm"
+              className="text-white hover:underline text-sm"
             >
               了解更多 &gt;
             </Link>
