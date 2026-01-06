@@ -55,8 +55,7 @@ const storeImages: StoreImage[] = [
   { id: '44', src: '/images/stores/aab3a2b7fd4bd22fde4434120b33493b.JPG', alt: '合作门店44' },
   { id: '45', src: '/images/stores/b09d0eb255885a906b642c5f87358c56.JPG', alt: '合作门店45' },
   { id: '46', src: '/images/stores/b6820b6dceb324c9970129ca61324211.JPG', alt: '合作门店46' },
-  { id: '47', src: '/images/stores/d4a4e6b9c89cf86ed66af8846da7f9ac.JPG', alt: '合作门店47' },
-  { id: '48', src: '/images/stores/d4f57815b2cc6b80bdeea3f8b79b73f7.JPG', alt: '合作门店48' },
+  { id: '47', src: '/images/stores/d4f57815b2cc6b80bdeea3f8b79b73f7.JPG', alt: '合作门店47' },
 ];
 
 export default function StoreShowcase() {
