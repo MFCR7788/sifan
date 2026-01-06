@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import ConfiguratorStep1 from '@/components/configurator/ConfiguratorStep1';
 import ConfiguratorStep2 from '@/components/configurator/ConfiguratorStep2';
@@ -44,6 +45,27 @@ export default function ConfiguratorPage() {
     <div className="min-h-screen bg-white">
       <Navigation />
 
+      {/* Header */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 py-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 tracking-tight mb-4">
+            定制您的专属方案
+          </h1>
+          <p className="text-lg text-gray-600 mb-6">
+            基于您的业务需求，量身定制数字化转型方案
+          </p>
+          <Link
+            href="/solution"
+            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 hover:underline"
+          >
+            了解定制方案的详细信息
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </div>
+
       {/* Progress Bar */}
       <div className="bg-gray-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-8">
@@ -77,13 +99,13 @@ export default function ConfiguratorPage() {
           </div>
           <div className="flex justify-between mt-4 text-sm">
             <span className={config.step >= 1 ? 'text-gray-900 font-medium' : 'text-gray-600'}>
-              选择平台
+              业务场景
             </span>
             <span className={config.step >= 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}>
-              服务深度
+              核心功能
             </span>
             <span className={config.step >= 3 ? 'text-gray-900 font-medium' : 'text-gray-600'}>
-              增值工具
+              增值服务
             </span>
           </div>
         </div>

@@ -9,58 +9,98 @@ interface ConfiguratorStep3Props {
   onPrev: () => void;
 }
 
-const addons = [
+const valueServices = [
   {
-    id: 'ai-design',
-    name: 'AI智能设计',
-    description: 'AI生成图片、设计素材',
-    price: 2800,
-    icon: '🎨'
-  },
-  {
-    id: 'data-analysis',
-    name: '深度数据分析',
-    description: '专业数据分析报告',
-    price: 3800,
-    icon: '📊'
-  },
-  {
-    id: 'crm',
-    name: 'CRM客户管理',
-    description: '客户关系管理系统',
-    price: 4800,
-    icon: '👥'
+    id: 'implementation',
+    name: '实施服务',
+    description: '专业团队上门实施，快速上线',
+    price: 0,
+    icon: '🚀',
+    features: [
+      '业务流程诊断',
+      '系统配置与测试',
+      '数据初始化与迁移',
+      '试点运行指导'
+    ]
   },
   {
     id: 'training',
     name: '运营培训',
-    description: '团队培训赋能',
-    price: 5800,
-    icon: '📚'
+    description: '系统操作与业务运营培训',
+    price: 0,
+    icon: '📚',
+    features: [
+      '系统操作培训',
+      '业务流程培训',
+      '最佳实践分享',
+      '团队认证考核'
+    ]
+  },
+  {
+    id: 'support-platinum',
+    name: '白金技术支持',
+    description: '7×24小时专属技术支持',
+    price: 0,
+    icon: '💎',
+    features: [
+      '专属技术顾问',
+      '7×24小时响应',
+      '优先问题处理',
+      '定期巡检服务'
+    ]
+  },
+  {
+    id: 'consulting',
+    name: '业务咨询',
+    description: '数字化转型顾问服务',
+    price: 0,
+    icon: '🎯',
+    features: [
+      '数字化转型规划',
+      '业务流程优化',
+      '数据分析咨询',
+      '季度业务复盘'
+    ]
+  },
+  {
+    id: 'customization',
+    name: '定制开发',
+    description: '个性化需求定制开发',
+    price: 0,
+    icon: '⚙️',
+    features: [
+      '需求分析与设计',
+      '定制功能开发',
+      '系统集成对接',
+      '持续迭代优化'
+    ]
+  },
+  {
+    id: 'data-migration',
+    name: '数据迁移',
+    description: '历史数据清洗与迁移',
+    price: 0,
+    icon: '🔄',
+    features: [
+      '数据清洗与标准化',
+      '历史数据导入',
+      '数据质量校验',
+      '迁移报告交付'
+    ]
   }
 ];
 
 export default function ConfiguratorStep3({ config, updateConfig, onNext, onPrev }: ConfiguratorStep3Props) {
-  const [localAddons, setLocalAddons] = useState<string[]>(config.addons);
+  const [localServices, setLocalServices] = useState<string[]>(config.valueServices || []);
 
-  const handleAddonToggle = (addonId: string) => {
-    const updatedAddons = localAddons.includes(addonId)
-      ? localAddons.filter(id => id !== addonId)
-      : [...localAddons, addonId];
+  const handleServiceToggle = (serviceId: string) => {
+    const updatedServices = localServices.includes(serviceId)
+      ? localServices.filter(id => id !== serviceId)
+      : [...localServices, serviceId];
 
-    setLocalAddons(updatedAddons);
-
-    // Calculate new price
-    const addonPrice = addons
-      .filter(a => updatedAddons.includes(a.id))
-      .reduce((sum, a) => sum + a.price, 0);
-
-    const basePrice = config.platform === 'multi' ? 19800 : 10800;
-    const serviceMultiplier = config.serviceLevel === 'advanced' ? 2 : config.serviceLevel === 'custom' ? 3 : 1;
-
+    setLocalServices(updatedServices);
     updateConfig({
-      addons: updatedAddons,
-      totalPrice: (basePrice * serviceMultiplier) + addonPrice
+      valueServices: updatedServices
     });
   };
 
@@ -68,20 +108,20 @@ export default function ConfiguratorStep3({ config, updateConfig, onNext, onPrev
     <div className="space-y-8">
       <div>
         <h2 className="text-3xl font-semibold text-gray-900 mb-2">
-          选择增值工具
+          选择增值服务
         </h2>
         <p className="text-gray-600">
-          可选的增值服务，提升运营效果（可多选）
+          专属服务，助力企业数字化转型（可多选）
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {addons.map((addon) => {
-          const isSelected = localAddons.includes(addon.id);
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {valueServices.map((service) => {
+          const isSelected = localServices.includes(service.id);
           return (
             <button
-              key={addon.id}
-              onClick={() => handleAddonToggle(addon.id)}
+              key={service.id}
+              onClick={() => handleServiceToggle(service.id)}
               className={`
                 relative p-6 rounded-2xl border-2 transition-all duration-300 text-left
                 ${isSelected
@@ -93,26 +133,38 @@ export default function ConfiguratorStep3({ config, updateConfig, onNext, onPrev
               <div className="flex items-start gap-4">
                 <div
                   className={`
-                    w-14 h-14 rounded-xl flex items-center justify-center text-2xl transition-all duration-300
+                    w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-all duration-300 flex-shrink-0
                     ${isSelected ? 'bg-blue-600' : 'bg-gray-100'}
                   `}
                 >
-                  {addon.icon}
+                  {service.icon}
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                    {addon.name}
+                    {service.name}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-2">
-                    {addon.description}
+                  <p className="text-gray-600 text-sm mb-3">
+                    {service.description}
                   </p>
-                  <div className="text-lg font-bold text-blue-600">
-                    ¥{addon.price.toLocaleString()}/月
+                  <div className="space-y-1">
+                    {service.features.slice(0, 2).map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
+                        <svg className="w-3 h-3 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {feature}
+                      </div>
+                    ))}
+                    {service.features.length > 2 && (
+                      <div className="text-sm text-gray-400">
+                        +{service.features.length - 2} 更多服务
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {isSelected && (
-                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                  <div className="absolute top-4 right-4 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
@@ -124,9 +176,9 @@ export default function ConfiguratorStep3({ config, updateConfig, onNext, onPrev
         })}
       </div>
 
-      {localAddons.length === 0 && (
+      {localServices.length === 0 && (
         <div className="text-center py-8 text-gray-500">
-          未选择任何增值工具
+          未选择任何增值服务
         </div>
       )}
     </div>

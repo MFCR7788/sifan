@@ -10,16 +10,26 @@ interface SummaryPanelProps {
 }
 
 const platformNames: Record<string, string> = {
-  douyin: '抖音',
-  xiaohongshu: '小红书',
-  wechat: '微信',
-  multi: '多平台'
+  'single-store': '单店运营',
+  'multi-store': '多门店连锁',
+  'brand-chain': '品牌连锁'
 };
 
-const serviceLevelNames: Record<string, string> = {
-  basic: '基础运营',
-  advanced: '深度代运营',
-  custom: '定制化方案'
+const moduleNames: Record<string, string> = {
+  'order-inventory': '订单与库存中心',
+  'distribution': '分销裂变体系',
+  'data-driven': '数据驱动运营',
+  'private-traffic': '私域流量运营',
+  'production-supply': '生产与供应链'
+};
+
+const serviceNames: Record<string, string> = {
+  'implementation': '实施服务',
+  'training': '运营培训',
+  'support-platinum': '白金技术支持',
+  'consulting': '业务咨询',
+  'customization': '定制开发',
+  'data-migration': '数据迁移'
 };
 
 const addonNames: Record<string, string> = {
@@ -27,6 +37,12 @@ const addonNames: Record<string, string> = {
   'data-analysis': '深度数据分析',
   crm: 'CRM客户管理',
   training: '运营培训'
+};
+
+const serviceLevelNames: Record<string, string> = {
+  basic: '基础运营',
+  advanced: '深度代运营',
+  custom: '定制化方案'
 };
 
 export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: SummaryPanelProps) {
@@ -38,9 +54,15 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
 
   const getPlatformName = () => platformNames[config.platform] || '未选择';
 
-  const getServiceLevelName = () => serviceLevelNames[config.serviceLevel] || '未选择';
+  const getModuleNames = () => {
+    if (!config.modules) return [];
+    return config.modules.map((id: string) => moduleNames[id]).filter(Boolean);
+  };
 
-  const getAddonNames = () => config.addons.map((id: string) => addonNames[id]).filter(Boolean);
+  const getServiceNames = () => {
+    if (!config.valueServices) return [];
+    return config.valueServices.map((id: string) => serviceNames[id]).filter(Boolean);
+  };
 
   const isComplete = config.step === 3;
 
@@ -78,7 +100,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                 1
               </div>
               <div className="flex-1">
-                <div className="text-sm text-gray-600 mb-1">目标平台</div>
+                <div className="text-sm text-gray-600 mb-1">业务场景</div>
                 <div className="font-medium text-gray-900">{getPlatformName()}</div>
                 {config.step >= 1 && config.platform && (
                   <button
@@ -91,39 +113,59 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
               </div>
             </div>
 
-            {/* Service Level */}
+            {/* Core Modules */}
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
                 2
               </div>
               <div className="flex-1">
-                <div className="text-sm text-gray-600 mb-1">服务深度</div>
-                <div className="font-medium text-gray-900">{getServiceLevelName()}</div>
-                {config.step >= 2 && config.serviceLevel && (
-                  <button
-                    onClick={() => onStepChange(2)}
-                    className="text-sm text-blue-600 hover:underline mt-1"
-                  >
-                    修改
-                  </button>
+                <div className="text-sm text-gray-600 mb-1">核心功能</div>
+                {config.step >= 2 && (config.modules || []).length > 0 ? (
+                  <>
+                    <div className="space-y-1">
+                      {getModuleNames().slice(0, 3).map((name, index) => (
+                        <div key={index} className="text-sm text-gray-900">
+                          • {name}
+                        </div>
+                      ))}
+                      {(config.modules || []).length > 3 && (
+                        <div className="text-sm text-gray-500">
+                          +{(config.modules || []).length - 3} 更多功能
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => onStepChange(2)}
+                      className="text-sm text-blue-600 hover:underline mt-1"
+                    >
+                      修改
+                    </button>
+                  </>
+                ) : (
+                  <div className="text-sm text-gray-500">未选择</div>
                 )}
               </div>
             </div>
 
-            {/* Addons */}
-            {config.step >= 3 && config.addons.length > 0 && (
+            {/* Value Services */}
+            {config.step >= 3 && (config.valueServices || []).length > 0 && (
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
                   3
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm text-gray-600 mb-1">增值工具</div>
+                  <div className="text-sm text-gray-600 mb-1">增值服务</div>
                   <div className="space-y-1">
-                    {getAddonNames().map((name, index) => (
+                    {getServiceNames().slice(0, 3).map((name, index) => (
                       <div key={index} className="text-sm text-gray-900">
                         • {name}
                       </div>
                     ))}
+                    {(config.valueServices || []).length > 3 && (
+                      <div className="text-sm text-gray-500">
+                        +{(config.valueServices || []).length - 3} 更多服务
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => onStepChange(3)}
