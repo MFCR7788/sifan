@@ -56,8 +56,8 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
   const getPlatformName = () => platformNames[config.platform] || '未选择';
 
   const getModuleNames = () => {
-    if (!config.modules) return [];
-    return config.modules.map((id: string) => moduleNames[id]).filter(Boolean);
+    if (!config.selectedFeatures) return [];
+    return config.selectedFeatures;
   };
 
   const getServiceNames = () => {
@@ -121,7 +121,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
               </div>
               <div className="flex-1">
                 <div className="text-sm text-gray-600 mb-1">核心功能</div>
-                {config.step >= 2 && (config.modules || []).length > 0 ? (
+                {config.step >= 2 && (config.selectedFeatures || []).length > 0 ? (
                   <>
                     <div className="space-y-1">
                       {getModuleNames().slice(0, 3).map((name: string, index: number) => (
@@ -129,9 +129,9 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                           • {name}
                         </div>
                       ))}
-                      {(config.modules || []).length > 3 && (
+                      {(config.selectedFeatures || []).length > 3 && (
                         <div className="text-sm text-gray-500">
-                          +{(config.modules || []).length - 3} 更多功能
+                          +{(config.selectedFeatures || []).length - 3} 更多功能
                         </div>
                       )}
                     </div>

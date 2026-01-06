@@ -85,31 +85,36 @@ const coreModules = [
 ];
 
 export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev }: ConfiguratorStep2Props) {
-  const handleModuleToggle = (moduleId: string) => {
-    const currentModules = config.modules || [];
-    const updatedModules = currentModules.includes(moduleId)
-      ? currentModules.filter((id: string) => id !== moduleId)
-      : [...currentModules, moduleId];
+  const handleFeatureToggle = (featureName: string, price: number) => {
+    const currentFeatures = config.selectedFeatures || [];
+    const updatedFeatures = currentFeatures.includes(featureName)
+      ? currentFeatures.filter((name: string) => name !== featureName)
+      : [...currentFeatures, featureName];
 
     // Calculate new price based on monthly prices from Excel
     const basePrice = config.platform === 'brand-chain' ? 2980 : config.platform === 'multi-store' ? 1200 : 300;
 
-    // Calculate total monthly fee from selected modules
-    const monthlyFee = updatedModules.reduce((total: number, moduleId: string) => {
-      const module = coreModules.find(m => m.id === moduleId);
-      if (!module) return total;
-
-      return total + module.features.reduce((sum, feature) => sum + feature.price, 0);
+    // Calculate total monthly fee from selected features
+    const monthlyFee = updatedFeatures.reduce((total: number, featureName: string) => {
+      for (const module of coreModules) {
+        const feature = module.features.find(f => f.name === featureName);
+        if (feature) return total + feature.price;
+      }
+      return total;
     }, 0);
 
     // Monthly price = base + monthly fee
     const monthlyPrice = basePrice + monthlyFee;
 
     updateConfig({
-      modules: updatedModules,
+      selectedFeatures: updatedFeatures,
       monthlyFee: monthlyFee,
       totalPrice: monthlyPrice
     });
+  };
+
+  const isFeatureSelected = (featureName: string) => {
+    return (config.selectedFeatures || []).includes(featureName);
   };
 
   return (
@@ -125,16 +130,16 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
 
       <div className="grid grid-cols-1 gap-4">
         {coreModules.map((module) => {
-          const isSelected = (config.modules || []).includes(module.id);
-          const moduleMonthlyPrice = module.features.reduce((sum, f) => sum + f.price, 0);
+          const selectedCount = module.features.filter(f => isFeatureSelected(f.name)).length;
+          const moduleMonthlyPrice = module.features.reduce((sum, f) =>
+            isFeatureSelected(f.name) ? sum + f.price : sum, 0);
 
           return (
-            <button
+            <div
               key={module.id}
-              onClick={() => handleModuleToggle(module.id)}
               className={`
                 relative p-6 rounded-2xl border-2 transition-all duration-300 text-left
-                ${isSelected
+                ${selectedCount > 0
                   ? 'border-blue-600 bg-blue-50 shadow-lg'
                   : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                 }
@@ -144,7 +149,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                 <div
                   className={`
                     w-14 h-14 rounded-xl flex items-center justify-center text-3xl transition-all duration-300 flex-shrink-0
-                    ${isSelected ? 'bg-blue-600' : 'bg-gray-100'}
+                    ${selectedCount > 0 ? 'bg-blue-600' : 'bg-gray-100'}
                   `}
                 >
                   {module.icon}
@@ -161,50 +166,70 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {module.features.map((feature, index) => (
-                      <div
-                        key={index}
-                        className={`text-xs p-2 rounded-lg ${
-                          feature.price > 0
-                            ? 'bg-white border border-blue-200'
-                            : 'bg-gray-50'
-                        }`}
-                      >
-                        <div className="text-gray-900">{feature.name}</div>
-                        {feature.price > 0 && (
-                          <div className="text-blue-600 font-medium">
-                            ¥{feature.price}/月
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {module.features.map((feature, index) => {
+                      const isSelected = isFeatureSelected(feature.name);
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => handleFeatureToggle(feature.name, feature.price)}
+                          className={`
+                            text-xs p-3 rounded-lg border-2 transition-all duration-200 text-left relative
+                            ${isSelected
+                              ? 'border-blue-600 bg-blue-100'
+                              : feature.price > 0
+                                ? 'border-gray-200 bg-white hover:border-blue-300'
+                                : 'border-gray-100 bg-gray-50 hover:border-blue-200'
+                            }
+                          `}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                              isSelected
+                                ? 'bg-blue-600 border-blue-600'
+                                : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-gray-900">{feature.name}</div>
+                              {feature.price > 0 && (
+                                <div className={`font-medium mt-1 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
+                                  ¥{feature.price}/月
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </div>
-                    ))}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div className="text-right flex-shrink-0">
-                  <div className="text-sm text-gray-600 mb-1">
-                    月费合计
-                  </div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    ¥{moduleMonthlyPrice}
-                  </div>
-                </div>
-
-                {isSelected && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                {selectedCount > 0 && (
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-sm text-gray-600 mb-1">
+                      已选{selectedCount}项
+                    </div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      ¥{moduleMonthlyPrice}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      /月
+                    </div>
                   </div>
                 )}
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
 
-      {(config.modules || []).length === 0 && (
+      {(config.selectedFeatures || []).length === 0 && (
         <div className="text-center py-8 text-gray-500">
           未选择任何核心功能
         </div>
