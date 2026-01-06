@@ -10,22 +10,20 @@ export default function Home() {
       <Navigation />
 
       {/* Hero Section - Full Screen */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4">
-        {/* Product Image */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-full max-w-5xl h-[60vh] md:h-[70vh]">
-            {/* Placeholder for product image */}
-            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-8xl md:text-9xl font-bold text-gray-300">3.0</div>
-                <div className="text-2xl md:text-3xl text-gray-400 mt-4">系统</div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <section
+        className="relative min-h-screen flex flex-col items-center justify-center px-4"
+        style={{
+          backgroundImage: 'url(/assets/image.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-white/80" />
 
         {/* Content Overlay */}
-        <div className="relative z-10 text-center mt-[35vh]">
+        <div className="relative z-10 text-center">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
             魔法超人
           </h1>
