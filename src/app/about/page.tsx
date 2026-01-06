@@ -37,18 +37,39 @@ export default function AboutPage() {
           <AppleFeature
             title="创立初心"
             description="我们深信，一身好校服，是陪伴孩子安心成长、自信向上的 &quot;第二层皮肤&quot;。"
+            image={
+              <img
+                src="/images/洞察瞬间-创立场景.png"
+                alt="创立初心"
+                className="w-full h-full object-cover"
+              />
+            }
             reverse={false}
           />
 
           <AppleFeature
             title="使命与愿景"
             description="赋能门店赢在数字时代，成为产业首选赋能平台"
+            image={
+              <img
+                src="/images/全域作战室-团队协作.png"
+                alt="使命与愿景"
+                className="w-full h-full object-cover"
+              />
+            }
             reverse={true}
           />
 
           <AppleFeature
             title="核心价值观"
             description="专业可靠、伙伴共赢、极致简单"
+            image={
+              <img
+                src="/images/知识共享-企业文化.png"
+                alt="核心价值观"
+                className="w-full h-full object-cover"
+              />
+            }
             reverse={false}
           />
         </div>
