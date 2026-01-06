@@ -23,7 +23,7 @@ export default function SolutionPage() {
       title: '数据驱动运营',
       description: '构建数据驾驶舱，实时掌握经营状况。实时销售战报，商品销售排行与库存周转分析，分销商业绩龙虎榜，区域销售对比分析。',
       icon: '📊',
-      image: <Image src="/images/image.png" alt="数据驱动运营" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/images/3.png" alt="数据驱动运营" width={600} height={450} className="w-full h-full object-cover" />
     },
     {
       title: '私域流量运营',
