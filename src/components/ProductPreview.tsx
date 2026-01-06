@@ -13,9 +13,9 @@ const products = [
   },
   {
     id: 2,
-    name: '深度代运营版',
-    price: '¥19,800/月',
-    features: ['全平台深度运营', '定制化内容策略', '专业团队托管', '效果优化'],
+    name: '连锁品牌版',
+    price: '¥1,200/月',
+    features: ['多门店连锁', '线上线下、一盘货', '新零售指导', '客服指导7*24小时'],
     popular: true
   },
   {
@@ -95,17 +95,24 @@ export default function ProductPreview() {
                 >
                   了解更多
                 </Link>
+              ) : product.id === 2 ? (
+                <Link
+                  href="/pricing?plan=premium"
+                  className={`
+                    block w-full py-3 px-6 rounded-full font-medium transition-all duration-200 text-center
+                    bg-white text-blue-600 hover:bg-gray-100 hover:scale-105
+                  `}
+                >
+                  了解更多
+                </Link>
               ) : (
                 <button
                   className={`
                     w-full py-3 px-6 rounded-full font-medium transition-all duration-200
-                    ${product.popular
-                      ? 'bg-white text-blue-600 hover:bg-gray-100 hover:scale-105'
-                      : 'bg-gray-900 text-white hover:bg-gray-800 hover:scale-105'
-                    }
+                    bg-gray-900 text-white hover:bg-gray-800 hover:scale-105
                   `}
                 >
-                  {product.popular ? '立即选择' : '了解更多'}
+                  了解更多
                 </button>
               )}
             </div>
