@@ -94,18 +94,18 @@ export default function Navigation() {
                   </>
                 ) : (
                   <>
-                    <Link
-                      href="/login"
+                    <a
+                      href="https://mfcr.zjsifan.com/index.php/Retail/Login/index.html"
                       className="text-xs text-gray-600 transition-colors hover:opacity-60"
                     >
                       登录
-                    </Link>
-                    <Link
-                      href="/register"
+                    </a>
+                    <a
+                      href="https://mfcr.zjsifan.com/index.php/Retail/Login/register.html"
                       className="text-xs bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
                     >
                       注册
-                    </Link>
+                    </a>
                   </>
                 )}
               </div>
@@ -179,20 +179,18 @@ export default function Navigation() {
                   </>
                 ) : (
                   <>
-                    <Link
-                      href="/login"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    <a
+                      href="https://mfcr.zjsifan.com/index.php/Retail/Login/index.html"
                       className="block px-3 py-3 text-sm text-gray-600 border-b border-gray-100"
                     >
                       登录
-                    </Link>
-                    <Link
-                      href="/register"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    </a>
+                    <a
+                      href="https://mfcr.zjsifan.com/index.php/Retail/Login/register.html"
                       className="block px-3 py-3 text-sm text-blue-600 font-semibold"
                     >
                       注册
-                    </Link>
+                    </a>
                   </>
                 )}
               </div>
