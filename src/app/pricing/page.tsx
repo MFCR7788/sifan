@@ -47,7 +47,7 @@ export default function PricingPage() {
       id: 'basic' as const,
       name: '基础版',
       version: '3.0',
-      price: '2580',
+      price: '2980',
       description: '适合门店、个体户',
       color: 'text-gray-900',
       badge: ''
