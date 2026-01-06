@@ -24,6 +24,21 @@ const storeImages: StoreImage[] = [
   { id: '13', src: '/images/stores/06121338_02.jpg', alt: '合作门店13' },
   { id: '14', src: '/images/stores/be7b306770cba2e2c800ea2e50ac8c17.jpg', alt: '合作门店14' },
   { id: '15', src: '/images/stores/d6dec57c24dbd785f420768c6d74c47f.JPG', alt: '合作门店15' },
+  { id: '16', src: '/images/stores/IMG_0110.jpg', alt: '合作门店16' },
+  { id: '17', src: '/images/stores/IMG_0781.JPG', alt: '合作门店17' },
+  { id: '18', src: '/images/stores/IMG_0782.JPG', alt: '合作门店18' },
+  { id: '19', src: '/images/stores/IMG_0830.jpg', alt: '合作门店19' },
+  { id: '20', src: '/images/stores/IMG_1376 2.JPG', alt: '合作门店20' },
+  { id: '21', src: '/images/stores/IMG_6593.jpg', alt: '合作门店21' },
+  { id: '22', src: '/images/stores/IMG_6670.jpg', alt: '合作门店22' },
+  { id: '23', src: '/images/stores/IMG_6906.jpg', alt: '合作门店23' },
+  { id: '24', src: '/images/stores/IMG_6908.jpg', alt: '合作门店24' },
+  { id: '25', src: '/images/stores/IMG_7989.jpg', alt: '合作门店25' },
+  { id: '26', src: '/images/stores/IMG_9238.jpg', alt: '合作门店26' },
+  { id: '27', src: '/images/stores/IMG_9267.jpg', alt: '合作门店27' },
+  { id: '28', src: '/images/stores/IMG_9428.jpg', alt: '合作门店28' },
+  { id: '29', src: '/images/stores/IMG_9437.jpg', alt: '合作门店29' },
+  { id: '30', src: '/images/stores/IMG_9816.JPG', alt: '合作门店30' },
 ];
 
 export default function StoreShowcase() {
