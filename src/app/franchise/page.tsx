@@ -69,7 +69,7 @@ export default function FranchisePage() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
                   <span className="text-lg">系统服务费</span>
-                  <span className="text-lg font-semibold">¥2580起</span>
+                  <span className="text-lg font-semibold">¥2980起</span>
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
                   <span className="text-lg">硬件设备</span>

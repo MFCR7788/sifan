@@ -36,20 +36,26 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto mt-16 space-y-24">
           <AppleFeature
             title="创立初心"
-            description="致力于让每个学生都能穿上舒适、时尚、高品质的校服，打造校园文化新风尚。"
+            description="我们深信，一身好校服，是陪伴孩子安心成长、自信向上的&quot;第二层皮肤&quot;。"
             reverse={false}
           />
 
           <AppleFeature
-            title="使命与愿景"
-            description="通过科技创新，重新定义校服行业，成为校园服装领域的引领者和革新者。"
+            title="使命"
+            description="赋能门店赢在数字时代"
             reverse={true}
           />
 
           <AppleFeature
-            title="核心价值观"
-            description="品质至上、创新引领、客户第一、合作共赢。我们始终坚持以客户为中心，提供最优质的产品和服务。"
+            title="愿景"
+            description="成为产业首选赋能平台"
             reverse={false}
+          />
+
+          <AppleFeature
+            title="核心价值观"
+            description="专业可靠、伙伴共赢、极致简单"
+            reverse={true}
           />
         </div>
       </section>
