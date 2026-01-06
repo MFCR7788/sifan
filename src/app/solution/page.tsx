@@ -5,44 +5,37 @@ import Image from 'next/image';
 import Navigation from '@/components/Navigation';
 import AppleFeature from '@/components/AppleFeature';
 
-// 导入功能图片
-import img1 from '@/../../assets/1.png';
-import img2 from '@/../../assets/2.png';
-import img3 from '@/../../assets/3.png';
-import img5 from '@/../../assets/5.png';
-import img6 from '@/../../assets/6.png';
-
 export default function SolutionPage() {
   const coreValues = [
     {
       title: '订单与库存一体化',
       description: '打通线上线下一盘货，实时同步库存数据，避免超卖与积压。多平台订单自动抓取与统一处理，智能仓储分配，就近发货，库存预警与自动补货建议。',
       icon: '📦',
-      image: <Image src={img1} alt="订单与库存一体化" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/assets/1.png" alt="订单与库存一体化" width={600} height={450} className="w-full h-full object-cover" />
     },
     {
       title: '分销裂变体系激活',
       description: '建立多层级分销网络，快速拓展销售渠道。三级分销商等级体系（推广员、核心代理、VIP合伙人），专属推广码与裂变工具，佣金自动结算，T+1到账。',
       icon: '🤝',
-      image: <Image src={img2} alt="分销裂变体系激活" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/assets/2.png" alt="分销裂变体系激活" width={600} height={450} className="w-full h-full object-cover" />
     },
     {
       title: '数据驱动运营',
       description: '构建数据驾驶舱，实时掌握经营状况。实时销售战报，商品销售排行与库存周转分析，分销商业绩龙虎榜，区域销售对比分析。',
       icon: '📊',
-      image: <Image src={img3} alt="数据驱动运营" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/assets/3.png" alt="数据驱动运营" width={600} height={450} className="w-full h-full object-cover" />
     },
     {
       title: '私域流量运营',
       description: '深度运营客户资产，提升复购率。客户画像与标签管理，自动化营销触达，会员积分与权益体系。',
       icon: '👥',
-      image: <Image src={img5} alt="私域流量运营" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/assets/5.png" alt="私域流量运营" width={600} height={450} className="w-full h-full object-cover" />
     },
     {
       title: '生产与供应链协同',
       description: '打通生产端与销售端，实现供需精准匹配。智能排产与生产计划，供应商协同管理，成本核算与财务对接。',
       icon: '🏭',
-      image: <Image src={img6} alt="生产与供应链协同" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/assets/6.png" alt="生产与供应链协同" width={600} height={450} className="w-full h-full object-cover" />
     }
   ];
 
