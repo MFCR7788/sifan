@@ -41,21 +41,15 @@ export default function AboutPage() {
           />
 
           <AppleFeature
-            title="使命"
+            title="使命与愿景"
             description="赋能门店赢在数字时代，成为产业首选赋能平台"
             reverse={true}
           />
 
           <AppleFeature
-            title="愿景"
-            description="成为产业首选赋能平台"
-            reverse={false}
-          />
-
-          <AppleFeature
             title="核心价值观"
             description="专业可靠、伙伴共赢、极致简单"
-            reverse={true}
+            reverse={false}
           />
         </div>
       </section>
