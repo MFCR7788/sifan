@@ -26,11 +26,11 @@ export default function Home() {
         </div>
 
         {/* Content Overlay */}
-        <div className="relative z-10 text-center mt-[192px] md:mt-[228px]">
+        <div className="relative z-10 text-center mt-[154px] md:mt-[190px]">
           <h2
             className="text-5xl md:text-7xl lg:text-8xl font-semibold text-white tracking-tight"
             style={{
-              textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4)'
+              textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2)'
             }}
           >
             3.0
@@ -38,7 +38,7 @@ export default function Home() {
           <h1
             className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight mt-2"
             style={{
-              textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4)'
+              textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2)'
             }}
           >
             魔法超人
