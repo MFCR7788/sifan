@@ -7,13 +7,23 @@ import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import OrderManagement from '@/components/dashboard/OrderManagement';
 import CustomerManagement from '@/components/dashboard/CustomerManagement';
 import SystemSettings from '@/components/dashboard/SystemSettings';
+import StoreManagement from '@/components/dashboard/StoreManagement';
+import ProductManagement from '@/components/dashboard/ProductManagement';
+import InventoryManagement from '@/components/dashboard/InventoryManagement';
+import DataStatistics from '@/components/dashboard/DataStatistics';
+import FinancialManagement from '@/components/dashboard/FinancialManagement';
 
-type TabType = 'overview' | 'orders' | 'customers' | 'settings';
+type TabType = 'overview' | 'orders' | 'customers' | 'settings' | 'stores' | 'products' | 'inventory' | 'statistics' | 'finance';
 
 const tabs = [
 	{ id: 'overview', label: '仪表盘', icon: '📊' },
 	{ id: 'orders', label: '订单管理', icon: '📦' },
 	{ id: 'customers', label: '客户管理', icon: '👥' },
+	{ id: 'stores', label: '门店管理', icon: '🏪' },
+	{ id: 'products', label: '商品管理', icon: '🛍️' },
+	{ id: 'inventory', label: '进销存', icon: '📦' },
+	{ id: 'statistics', label: '数据统计', icon: '📈' },
+	{ id: 'finance', label: '财务管理', icon: '💰' },
 	{ id: 'settings', label: '系统设置', icon: '⚙️' },
 ];
 
@@ -51,6 +61,16 @@ export default function DashboardPage() {
 				return <CustomerManagement />;
 			case 'settings':
 				return <SystemSettings />;
+			case 'stores':
+				return <StoreManagement />;
+			case 'products':
+				return <ProductManagement />;
+			case 'inventory':
+				return <InventoryManagement />;
+			case 'statistics':
+				return <DataStatistics />;
+			case 'finance':
+				return <FinancialManagement />;
 			default:
 				return <DashboardOverview />;
 		}
