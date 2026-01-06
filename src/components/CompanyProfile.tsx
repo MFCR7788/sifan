@@ -28,7 +28,7 @@ export default function CompanyProfile() {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Column - Text Content */}
           <div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-900 tracking-tight mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 tracking-tight mb-6">
               中国首个全域数字化<br />校服连锁品牌
             </h2>
 

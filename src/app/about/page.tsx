@@ -58,7 +58,7 @@ export default function AboutPage() {
       <section className="py-24 md:py-32 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 tracking-tight">
-            企业资质
+            企业介绍
           </h2>
         </div>
         <CompanyProfile />
