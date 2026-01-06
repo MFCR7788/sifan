@@ -20,28 +20,29 @@ export default function Home() {
               src="/assets/image.png"
               alt="魔法超人"
               className="w-full h-full object-cover"
+              style={{ opacity: 0.8 }}
             />
           </div>
         </div>
 
         {/* Content Overlay */}
         <div className="relative z-10 text-center">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-white tracking-tight drop-shadow-lg">
             魔法超人
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mt-4 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-white mt-4 max-w-2xl mx-auto drop-shadow-md">
             智能驱动，未来已来
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/pricing"
-              className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+              className="px-8 py-3 bg-white text-gray-900 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors shadow-lg"
             >
               了解产品
             </Link>
             <Link
               href="/about"
-              className="text-blue-600 hover:underline text-sm"
+              className="text-white hover:text-gray-200 text-sm drop-shadow-md"
             >
               了解更多 &gt;
             </Link>
