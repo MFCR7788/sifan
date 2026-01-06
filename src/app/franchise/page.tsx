@@ -58,29 +58,34 @@ export default function FranchisePage() {
 
             <div>
               <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 tracking-tight mb-8">
-                投资构成
+                加盟费用
               </h2>
               <div className="space-y-6">
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
-                  <span className="text-lg">系统服务费</span>
-                  <span className="text-lg font-semibold">¥2980起</span>
+                  <span className="text-lg">加盟费</span>
+                  <span className="text-lg font-semibold">免</span>
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
-                  <span className="text-lg">硬件设备</span>
-                  <span className="text-lg font-semibold">¥5000起</span>
+                  <span className="text-lg">保证金</span>
+                  <span className="text-lg font-semibold">免</span>
                 </div>
-                <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                <div className="flex flex-col items-start py-4 border-b border-gray-200">
                   <span className="text-lg">首批商品</span>
-                  <span className="text-lg font-semibold">¥10000起</span>
+                  <span className="text-lg font-semibold mt-2">统一地址 免费铺，不统一区域 1万起订</span>
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
                   <span className="text-lg">其他费用</span>
-                  <span className="text-lg font-semibold">¥3000起</span>
+                  <span className="text-lg font-semibold">设备¥2500/套</span>
+                </div>
+                <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                  <span className="text-lg">系统费用</span>
+                  <span className="text-lg font-semibold">按产品选择</span>
+                </div>
+                <div className="flex flex-col items-start py-4 border-b border-gray-200">
+                  <span className="text-lg">总部给加盟商拓分销点</span>
+                  <span className="text-lg font-semibold mt-2">¥500/个（包含开抖店费用）</span>
                 </div>
               </div>
-              <p className="text-sm text-gray-500 mt-6">
-                * 具体投资金额根据实际情况而定
-              </p>
             </div>
 
             <div>
