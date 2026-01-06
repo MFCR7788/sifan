@@ -62,15 +62,15 @@ export default function FranchisePage() {
               </h2>
               <div className="space-y-6">
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
-                  <span className="text-lg">加  盟  费</span>
+                  <span className="text-lg">加 盟 费</span>
                   <span className="text-lg font-semibold">免</span>
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
-                  <span className="text-lg">保  证  金</span>
+                  <span className="text-lg">保 证 金</span>
                   <span className="text-lg font-semibold">免</span>
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
-                  <span className="text-lg">首批商品</span>
+                  <span className="text-lg">首批商品（统一区域 免）</span>
                   <span className="text-lg font-semibold">¥10000</span>
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
@@ -81,9 +81,9 @@ export default function FranchisePage() {
                   <span className="text-lg">系统费用</span>
                   <span className="text-lg font-semibold">按产品选择</span>
                 </div>
-                <div className="flex flex-col items-start py-4 border-b border-gray-200">
-                  <span className="text-lg">分  销  点</span>
-                  <span className="text-lg font-semibold mt-2">¥500 / 个（包含开抖店费用，形象招牌）</span>
+                <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                  <span className="text-lg">分 销 点（包含开抖店费用，形象招牌）</span>
+                  <span className="text-lg font-semibold">¥500 / 个</span>
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
                   <span className="text-lg">门头形象</span>
