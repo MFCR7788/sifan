@@ -36,13 +36,13 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto mt-16 space-y-24">
           <AppleFeature
             title="创立初心"
-            description="我们深信，一身好校服，是陪伴孩子安心成长、自信向上的&quot;第二层皮肤&quot;。"
+            description="我们深信，一身好校服，是陪伴孩子安心成长、自信向上的 &quot;第二层皮肤&quot;。"
             reverse={false}
           />
 
           <AppleFeature
             title="使命"
-            description="赋能门店赢在数字时代"
+            description="赋能门店赢在数字时代，成为产业首选赋能平台"
             reverse={true}
           />
 
