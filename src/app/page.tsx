@@ -10,28 +10,38 @@ export default function Home() {
       <Navigation />
 
       {/* Hero Section - Full Screen */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 bg-cover bg-center" style={{ backgroundImage: "url('/assets/image.png')" }}>
-        {/* Dark overlay for better readability */}
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4">
+        {/* Product Image */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-full max-w-5xl h-[60vh] md:h-[70vh]">
+            {/* Placeholder for product image */}
+            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-8xl md:text-9xl font-bold text-gray-300">3.0</div>
+                <div className="text-2xl md:text-3xl text-gray-400 mt-4">系统</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Content Overlay */}
-        <div className="relative z-10 text-center">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-white tracking-tight drop-shadow-2xl">
-            3.0 魔法超人
+        <div className="relative z-10 text-center mt-[35vh]">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
+            魔法超人
           </h1>
-          <p className="text-xl md:text-2xl text-white mt-4 max-w-2xl mx-auto drop-shadow-lg">
+          <p className="text-xl md:text-2xl text-gray-600 mt-4 max-w-2xl mx-auto">
             智能驱动，未来已来
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/pricing"
-              className="px-8 py-3 bg-white text-gray-900 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors shadow-lg"
+              className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               了解产品
             </Link>
             <Link
               href="/about"
-              className="text-white hover:underline text-sm drop-shadow-md"
+              className="text-blue-600 hover:underline text-sm"
             >
               了解更多 &gt;
             </Link>
