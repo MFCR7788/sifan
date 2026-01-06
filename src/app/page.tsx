@@ -14,11 +14,14 @@ export default function Home() {
         {/* Product Image */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative w-full max-w-5xl h-[60vh] md:h-[70vh]">
-            {/* Placeholder for product image */}
-            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center">
+            {/* Product Image with Background */}
+            <div
+              className="w-full h-full bg-cover bg-center rounded-3xl flex items-center justify-center"
+              style={{ backgroundImage: "url('/assets/image.png')" }}
+            >
               <div className="text-center">
-                <div className="text-8xl md:text-9xl font-bold text-gray-300">3.0</div>
-                <div className="text-2xl md:text-3xl text-gray-400 mt-4">系统</div>
+                <div className="text-8xl md:text-9xl font-bold text-white drop-shadow-lg">3.0</div>
+                <div className="text-2xl md:text-3xl text-white mt-4 drop-shadow-md">系统</div>
               </div>
             </div>
           </div>
