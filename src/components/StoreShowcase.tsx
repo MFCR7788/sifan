@@ -10,13 +10,20 @@ interface StoreImage {
 
 const storeImages: StoreImage[] = [
   { id: '1', src: '/images/stores/0feedback_sendimage.jpg', alt: '合作门店1' },
-  { id: '2', src: '/images/stores/5beeca9084b91f0f872c9c3476e8a80a.JPG', alt: '合作门店2' },
-  { id: '3', src: '/images/stores/28efb704fb733bdf4d96b8af8f9fcfd4.jpg', alt: '合作门店3' },
-  { id: '4', src: '/images/stores/c31f0ac7b7cd44a6cd02f613bd3bb7d3.jpg', alt: '合作门店4' },
-  { id: '5', src: '/images/stores/IMG_0110.jpg', alt: '合作门店5' },
-  { id: '6', src: '/images/stores/IMG_0781.JPG', alt: '合作门店6' },
-  { id: '7', src: '/images/stores/IMG_0782.JPG', alt: '合作门店7' },
-  { id: '8', src: '/images/stores/IMG_0829.JPG', alt: '合作门店8' },
+  { id: '2', src: '/images/stores/0feedback_sendimage 2.jpg', alt: '合作门店2' },
+  { id: '3', src: '/images/stores/0feedback_sendimage 3.jpg', alt: '合作门店3' },
+  { id: '4', src: '/images/stores/4.jpg', alt: '合作门店4' },
+  { id: '5', src: '/images/stores/4 2.jpg', alt: '合作门店5' },
+  { id: '6', src: '/images/stores/4bd60ab93ae0970e66c1d1afeabae231.JPG', alt: '合作门店6' },
+  { id: '7', src: '/images/stores/5beeca9084b91f0f872c9c3476e8a80a.JPG', alt: '合作门店7' },
+  { id: '8', src: '/images/stores/05e2912c440fb6652e89774c71f8636e.JPG', alt: '合作门店8' },
+  { id: '9', src: '/images/stores/7c509a63078b2316cf880e2544942885.JPG', alt: '合作门店9' },
+  { id: '10', src: '/images/stores/56cd5a7393a7212098d258d5330b4868.JPG', alt: '合作门店10' },
+  { id: '11', src: '/images/stores/625b273dd65cdb12d73190a5d9c9afad.JPG', alt: '合作门店11' },
+  { id: '12', src: '/images/stores/06121157_00.jpg', alt: '合作门店12' },
+  { id: '13', src: '/images/stores/06121338_02.jpg', alt: '合作门店13' },
+  { id: '14', src: '/images/stores/be7b306770cba2e2c800ea2e50ac8c17.jpg', alt: '合作门店14' },
+  { id: '15', src: '/images/stores/d6dec57c24dbd785f420768c6d74c47f.JPG', alt: '合作门店15' },
 ];
 
 export default function StoreShowcase() {
@@ -26,14 +33,12 @@ export default function StoreShowcase() {
     <section className="py-20 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Gallery Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
           {storeImages.map((image, index) => (
             <div
               key={image.id}
-              className={`relative group overflow-hidden rounded-2xl cursor-pointer ${
-                index === 4 || index === 7 ? 'md:col-span-2' : ''
-              }`}
-              style={{ aspectRatio: index === 4 || index === 7 ? '16/9' : '4/3' }}
+              className="relative group overflow-hidden rounded-2xl cursor-pointer"
+              style={{ aspectRatio: '4/3' }}
               onClick={() => setSelectedImage(image)}
             >
               <img
