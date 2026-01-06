@@ -20,7 +20,7 @@ export default function Home() {
               src="/assets/image.png"
               alt="魔法超人"
               className="w-full h-full object-cover"
-              style={{ opacity: 0.8 }}
+              style={{ opacity: 1 }}
             />
           </div>
         </div>
