@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 const products = [
   {
     id: 1,
     name: '基础运营版',
-    price: '¥9,800/月',
-    features: ['多平台基础运营', '内容发布管理', '数据分析报表', '客服支持'],
+    price: '¥300/月',
+    features: ['线上小程序商城', '线下收银系统', '数据分析报表', '客服支持'],
     popular: false
   },
   {
@@ -84,17 +85,29 @@ export default function ProductPreview() {
               </div>
 
               {/* CTA Button */}
-              <button
-                className={`
-                  w-full py-3 px-6 rounded-full font-medium transition-all duration-200
-                  ${product.popular
-                    ? 'bg-white text-blue-600 hover:bg-gray-100 hover:scale-105'
-                    : 'bg-gray-900 text-white hover:bg-gray-800 hover:scale-105'
-                  }
-                `}
-              >
-                {product.popular ? '立即选择' : '了解更多'}
-              </button>
+              {product.id === 1 ? (
+                <Link
+                  href="/pricing?plan=basic"
+                  className={`
+                    block w-full py-3 px-6 rounded-full font-medium transition-all duration-200 text-center
+                    bg-gray-900 text-white hover:bg-gray-800 hover:scale-105
+                  `}
+                >
+                  了解更多
+                </Link>
+              ) : (
+                <button
+                  className={`
+                    w-full py-3 px-6 rounded-full font-medium transition-all duration-200
+                    ${product.popular
+                      ? 'bg-white text-blue-600 hover:bg-gray-100 hover:scale-105'
+                      : 'bg-gray-900 text-white hover:bg-gray-800 hover:scale-105'
+                    }
+                  `}
+                >
+                  {product.popular ? '立即选择' : '了解更多'}
+                </button>
+              )}
             </div>
           ))}
         </div>

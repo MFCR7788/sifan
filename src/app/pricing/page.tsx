@@ -19,6 +19,13 @@ export default function PricingPage() {
 
   useEffect(() => {
     fetchPricingData();
+
+    // 从URL参数获取选中的方案
+    const params = new URLSearchParams(window.location.search);
+    const planParam = params.get('plan');
+    if (planParam === 'basic' || planParam === 'premium' || planParam === 'ultimate') {
+      setSelectedPlan(planParam);
+    }
   }, []);
 
   const fetchPricingData = async () => {
