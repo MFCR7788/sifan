@@ -16,11 +16,12 @@ const platformNames: Record<string, string> = {
 };
 
 const moduleNames: Record<string, string> = {
-  'order-inventory': '订单与库存中心',
-  'distribution': '分销裂变体系',
-  'data-driven': '数据驱动运营',
-  'private-traffic': '私域流量运营',
-  'production-supply': '生产与供应链'
+  'distribution-system': '分销裂变体系',
+  'marketing-activities': '营销活动中心',
+  'member-operation': '会员运营体系',
+  'order-inventory': '订单与库存',
+  'data-analysis': '数据分析与监控',
+  'advanced-functions': '高级功能'
 };
 
 const serviceNames: Record<string, string> = {
@@ -123,7 +124,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                 {config.step >= 2 && (config.modules || []).length > 0 ? (
                   <>
                     <div className="space-y-1">
-                      {getModuleNames().slice(0, 3).map((name, index) => (
+                      {getModuleNames().slice(0, 3).map((name: string, index: number) => (
                         <div key={index} className="text-sm text-gray-900">
                           • {name}
                         </div>
@@ -156,7 +157,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                 <div className="flex-1">
                   <div className="text-sm text-gray-600 mb-1">增值服务</div>
                   <div className="space-y-1">
-                    {getServiceNames().slice(0, 3).map((name, index) => (
+                    {getServiceNames().slice(0, 3).map((name: string, index: number) => (
                       <div key={index} className="text-sm text-gray-900">
                         • {name}
                       </div>
@@ -183,11 +184,16 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
 
           {/* Price */}
           <div>
-            <div className="text-sm text-gray-600 mb-1">月度总价</div>
+            <div className="text-sm text-gray-600 mb-1">年度总价</div>
             <div className="text-4xl font-bold text-gray-900">
               ¥{config.totalPrice.toLocaleString()}
-              <span className="text-lg font-normal text-gray-600 ml-1">/月</span>
+              <span className="text-lg font-normal text-gray-600 ml-1">/年</span>
             </div>
+            {config.monthlyFee > 0 && (
+              <div className="text-sm text-gray-500 mt-1">
+                月度功能费: ¥{config.monthlyFee}/月
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}

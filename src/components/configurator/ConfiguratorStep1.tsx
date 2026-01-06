@@ -29,7 +29,7 @@ const businessScenarios = [
     icon: '🏢',
     description: '适合集团企业',
     features: ['全渠道分销体系', '数据驱动运营', '供应链协同'],
-    price: 2580
+    price: 2980
   }
 ];
 
@@ -92,7 +92,7 @@ export default function ConfiguratorStep1({ config, updateConfig, onNext }: Conf
                 ))}
               </div>
               <div className="text-2xl font-bold text-blue-600 pt-4 border-t border-gray-200">
-                ¥{scenario.price.toLocaleString()}/月
+                ¥{scenario.price.toLocaleString()}/年
               </div>
             </div>
 
