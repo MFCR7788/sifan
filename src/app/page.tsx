@@ -10,7 +10,7 @@ export default function Home() {
       <Navigation />
 
       {/* Hero Section - Full Screen */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4">
+      <section className="relative min-h-screen flex flex-col items-center px-4 pt-20">
         {/* Background Image Container - 70% size with rounded corners */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div
@@ -26,23 +26,23 @@ export default function Home() {
         </div>
 
         {/* Content Overlay */}
-        <div className="relative z-10 text-center">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-white tracking-tight drop-shadow-lg">
+        <div className="relative z-10 text-center mt-32 md:mt-40">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
             魔法超人
           </h1>
-          <p className="text-xl md:text-2xl text-white mt-4 max-w-2xl mx-auto drop-shadow-md">
+          <p className="text-xl md:text-2xl text-gray-600 mt-4 max-w-2xl mx-auto">
             智能驱动，未来已来
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/pricing"
-              className="px-8 py-3 bg-white text-gray-900 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors shadow-lg"
+              className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               了解产品
             </Link>
             <Link
               href="/about"
-              className="text-white hover:text-gray-200 text-sm drop-shadow-md"
+              className="text-blue-600 hover:underline text-sm"
             >
               了解更多 &gt;
             </Link>
