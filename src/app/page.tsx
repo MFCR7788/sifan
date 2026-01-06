@@ -10,17 +10,19 @@ export default function Home() {
       <Navigation />
 
       {/* Hero Section - Full Screen */}
-      <section
-        className="relative min-h-screen flex flex-col items-center justify-center px-4"
-        style={{
-          backgroundImage: 'url(/assets/image.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-white/80" />
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4">
+        {/* Background Image Container - 70% size with rounded corners */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div
+            className="relative w-[70%] h-[70vh] md:h-[70%] rounded-3xl overflow-hidden shadow-2xl"
+          >
+            <img
+              src="/assets/image.png"
+              alt="魔法超人"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
 
         {/* Content Overlay */}
         <div className="relative z-10 text-center">
