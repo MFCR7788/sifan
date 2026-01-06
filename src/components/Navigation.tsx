@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { name: '首页', href: '/' },
@@ -14,6 +15,7 @@ const navItems = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { isAuthenticated, user, isLoading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -50,7 +52,7 @@ export default function Navigation() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center space-x-8">
             <div className="flex items-baseline space-x-8">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
@@ -71,6 +73,35 @@ export default function Navigation() {
                 );
               })}
             </div>
+            
+            {/* Auth Links */}
+            {!isLoading && (
+              <div className="flex items-center space-x-6 pl-6 border-l border-gray-200">
+                {isAuthenticated ? (
+                  <Link
+                    href="/profile"
+                    className="text-xs text-gray-600 transition-colors hover:opacity-60"
+                  >
+                    {user?.name || '个人中心'}
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="text-xs text-gray-600 transition-colors hover:opacity-60"
+                    >
+                      登录
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="text-xs bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
+                    >
+                      注册
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -117,6 +148,38 @@ export default function Navigation() {
                 </Link>
               );
             })}
+            
+            {/* Mobile Auth Links */}
+            {!isLoading && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                {isAuthenticated ? (
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-3 py-3 text-sm text-gray-600 border-b border-gray-100"
+                  >
+                    个人中心
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-3 py-3 text-sm text-gray-600 border-b border-gray-100"
+                    >
+                      登录
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-3 py-3 text-sm text-blue-600 font-semibold"
+                    >
+                      注册
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
