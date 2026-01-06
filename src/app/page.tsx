@@ -27,7 +27,12 @@ export default function Home() {
 
         {/* Content Overlay */}
         <div className="relative z-10 text-center mt-32 md:mt-40">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold text-gray-900 tracking-tight">
+          <h1
+            className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight"
+            style={{
+              textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4)'
+            }}
+          >
             魔法超人
           </h1>
           <p className="mt-4 text-white font-semibold text-xl md:text-2xl max-w-2xl mx-auto">
