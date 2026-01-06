@@ -11,13 +11,13 @@ export default function SolutionPage() {
       title: '订单与库存一体化',
       description: '打通线上线下一盘货，实时同步库存数据，避免超卖与积压。多平台订单自动抓取与统一处理，智能仓储分配，就近发货，库存预警与自动补货建议。',
       icon: '📦',
-      image: <Image src="/assets/1.png" alt="订单与库存一体化" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/images/1.png" alt="订单与库存一体化" width={600} height={450} className="w-full h-full object-cover" />
     },
     {
       title: '分销裂变体系激活',
       description: '建立多层级分销网络，快速拓展销售渠道。三级分销商等级体系（推广员、核心代理、VIP合伙人），专属推广码与裂变工具，佣金自动结算，T+1到账。',
       icon: '🤝',
-      image: <Image src="/assets/2.png" alt="分销裂变体系激活" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/images/2.png" alt="分销裂变体系激活" width={600} height={450} className="w-full h-full object-cover" />
     },
     {
       title: '数据驱动运营',
@@ -29,13 +29,13 @@ export default function SolutionPage() {
       title: '私域流量运营',
       description: '深度运营客户资产，提升复购率。客户画像与标签管理，自动化营销触达，会员积分与权益体系。',
       icon: '👥',
-      image: <Image src="/assets/5.png" alt="私域流量运营" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/images/5.png" alt="私域流量运营" width={600} height={450} className="w-full h-full object-cover" />
     },
     {
       title: '生产与供应链协同',
       description: '打通生产端与销售端，实现供需精准匹配。智能排产与生产计划，供应商协同管理，成本核算与财务对接。',
       icon: '🏭',
-      image: <Image src="/assets/6.png" alt="生产与供应链协同" width={600} height={450} className="w-full h-full object-cover" />
+      image: <Image src="/images/6.png" alt="生产与供应链协同" width={600} height={450} className="w-full h-full object-cover" />
     }
   ];
 
