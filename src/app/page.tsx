@@ -26,9 +26,9 @@ export default function Home() {
         </div>
 
         {/* Content Overlay */}
-        <div className="relative z-10 text-center mt-[154px] md:mt-[190px]">
+        <div className="relative z-10 text-center mt-[135px] md:mt-[171px]">
           <h2
-            className="text-5xl md:text-7xl lg:text-8xl font-semibold text-white tracking-tight"
+            className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight"
             style={{
               textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2)'
             }}
