@@ -26,7 +26,7 @@ export default function Home() {
         </div>
 
         {/* Content Overlay */}
-        <div className="relative z-10 text-center mt-32 md:mt-40">
+        <div className="relative z-10 text-center mt-[192px] md:mt-[228px]">
           <h1
             className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight"
             style={{
