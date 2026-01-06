@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
-import StoreShowcase from '@/components/StoreShowcase';
 import ValueProposition from '@/components/ValueProposition';
 import ProductPreview from '@/components/ProductPreview';
 
@@ -77,19 +76,6 @@ export default function Home() {
 
       {/* Product Preview Section */}
       <ProductPreview />
-
-      {/* Store Showcase Section */}
-      <section className="py-24 md:py-32 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-900 tracking-tight">
-            门店展示
-          </h2>
-          <p className="text-xl text-gray-600 mt-6">
-            全方位覆盖您的业务场景
-          </p>
-        </div>
-        <StoreShowcase />
-      </section>
 
       {/* CTA Section */}
       <section className="py-24 md:py-32 px-4">
