@@ -67,7 +67,7 @@ export default function FranchisePage() {
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
                   <span className="text-lg">保 证 金</span>
-                  <span className="text-lg font-semibold">免</span>
+                  <span className="text-lg font-semibold">¥20000</span>
                 </div>
                 <div className="flex justify-between items-center py-4 border-b border-gray-200">
                   <span className="text-lg">首批商品（统一区域 免）</span>
