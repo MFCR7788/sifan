@@ -160,6 +160,7 @@ export default function SolutionPage() {
                 key={index}
                 title={item.title}
                 description={item.description}
+                image={item.image}
                 reverse={index % 2 === 1}
               />
             ))}
