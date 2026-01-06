@@ -20,7 +20,7 @@ export default function LoginPage() {
 
 		try {
 			await login(email, password);
-			router.push('/dashboard');
+			window.location.href = 'https://mfcr.zjsifan.com/index.php/Retail/Login/index.html';
 		} catch (err: any) {
 			setError(err.message || '登录失败');
 		} finally {

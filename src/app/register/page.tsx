@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
 		try {
 			await register(formData);
-			router.push('/profile');
+			window.location.href = 'https://mfcr.zjsifan.com/index.php/Retail/Login/register.html';
 		} catch (err: any) {
 			setError(err.message || '注册失败');
 		} finally {
