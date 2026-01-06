@@ -24,12 +24,6 @@ export default function FranchisePage() {
             >
               咨询加盟
             </Link>
-            <Link
-              href="/pricing"
-              className="text-blue-600 hover:underline text-sm"
-            >
-              查看产品 &gt;
-            </Link>
           </div>
         </div>
       </section>
