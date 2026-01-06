@@ -102,13 +102,13 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       return total + module.features.reduce((sum, feature) => sum + feature.price, 0);
     }, 0);
 
-    // Annual price = base + (monthly fee * 12)
-    const annualPrice = basePrice + (monthlyFee * 12);
+    // Monthly price = base + monthly fee
+    const monthlyPrice = basePrice + monthlyFee;
 
     updateConfig({
       modules: updatedModules,
       monthlyFee: monthlyFee,
-      totalPrice: annualPrice
+      totalPrice: monthlyPrice
     });
   };
 
@@ -188,9 +188,6 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                   </div>
                   <div className="text-2xl font-bold text-blue-600">
                     ¥{moduleMonthlyPrice}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    ¥{moduleMonthlyPrice * 12}/年
                   </div>
                 </div>
 

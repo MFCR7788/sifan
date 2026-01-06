@@ -92,7 +92,7 @@ export default function ConfiguratorStep1({ config, updateConfig, onNext }: Conf
                 ))}
               </div>
               <div className="text-2xl font-bold text-blue-600 pt-4 border-t border-gray-200">
-                ¥{scenario.price.toLocaleString()}/年
+                ¥{scenario.price.toLocaleString()}/月
               </div>
             </div>
 

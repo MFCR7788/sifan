@@ -184,14 +184,14 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
 
           {/* Price */}
           <div>
-            <div className="text-sm text-gray-600 mb-1">年度总价</div>
+            <div className="text-sm text-gray-600 mb-1">月度总价</div>
             <div className="text-4xl font-bold text-gray-900">
               ¥{config.totalPrice.toLocaleString()}
-              <span className="text-lg font-normal text-gray-600 ml-1">/年</span>
+              <span className="text-lg font-normal text-gray-600 ml-1">/月</span>
             </div>
             {config.monthlyFee > 0 && (
               <div className="text-sm text-gray-500 mt-1">
-                月度功能费: ¥{config.monthlyFee}/月
+                功能费: ¥{config.monthlyFee}/月
               </div>
             )}
           </div>
