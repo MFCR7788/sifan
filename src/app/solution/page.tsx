@@ -265,10 +265,11 @@ export default function SolutionPage() {
           </p>
           <div className="flex justify-center gap-6 text-xs text-gray-500">
             <Link href="/" className="hover:underline">首页</Link>
-            <Link href="/pricing" className="hover:underline">产品报价</Link>
-            <Link href="/solution" className="hover:underline">定制方案</Link>
-            <Link href="/franchise" className="hover:underline">招商加盟</Link>
-            <Link href="/contact" className="hover:underline">联系我们</Link>
+            <Link href="/pricing" className="hover:underline">产品</Link>
+            <Link href="/configurator" className="hover:underline">定制</Link>
+            <Link href="/franchise" className="hover:underline">加盟</Link>
+            <Link href="/about" className="hover:underline">关于</Link>
+            <Link href="/contact" className="hover:underline">联系</Link>
           </div>
         </div>
       </footer>

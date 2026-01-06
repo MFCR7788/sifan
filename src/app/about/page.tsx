@@ -106,9 +106,11 @@ export default function AboutPage() {
           </p>
           <div className="flex justify-center gap-6 text-xs text-gray-500">
             <a href="/" className="hover:underline">首页</a>
-            <a href="/pricing" className="hover:underline">产品报价</a>
-            <a href="/franchise" className="hover:underline">招商加盟</a>
-            <a href="/contact" className="hover:underline">联系我们</a>
+            <a href="/pricing" className="hover:underline">产品</a>
+            <a href="/configurator" className="hover:underline">定制</a>
+            <a href="/franchise" className="hover:underline">加盟</a>
+            <a href="/about" className="hover:underline">关于</a>
+            <a href="/contact" className="hover:underline">联系</a>
           </div>
         </div>
       </footer>
