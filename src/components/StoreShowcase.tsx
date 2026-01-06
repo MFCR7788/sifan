@@ -51,8 +51,8 @@ export default function StoreShowcase() {
         {/* Stats */}
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
-            <div className="text-5xl font-semibold text-gray-900 mb-3">100+</div>
-            <div className="text-gray-600">合作门店</div>
+            <div className="text-5xl font-semibold text-gray-900 mb-3">300+</div>
+            <div className="text-gray-600">合作网点</div>
           </div>
           <div className="text-center">
             <div className="text-5xl font-semibold text-gray-900 mb-3">30+</div>
