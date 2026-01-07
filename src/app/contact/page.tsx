@@ -191,7 +191,7 @@ export default function ContactPage() {
       <footer className="py-16 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-xs text-gray-500 mb-4">
-            Copyright © 2025 浙江思杋服饰有限公司 魔法小超人团队. All rights reserved.
+            Copyright © 2025 浙江思杋服饰有限公司 魔法超人团队. All rights reserved.
           </p>
           <div className="flex justify-center gap-6 text-xs text-gray-500">
             <a href="/" className="hover:underline">首页</a>

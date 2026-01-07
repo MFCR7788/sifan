@@ -34,7 +34,7 @@ export default function CompanyProfile() {
 
             <p className="text-xl text-gray-600 mb-12 leading-relaxed">
               浙江思杋服饰有限公司成立于2018年，致力于打造校服新零售标杆品牌。
-              以"魔法小超人"为品牌名，通过线上线下融合的体验式零售模式，
+              以"魔法超人"为品牌名，通过线上线下融合的体验式零售模式，
               解决家长"试穿难、退换烦、质量没保障"三大痛点。
             </p>
 

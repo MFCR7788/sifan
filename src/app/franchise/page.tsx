@@ -15,7 +15,7 @@ export default function FranchisePage() {
             招商加盟
           </h1>
           <p className="text-xl text-gray-600 mt-6">
-            加入魔法小超人，共创校服新零售未来
+            加入魔法超人，共创校服新零售未来
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -133,7 +133,7 @@ export default function FranchisePage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">品牌授权</h3>
-                    <p className="text-gray-600 mt-1">官方授权，使用魔法小超人品牌标识</p>
+                    <p className="text-gray-600 mt-1">官方授权，使用魔法超人品牌标识</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -254,7 +254,7 @@ export default function FranchisePage() {
       <footer className="py-16 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-xs text-gray-500 mb-4">
-            Copyright © 2025 浙江思杋服饰有限公司 魔法小超人团队. All rights reserved.
+            Copyright © 2025 浙江思杋服饰有限公司 魔法超人团队. All rights reserved.
           </p>
           <div className="flex justify-center gap-6 text-xs text-gray-500">
             <a href="/" className="hover:underline">首页</a>

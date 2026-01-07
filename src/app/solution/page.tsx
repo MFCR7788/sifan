@@ -122,7 +122,7 @@ export default function SolutionPage() {
             定制化方案
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
-            基于魔法小超人平台五大核心优势，系统化解决校服企业核心痛点，<br />
+            基于魔法超人平台五大核心优势，系统化解决校服企业核心痛点，<br />
             实现效率提升、渠道拓宽、库存优化、数据驱动
           </p>
           <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
@@ -268,7 +268,7 @@ export default function SolutionPage() {
       <footer className="py-16 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-xs text-gray-500 mb-4">
-            Copyright © 2025 浙江思杋服饰有限公司 魔法小超人团队. All rights reserved.
+            Copyright © 2025 浙江思杋服饰有限公司 魔法超人团队. All rights reserved.
           </p>
           <div className="flex justify-center gap-6 text-xs text-gray-500">
             <Link href="/" className="hover:underline">首页</Link>
