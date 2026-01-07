@@ -7,7 +7,7 @@ export default function SystemSettings() {
 	const { user } = useAuth();
 	const [activeTab, setActiveTab] = useState('general');
 	const [settings, setSettings] = useState({
-		companyName: '魔法超人科技有限公司',
+		companyName: '魔法小超人科技有限公司',
 		companyEmail: 'contact@magic-superman.com',
 		companyPhone: '400-123-4567',
 		companyAddress: '北京市朝阳区科技园区',
@@ -331,7 +331,7 @@ export default function SystemSettings() {
 										alt="Logo"
 										className="w-20 h-20 mx-auto mb-4"
 									/>
-									<h3 className="text-2xl font-bold text-gray-900">魔法超人业务管理系统</h3>
+									<h3 className="text-2xl font-bold text-gray-900">魔法小超人业务管理系统</h3>
 									<p className="text-gray-600 mt-2">版本 1.0.0</p>
 								</div>
 

@@ -41,13 +41,13 @@ export default function Navigation() {
             <Link href="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity">
               <img
                 src="/小超人.png"
-                alt="魔法超人"
+                alt="魔法小超人"
                 className="w-7 h-7 object-contain"
               />
               <span className={`text-lg font-semibold transition-colors ${
                 isScrolled ? 'text-gray-900' : 'text-gray-900'
               }`}>
-                魔法超人
+                魔法小超人
               </span>
             </Link>
           </div>

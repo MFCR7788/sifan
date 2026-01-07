@@ -38,7 +38,7 @@ export default function ValueProposition() {
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-20">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-900 tracking-tight mb-6">
-            为什么选择魔法超人
+            为什么选择魔法小超人
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             每一项功能，都为您的业务增长精心设计
