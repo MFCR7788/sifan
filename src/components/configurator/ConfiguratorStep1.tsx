@@ -13,7 +13,7 @@ const businessScenarios = [
     icon: '🏪',
     description: '适合门店、个体户',
     features: ['线上小程序商城', '线下收银系统', '基础库存管理'],
-    price: 2980
+    price: 300
   },
   {
     id: 'multi-store',
@@ -21,7 +21,7 @@ const businessScenarios = [
     icon: '🏬',
     description: '适合连锁企业',
     features: ['多门店统一管理', '线上线下一盘货', '智能库存调拨'],
-    price: 12980
+    price: 1200
   },
   {
     id: 'brand-chain',
@@ -29,7 +29,7 @@ const businessScenarios = [
     icon: '🏢',
     description: '适合集团企业',
     features: ['全渠道分销体系', '数据驱动运营', '供应链协同'],
-    price: 29800
+    price: 2980
   }
 ];
 
@@ -92,7 +92,7 @@ export default function ConfiguratorStep1({ config, updateConfig, onNext }: Conf
                 ))}
               </div>
               <div className="text-2xl font-bold text-blue-600 pt-4 border-t border-gray-200">
-                基础费用¥2980/年
+                ¥{scenario.price.toLocaleString()}/月
               </div>
             </div>
 
