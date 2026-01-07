@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 		if (validatedData.serviceLevel) {
 			orderData.serviceLevel = validatedData.serviceLevel;
 		}
-		if (validatedData.valueServices && validatedData.valueServices.length > 0) {
+		if (validatedData.valueServices && Array.isArray(validatedData.valueServices) && validatedData.valueServices.length > 0) {
 			orderData.valueServices = validatedData.valueServices;
 		}
 		if (validatedData.notes) {
@@ -38,15 +38,17 @@ export async function POST(request: NextRequest) {
 		// 创建订单
 		const order = await orderManager.createOrder(orderData);
 
-		// 返回订单信息
+		// 返回订单信息 - 使用数据库字段名（下划线格式）
+		// 使用any类型避免类型检查错误，因为数据库返回的是下划线命名
+		const dbOrder = order as any;
 		return NextResponse.json({
 			success: true,
 			data: {
-				id: order.id,
-				orderNumber: order.orderNumber,
-				totalPrice: order.totalPrice,
-				status: order.status,
-				createdAt: order.createdAt,
+				id: dbOrder.id,
+				orderNumber: dbOrder.order_number,
+				totalPrice: dbOrder.total_price,
+				status: dbOrder.status,
+				createdAt: dbOrder.created_at,
 			},
 		});
 	} catch (error: any) {

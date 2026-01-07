@@ -9,10 +9,19 @@ interface OrderData {
 	id: string;
 	orderNumber: string;
 	customerName: string;
+	customerPhone: string;
+	customerEmail: string;
+	platform: string;
+	selectedFeatures: any[];
+	valueServices: any[];
 	totalPrice: number;
+	monthlyFee: number;
 	status: string;
-	paymentMethod: string;
-	paymentTime: string;
+	paymentMethod: string | null;
+	paymentTime: string | null;
+	notes: string | null;
+	createdAt: string;
+	updatedAt: string | null;
 }
 
 export default function PaymentSuccessPage() {
@@ -34,7 +43,27 @@ export default function PaymentSuccessPage() {
 			const result = await response.json();
 
 			if (result.success) {
-				setOrder(result.data);
+				// 转换数据库字段名（下划线）为前端字段名（驼峰）
+				const dbOrder = result.data;
+				const transformedOrder: OrderData = {
+					id: dbOrder.id,
+					orderNumber: dbOrder.order_number,
+					customerName: dbOrder.customer_name,
+					customerPhone: dbOrder.customer_phone,
+					customerEmail: dbOrder.customer_email,
+					platform: dbOrder.platform,
+					selectedFeatures: dbOrder.selected_features || [],
+					valueServices: dbOrder.value_services || [],
+					totalPrice: dbOrder.total_price,
+					monthlyFee: dbOrder.monthly_fee || 0,
+					status: dbOrder.status,
+					paymentMethod: dbOrder.payment_method,
+					paymentTime: dbOrder.payment_time,
+					notes: dbOrder.notes,
+					createdAt: dbOrder.created_at,
+					updatedAt: dbOrder.updated_at,
+				};
+				setOrder(transformedOrder);
 			} else {
 				alert('获取订单失败');
 			}
@@ -91,7 +120,9 @@ export default function PaymentSuccessPage() {
 							<div className="flex justify-between">
 								<span className="text-gray-600">支付方式</span>
 								<span className="font-medium text-gray-900">
-									{order.paymentMethod === 'wechat' ? '微信支付' : order.paymentMethod === 'alipay' ? '支付宝' : '其他'}
+									{order.paymentMethod === 'wechat' ? '微信支付' :
+									 order.paymentMethod === 'alipay' ? '支付宝' :
+									 order.paymentMethod === 'bank_transfer' ? '银行转账' : '其他'}
 								</span>
 							</div>
 							<div className="flex justify-between">
@@ -112,6 +143,14 @@ export default function PaymentSuccessPage() {
 				<div className="bg-blue-50 rounded-2xl p-6 mb-8">
 					<h2 className="text-xl font-semibold text-gray-900 mb-4">后续步骤</h2>
 					<div className="space-y-3">
+						{order?.paymentMethod === 'bank_transfer' && (
+							<div className="bg-orange-50 rounded-xl p-4 border border-orange-200 mb-4">
+								<div className="text-sm text-orange-600 font-medium mb-1">📋 银行转账特别说明</div>
+								<div className="text-sm text-orange-700">
+									我们的客服将在1-2个工作内核实您的转账信息，确认到账后会立即联系您。
+								</div>
+							</div>
+						)}
 						<div className="flex items-start gap-3">
 							<div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
 								1

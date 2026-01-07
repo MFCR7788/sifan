@@ -115,3 +115,24 @@ export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
+
+// API返回的订单数据类型（使用驼峰命名）
+export type OrderData = {
+	id: string;
+	orderNumber: string;
+	customerName: string;
+	customerPhone: string;
+	customerEmail: string;
+	platform: string;
+	serviceLevel: string | null;
+	selectedFeatures: any[];
+	valueServices: any[];
+	totalPrice: number;
+	monthlyFee: number;
+	status: string;
+	paymentMethod: string | null;
+	paymentTime: string | null;
+	notes: string | null;
+	createdAt: string;
+	updatedAt: string | null;
+};

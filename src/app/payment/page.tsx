@@ -62,13 +62,28 @@ export default function PaymentPage() {
 			const result = await response.json();
 
 			if (result.success) {
-				setOrder(result.data);
+				// 转换数据库字段名（下划线）为前端字段名（驼峰）
+				const dbOrder = result.data;
+				const transformedOrder: OrderData = {
+					id: dbOrder.id,
+					orderNumber: dbOrder.order_number,
+					customerName: dbOrder.customer_name,
+					customerPhone: dbOrder.customer_phone,
+					customerEmail: dbOrder.customer_email,
+					platform: dbOrder.platform,
+					selectedFeatures: dbOrder.selected_features || [],
+					valueServices: dbOrder.value_services || [],
+					totalPrice: dbOrder.total_price,
+					status: dbOrder.status,
+					createdAt: dbOrder.created_at,
+				};
+				setOrder(transformedOrder);
 			} else {
-				alert('获取订单失败');
+				alert('获取订单失败: ' + (result.error || '未知错误'));
 			}
 		} catch (error) {
 			console.error('Fetch order error:', error);
-			alert('获取订单失败');
+			alert('获取订单失败: 网络错误');
 		} finally {
 			setLoading(false);
 		}
@@ -209,37 +224,110 @@ export default function PaymentPage() {
 										</div>
 									)}
 								</button>
+
+								<button
+									onClick={() => setPaymentMethod('bank_transfer')}
+									className={`w-full p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 ${
+										paymentMethod === 'bank_transfer'
+											? 'border-orange-600 bg-orange-50'
+											: 'border-gray-200 hover:border-gray-300'
+									}`}
+								>
+									<div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+										<span className="text-white text-xl">🏦</span>
+									</div>
+									<div className="text-left">
+										<div className="font-medium text-gray-900">银行转账</div>
+										<div className="text-sm text-gray-600">对公转账，请备注订单号</div>
+									</div>
+									{paymentMethod === 'bank_transfer' && (
+										<div className="ml-auto">
+											<div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
+												<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+												</svg>
+											</div>
+										</div>
+									)}
+								</button>
 							</div>
 						</div>
 
-						{/* QR Code */}
+						{/* QR Code or Bank Info */}
 						<div className="bg-white border border-gray-200 rounded-2xl p-6">
-							<h2 className="text-xl font-semibold text-gray-900 mb-4">扫码支付</h2>
-							<div className="flex flex-col items-center">
-								<div className="w-64 h-64 bg-gray-100 rounded-2xl flex items-center justify-center mb-4 border-2 border-dashed border-gray-300">
-									<div className="text-center">
-										<div className="text-6xl mb-2">📱</div>
-										<div className="text-gray-600 text-sm">
-											{paymentMethod === 'wechat' ? '微信支付二维码' : '支付宝二维码'}
+							{paymentMethod === 'bank_transfer' ? (
+								<>
+									<h2 className="text-xl font-semibold text-gray-900 mb-4">银行转账信息</h2>
+									<div className="space-y-4">
+										<div className="bg-orange-50 rounded-xl p-4 border border-orange-200">
+											<div className="text-sm text-orange-600 font-medium mb-2">⚠️ 重要提示</div>
+											<div className="text-sm text-orange-700">
+												转账时请务必在备注中填写订单号：<span className="font-semibold">{order.orderNumber}</span>
+											</div>
+										</div>
+
+										<div className="space-y-3">
+											<div className="flex justify-between items-start">
+												<span className="text-gray-600">开户银行</span>
+												<span className="font-medium text-gray-900">招商银行</span>
+											</div>
+											<div className="flex justify-between items-start">
+												<span className="text-gray-600">开户名称</span>
+												<span className="font-medium text-gray-900">魔法超人科技有限公司</span>
+											</div>
+											<div className="flex justify-between items-start">
+												<span className="text-gray-600">银行账号</span>
+												<span className="font-medium text-gray-900 font-mono">6214 8302 8888 6666</span>
+											</div>
+											<div className="flex justify-between items-start">
+												<span className="text-gray-600">转账金额</span>
+												<span className="font-bold text-xl text-gray-900">¥{order.totalPrice.toLocaleString()}</span>
+											</div>
+										</div>
+
+										<div className="pt-4 border-t border-gray-200">
+											<p className="text-sm text-gray-600 mb-3">
+												转账完成后，请点击下方按钮确认支付，我们的客服会在1-2个工作日内核实
+											</p>
+											<button
+												onClick={handleConfirmPayment}
+												className="w-full py-3 px-6 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 hover:scale-105 transition-all duration-200"
+											>
+												我已完成银行转账
+											</button>
 										</div>
 									</div>
-								</div>
-								<p className="text-sm text-gray-600 mb-4">
-									请使用{paymentMethod === 'wechat' ? '微信' : '支付宝'}扫描二维码完成支付
-								</p>
-								<div className="text-lg font-semibold text-gray-900 mb-4">
-									待支付金额：<span className="text-2xl">¥{order.totalPrice.toLocaleString()}</span>
-								</div>
-								<div className="text-sm text-gray-500 mb-6">
-									支付剩余时间：<span className="font-mono text-red-600">{formatCountdown(countdown)}</span>
-								</div>
-								<button
-									onClick={handleConfirmPayment}
-									className="w-full max-w-xs py-3 px-6 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 hover:scale-105 transition-all duration-200"
-								>
-									我已完成支付
-								</button>
-							</div>
+								</>
+							) : (
+								<>
+									<h2 className="text-xl font-semibold text-gray-900 mb-4">扫码支付</h2>
+									<div className="flex flex-col items-center">
+										<div className="w-64 h-64 bg-gray-100 rounded-2xl flex items-center justify-center mb-4 border-2 border-dashed border-gray-300">
+											<div className="text-center">
+												<div className="text-6xl mb-2">📱</div>
+												<div className="text-gray-600 text-sm">
+													{paymentMethod === 'wechat' ? '微信支付二维码' : '支付宝二维码'}
+												</div>
+											</div>
+										</div>
+										<p className="text-sm text-gray-600 mb-4">
+											请使用{paymentMethod === 'wechat' ? '微信' : '支付宝'}扫描二维码完成支付
+										</p>
+										<div className="text-lg font-semibold text-gray-900 mb-4">
+											待支付金额：<span className="text-2xl">¥{order.totalPrice.toLocaleString()}</span>
+										</div>
+										<div className="text-sm text-gray-500 mb-6">
+											支付剩余时间：<span className="font-mono text-red-600">{formatCountdown(countdown)}</span>
+										</div>
+										<button
+											onClick={handleConfirmPayment}
+											className="w-full max-w-xs py-3 px-6 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+										>
+											我已完成支付
+										</button>
+									</div>
+								</>
+							)}
 						</div>
 					</div>
 

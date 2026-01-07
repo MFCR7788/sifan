@@ -23,7 +23,7 @@ export class OrderManager {
 				${data.platform},
 				${data.serviceLevel || null},
 				${JSON.stringify(data.selectedFeatures || [])}::jsonb,
-				${data.valueServices && data.valueServices.length > 0 ? JSON.stringify(data.valueServices) : null}::jsonb,
+				${data.valueServices && Array.isArray(data.valueServices) && data.valueServices.length > 0 ? JSON.stringify(data.valueServices) : null}::jsonb,
 				${data.totalPrice},
 				${data.monthlyFee || 0},
 				'pending',
