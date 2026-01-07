@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface SummaryPanelProps {
   config: any;
@@ -47,7 +48,16 @@ const serviceLevelNames: Record<string, string> = {
 };
 
 export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: SummaryPanelProps) {
+  const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(true);
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    notes: ''
+  });
 
   useEffect(() => {
     setIsExpanded(true);
@@ -66,6 +76,50 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
   };
 
   const isComplete = config.step === 3;
+
+  const handleSubmitOrder = async () => {
+    if (!customerInfo.name || !customerInfo.phone || !customerInfo.email) {
+      alert('请填写完整的客户信息');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerName: customerInfo.name,
+          customerPhone: customerInfo.phone,
+          customerEmail: customerInfo.email,
+          platform: config.platform,
+          serviceLevel: config.serviceLevel || '',
+          selectedFeatures: config.selectedFeatures || [],
+          valueServices: config.valueServices || [],
+          totalPrice: config.totalPrice,
+          monthlyFee: config.monthlyFee || 0,
+          notes: customerInfo.notes,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // 跳转到支付页面
+        router.push(`/payment?orderNumber=${result.data.orderNumber}`);
+      } else {
+        alert(result.error || '创建订单失败');
+      }
+    } catch (error) {
+      console.error('Submit order error:', error);
+      alert('提交订单失败，请重试');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden sticky top-24">
@@ -197,6 +251,52 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
           </div>
 
           {/* Action Buttons */}
+          {showCustomerForm && isComplete && (
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-200">
+              <h4 className="font-medium text-gray-900">请填写您的联系信息</h4>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">姓名 *</label>
+                <input
+                  type="text"
+                  value={customerInfo.name}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="请输入姓名"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">手机号 *</label>
+                <input
+                  type="tel"
+                  value={customerInfo.phone}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="请输入手机号"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">邮箱 *</label>
+                <input
+                  type="email"
+                  value={customerInfo.email}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="请输入邮箱"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">备注说明</label>
+                <textarea
+                  value={customerInfo.notes}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+                  rows={2}
+                  placeholder="请输入备注说明（可选）"
+                />
+              </div>
+            </div>
+          )}
+
           <div className="space-y-3">
             {config.step > 1 && (
               <button
@@ -208,7 +308,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
             )}
 
             <button
-              onClick={isComplete ? () => alert('提交订单！') : onNext}
+              onClick={isComplete ? (showCustomerForm ? handleSubmitOrder : () => setShowCustomerForm(true)) : onNext}
               disabled={!isComplete && config.step === 1 && !config.platform}
               className={`
                 w-full py-3 px-4 rounded-xl font-medium transition-all duration-200
@@ -217,9 +317,10 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                   : 'bg-gray-900 text-white hover:bg-gray-800 hover:scale-105'
                 }
                 ${config.step === 1 && !config.platform ? 'opacity-50 cursor-not-allowed' : ''}
+                ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}
               `}
             >
-              {isComplete ? '提交订单' : '下一步'}
+              {isSubmitting ? '提交中...' : (showCustomerForm ? '确认提交' : (isComplete ? '提交订单' : '下一步'))}
             </button>
           </div>
 

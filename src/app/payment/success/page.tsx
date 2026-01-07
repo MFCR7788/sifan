@@ -1,0 +1,163 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import Navigation from '@/components/Navigation';
+
+interface OrderData {
+	id: string;
+	orderNumber: string;
+	customerName: string;
+	totalPrice: number;
+	status: string;
+	paymentMethod: string;
+	paymentTime: string;
+}
+
+export default function PaymentSuccessPage() {
+	const searchParams = useSearchParams();
+	const orderNumber = searchParams.get('orderNumber');
+
+	const [order, setOrder] = useState<OrderData | null>(null);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		if (orderNumber) {
+			fetchOrder();
+		}
+	}, [orderNumber]);
+
+	const fetchOrder = async () => {
+		try {
+			const response = await fetch(`/api/orders/${orderNumber}`);
+			const result = await response.json();
+
+			if (result.success) {
+				setOrder(result.data);
+			} else {
+				alert('获取订单失败');
+			}
+		} catch (error) {
+			console.error('Fetch order error:', error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	if (loading) {
+		return (
+			<div className="min-h-screen bg-white flex items-center justify-center">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+					<p className="mt-4 text-gray-600">加载中...</p>
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="min-h-screen bg-white">
+			<Navigation />
+
+			<div className="max-w-2xl mx-auto px-4 py-16">
+				{/* Success Icon */}
+				<div className="text-center mb-8">
+					<div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+						<svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+						</svg>
+					</div>
+				</div>
+
+				{/* Success Message */}
+				<div className="text-center mb-8">
+					<h1 className="text-3xl font-semibold text-gray-900 mb-4">支付成功</h1>
+					<p className="text-gray-600">感谢您的订购，我们将在1-2个工作日内与您联系</p>
+				</div>
+
+				{/* Order Info */}
+				{order && (
+					<div className="bg-gray-50 rounded-2xl p-6 mb-8">
+						<div className="space-y-3">
+							<div className="flex justify-between">
+								<span className="text-gray-600">订单号</span>
+								<span className="font-medium text-gray-900">{order.orderNumber}</span>
+							</div>
+							<div className="flex justify-between">
+								<span className="text-gray-600">客户姓名</span>
+								<span className="font-medium text-gray-900">{order.customerName}</span>
+							</div>
+							<div className="flex justify-between">
+								<span className="text-gray-600">支付方式</span>
+								<span className="font-medium text-gray-900">
+									{order.paymentMethod === 'wechat' ? '微信支付' : order.paymentMethod === 'alipay' ? '支付宝' : '其他'}
+								</span>
+							</div>
+							<div className="flex justify-between">
+								<span className="text-gray-600">支付金额</span>
+								<span className="font-medium text-gray-900">¥{order.totalPrice.toLocaleString()}</span>
+							</div>
+							<div className="flex justify-between">
+								<span className="text-gray-600">支付时间</span>
+								<span className="font-medium text-gray-900">
+									{order.paymentTime ? new Date(order.paymentTime).toLocaleString('zh-CN') : '-'}
+								</span>
+							</div>
+						</div>
+					</div>
+				)}
+
+				{/* Next Steps */}
+				<div className="bg-blue-50 rounded-2xl p-6 mb-8">
+					<h2 className="text-xl font-semibold text-gray-900 mb-4">后续步骤</h2>
+					<div className="space-y-3">
+						<div className="flex items-start gap-3">
+							<div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+								1
+							</div>
+							<div>
+								<div className="font-medium text-gray-900">确认订单</div>
+								<div className="text-sm text-gray-600">我们的客服将尽快与您确认订单详情</div>
+							</div>
+						</div>
+						<div className="flex items-start gap-3">
+							<div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+								2
+							</div>
+							<div>
+								<div className="font-medium text-gray-900">系统实施</div>
+								<div className="text-sm text-gray-600">专业团队上门实施，快速上线</div>
+							</div>
+						</div>
+						<div className="flex items-start gap-3">
+							<div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+								3
+							</div>
+							<div>
+								<div className="font-medium text-gray-900">培训与支持</div>
+								<div className="text-sm text-gray-600">提供系统培训和持续技术支持</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				{/* Actions */}
+				<div className="space-y-3">
+					<Link
+						href="/"
+						className="block w-full py-3 px-6 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 text-center transition-all duration-200"
+					>
+						返回首页
+					</Link>
+					<Link
+						href="/contact"
+						className="block w-full py-3 px-6 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 text-center transition-all duration-200"
+					>
+						联系我们
+					</Link>
+				</div>
+			</div>
+		</div>
+	);
+}

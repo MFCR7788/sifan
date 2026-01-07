@@ -1,9 +1,35 @@
-import { pgTable, varchar, text, timestamp, boolean, index } from "drizzle-orm/pg-core"
+import { pgTable, varchar, text, timestamp, boolean, index, integer, jsonb } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { createSchemaFactory } from "drizzle-zod"
 import { z } from "zod"
 
-
+// Orders table for custom solution orders
+export const orders = pgTable(
+	"orders",
+	{
+		id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+		orderNumber: varchar({ length: 32 }).notNull().unique(),
+		customerName: varchar({ length: 128 }).notNull(),
+		customerPhone: varchar({ length: 20 }).notNull(),
+		customerEmail: varchar({ length: 255 }).notNull(),
+		platform: varchar({ length: 50 }).notNull(),
+		serviceLevel: varchar({ length: 50 }),
+		selectedFeatures: jsonb().notNull(),
+		valueServices: jsonb(),
+		totalPrice: integer().notNull(),
+		monthlyFee: integer().default(0),
+		status: varchar({ length: 50 }).default("pending").notNull(), // pending, paid, cancelled, completed
+		paymentMethod: varchar({ length: 50 }), // wechat, alipay, bank_transfer
+		paymentTime: timestamp("payment_time", { withTimezone: true, mode: 'string' }),
+		notes: text(),
+		createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+		updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+	},
+	(table) => ({
+		orderNumberIdx: index("orders_order_number_idx").on(table.orderNumber),
+		statusIdx: index("orders_status_idx").on(table.status),
+	})
+);
 
 export const contactMessages = pgTable("contact_messages", {
 	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
@@ -45,6 +71,19 @@ export const insertContactMessageSchema = createCoercedInsertSchema(contactMessa
 	message: true,
 });
 
+export const insertOrderSchema = createCoercedInsertSchema(orders).pick({
+	customerName: true,
+	customerPhone: true,
+	customerEmail: true,
+	platform: true,
+	serviceLevel: true,
+	selectedFeatures: true,
+	valueServices: true,
+	totalPrice: true,
+	monthlyFee: true,
+	notes: true,
+});
+
 export const insertUserSchema = createCoercedInsertSchema(users).pick({
 	email: true,
 	name: true,
@@ -74,3 +113,5 @@ export type UpdateUser = z.infer<typeof updateUserSchema>;
 export type LoginData = z.infer<typeof loginSchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
