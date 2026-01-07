@@ -7,14 +7,14 @@ const products = [
   {
     id: 1,
     name: '基础运营版',
-    price: '¥300/月',
+    price: '¥2980/年',
     features: ['线上小程序商城', '线下收银系统', '数据分析报表', '客服支持5*12小时'],
     popular: false
   },
   {
     id: 2,
     name: '连锁品牌版',
-    price: '¥1,200/月',
+    price: '¥12980/年',
     features: ['多门店连锁', '线上线下一盘货', '新零售培训指导', '客服指导7*24小时'],
     popular: true
   },
