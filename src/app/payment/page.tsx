@@ -341,7 +341,6 @@ export default function PaymentPage() {
 									<div className="text-gray-600">客户信息</div>
 									<div className="font-medium text-gray-900">{order.customerName}</div>
 									<div className="text-gray-600">{order.customerPhone}</div>
-									<div className="text-gray-600">{order.customerEmail}</div>
 								</div>
 
 								<div className="border-t border-gray-200" />

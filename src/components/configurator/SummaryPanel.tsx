@@ -78,7 +78,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
   const isComplete = config.step === 3;
 
   const handleSubmitOrder = async () => {
-    if (!customerInfo.name || !customerInfo.phone || !customerInfo.email) {
+    if (!customerInfo.name || !customerInfo.phone) {
       alert('请填写完整的客户信息');
       return;
     }
@@ -94,7 +94,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
         body: JSON.stringify({
           customerName: customerInfo.name,
           customerPhone: customerInfo.phone,
-          customerEmail: customerInfo.email,
+          customerEmail: '',
           platform: config.platform,
           serviceLevel: config.serviceLevel || '',
           selectedFeatures: config.selectedFeatures || [],
@@ -272,16 +272,6 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                   onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
                   placeholder="请输入手机号"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">邮箱 *</label>
-                <input
-                  type="email"
-                  value={customerInfo.email}
-                  onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  placeholder="请输入邮箱"
                 />
               </div>
               <div>
