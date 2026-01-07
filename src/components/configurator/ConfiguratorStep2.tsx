@@ -85,16 +85,33 @@ const coreModules = [
 ];
 
 export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev }: ConfiguratorStep2Props) {
+  // 判断当前是否为多门店或品牌连锁（功能已包含，不计额外费用）
+  const isPremiumOrUltimate = config.platform === 'multi-store' || config.platform === 'brand-chain';
+
+  // 获取所有核心功能名称
+  const getAllFeatureNames = () => {
+    const allFeatures: string[] = [];
+    coreModules.forEach(module => {
+      module.features.forEach(feature => {
+        allFeatures.push(feature.name);
+      });
+    });
+    return allFeatures;
+  };
+
   const handleFeatureToggle = (featureName: string, price: number) => {
+    // 多门店或品牌连锁模式下，核心功能已包含，不可取消
+    if (isPremiumOrUltimate) {
+      return;
+    }
+
     const currentFeatures = config.selectedFeatures || [];
     const updatedFeatures = currentFeatures.includes(featureName)
       ? currentFeatures.filter((name: string) => name !== featureName)
       : [...currentFeatures, featureName];
 
-    // Calculate new price based on monthly prices from Excel
-    const basePrice = config.platform === 'brand-chain' ? 2980 : config.platform === 'multi-store' ? 1200 : 300;
-
-    // Calculate total monthly fee from selected features
+    // 单店模式下，计算月度费用
+    const basePrice = 2980; // 单店基础价格（年度）
     const monthlyFee = updatedFeatures.reduce((total: number, featureName: string) => {
       for (const module of coreModules) {
         const feature = module.features.find(f => f.name === featureName);
@@ -103,13 +120,13 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       return total;
     }, 0);
 
-    // Monthly price = base + monthly fee
-    const monthlyPrice = basePrice + monthlyFee;
+    // 总价 = 基础价格 + 月度费用（单店模式下）
+    const totalPrice = basePrice + monthlyFee;
 
     updateConfig({
       selectedFeatures: updatedFeatures,
       monthlyFee: monthlyFee,
-      totalPrice: monthlyPrice
+      totalPrice: totalPrice
     });
   };
 
@@ -124,7 +141,10 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
           选择核心功能
         </h2>
         <p className="text-gray-600">
-          根据业务需求选择功能模块（可多选）
+          {isPremiumOrUltimate
+            ? `${config.platform === 'multi-store' ? '多门店连锁' : '品牌连锁'}套餐已包含以下所有功能，无需额外选择`
+            : '根据业务需求选择功能模块（可多选）'
+          }
         </p>
       </div>
 
@@ -170,7 +190,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                     {module.features.map((feature, index) => {
                       const isSelected = isFeatureSelected(feature.name);
                       return (
-                        <button
+                        <div
                           key={index}
                           onClick={() => handleFeatureToggle(feature.name, feature.price)}
                           className={`
@@ -181,6 +201,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                                 ? 'border-gray-200 bg-white hover:border-blue-300'
                                 : 'border-gray-100 bg-gray-50 hover:border-blue-200'
                             }
+                            ${isPremiumOrUltimate ? 'cursor-not-allowed' : 'cursor-pointer'}
                           `}
                         >
                           <div className="flex items-start gap-2">
@@ -200,11 +221,14 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                               {feature.price > 0 && (
                                 <div className={`font-medium mt-1 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
                                   ¥{feature.price}/月
+                                  {isPremiumOrUltimate && isSelected && (
+                                    <span className="text-green-600 ml-1">(已包含)</span>
+                                  )}
                                 </div>
                               )}
                             </div>
                           </div>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
@@ -216,10 +240,10 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                       已选{selectedCount}项
                     </div>
                     <div className="text-2xl font-bold text-blue-600">
-                      ¥{moduleMonthlyPrice}
+                      {isPremiumOrUltimate ? '已包含' : `¥${moduleMonthlyPrice}`}
                     </div>
                     <div className="text-xs text-gray-500">
-                      /月
+                      {isPremiumOrUltimate ? '' : '/月'}
                     </div>
                   </div>
                 )}
@@ -229,7 +253,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
         })}
       </div>
 
-      {(config.selectedFeatures || []).length === 0 && (
+      {(config.selectedFeatures || []).length === 0 && !isPremiumOrUltimate && (
         <div className="text-center py-8 text-gray-500">
           未选择任何核心功能
         </div>
