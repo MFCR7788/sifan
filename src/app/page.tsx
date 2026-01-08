@@ -28,7 +28,7 @@ export default function Home() {
           >
             {!imageError ? (
               <img
-                src="/assets/image.png"
+                src="/assets/image-4.png"
                 alt="魔法超人"
                 className="w-full h-full object-cover"
                 style={{ opacity: 1 }}
