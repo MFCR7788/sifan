@@ -74,6 +74,7 @@ export default function ConfiguratorStep1({ config, updateConfig, onNext }: Conf
     updateConfig({
       platform: scenarioId,
       selectedFeatures: features,
+      monthlyFee: 0, // 切换业务场景时，重置功能费为0（多门店和品牌连锁的付费功能已包含在基础价格中）
       totalPrice: selectedScenario?.price || 0
     });
   };

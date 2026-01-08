@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 interface ConfiguratorStep2Props {
   config: any;
   updateConfig: (updates: any) => void;
@@ -117,6 +119,67 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
     return allFeatures;
   };
 
+  // 初始化功能费：在多门店或品牌连锁模式下，确保功能费只包含可选功能
+  useEffect(() => {
+    if (!config.platform) return;
+
+    // 计算基础价格
+    let basePrice = 2980;
+    if (config.platform === 'multi-store') {
+      basePrice = 12980;
+    } else if (config.platform === 'brand-chain') {
+      basePrice = 29800;
+    }
+
+    // 计算额外费用
+    let extraFee = 0;
+    const selectedFeatures = config.selectedFeatures || [];
+
+    if (isPremiumOrUltimate) {
+      // 多门店或品牌连锁模式：只计算可选功能的费用
+      extraFee = selectedFeatures.reduce((total: number, featureName: string) => {
+        // 只计算可选功能
+        if (!isOptionalFeature(featureName)) return total;
+
+        for (const module of coreModules) {
+          const feature = module.features.find(f => f.name === featureName);
+          if (feature) {
+            if (feature.name === '上门陪跑1-2个月') {
+              return total + feature.price;
+            }
+            if (feature.price > 0) {
+              return total + feature.price * 12;
+            }
+          }
+        }
+        return total;
+      }, 0);
+    } else {
+      // 单店模式：计算所有已选付费功能的费用
+      extraFee = selectedFeatures.reduce((total: number, featureName: string) => {
+        for (const module of coreModules) {
+          const feature = module.features.find(f => f.name === featureName);
+          if (feature) {
+            if (feature.name === '上门陪跑1-2个月') {
+              return total + feature.price;
+            }
+            if (feature.price > 0) {
+              return total + feature.price * 12;
+            }
+          }
+        }
+        return total;
+      }, 0);
+    }
+
+    // 更新总价和功能费
+    const totalPrice = basePrice + extraFee;
+    updateConfig({
+      monthlyFee: extraFee,
+      totalPrice: totalPrice
+    });
+  }, [config.platform, config.selectedFeatures]);
+
   const handleFeatureToggle = (featureName: string, price: number) => {
     // 多门店或品牌连锁模式下，已包含的功能不可操作
     if (isPremiumOrUltimate && !isOptionalFeature(featureName)) {
@@ -136,23 +199,49 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       basePrice = 29800; // 品牌连锁基础价格
     }
 
-    // 计算额外费用（仅包含已选的付费功能）
-    const extraFee = updatedFeatures.reduce((total: number, featureName: string) => {
-      for (const module of coreModules) {
-        const feature = module.features.find(f => f.name === featureName);
-        if (feature) {
-          // "上门陪跑1-2个月"保持月度价格，其他付费功能乘以12转为年度费用
-          if (feature.name === '上门陪跑1-2个月') {
-            return total + feature.price; // 不乘以12，保持月度价格
-          }
-          // 只有付费功能才计费（price > 0）
-          if (feature.price > 0) {
-            return total + feature.price * 12;
+    // 计算额外费用
+    let extraFee = 0;
+
+    if (isPremiumOrUltimate) {
+      // 多门店或品牌连锁模式：只计算可选功能的费用
+      extraFee = updatedFeatures.reduce((total: number, featureName: string) => {
+        // 只计算可选功能
+        if (!isOptionalFeature(featureName)) return total;
+
+        for (const module of coreModules) {
+          const feature = module.features.find(f => f.name === featureName);
+          if (feature) {
+            // "上门陪跑1-2个月"保持月度价格，其他功能乘以12转为年度费用
+            if (feature.name === '上门陪跑1-2个月') {
+              return total + feature.price; // 不乘以12，保持月度价格
+            }
+            // 只有付费功能才计费（price > 0）
+            if (feature.price > 0) {
+              return total + feature.price * 12;
+            }
           }
         }
-      }
-      return total;
-    }, 0);
+        return total;
+      }, 0);
+    } else {
+      // 单店模式：计算所有已选付费功能的费用
+      extraFee = updatedFeatures.reduce((total: number, featureName: string) => {
+        for (const module of coreModules) {
+          const feature = module.features.find(f => f.name === featureName);
+          if (feature) {
+            // "上门陪跑1-2个月"保持月度价格，其他功能乘以12转为年度费用
+            if (feature.name === '上门陪跑1-2个月') {
+              return total + feature.price; // 不乘以12，保持月度价格
+            }
+            // 只有付费功能才计费（price > 0）
+            if (feature.price > 0) {
+              return total + feature.price * 12;
+            }
+          }
+        }
+        return total;
+      }, 0);
+    }
 
     // 总价 = 基础价格 + 额外费用
     const totalPrice = basePrice + extraFee;
