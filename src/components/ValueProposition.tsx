@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 const valueProps = [
   {
@@ -105,9 +106,9 @@ export default function ValueProposition() {
 
         {/* Bottom CTA */}
         <div className="text-center mt-16">
-          <button className="px-10 py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200">
+          <Link href="/register" className="inline-block px-10 py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200">
             立即体验
-          </button>
+          </Link>
         </div>
       </div>
     </section>
