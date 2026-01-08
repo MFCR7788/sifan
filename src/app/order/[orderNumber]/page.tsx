@@ -82,6 +82,19 @@ export default function OrderDetailPage() {
     custom: '定制化方案'
   };
 
+  const serviceNames: Record<string, string> = {
+    'implementation': '实施服务',
+    'training': '运营培训',
+    'support-platinum': '白金技术支持',
+    'consulting': '业务咨询',
+    'customization': '定制开发',
+    'data-migration': '数据迁移'
+  };
+
+  const getServiceName = (serviceId: string): string => {
+    return serviceNames[serviceId] || serviceId;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -238,7 +251,7 @@ export default function OrderDetailPage() {
                       <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className="text-gray-900">{service}</span>
+                      <span className="text-gray-900">{getServiceName(service)}</span>
                     </div>
                   ))}
                 </div>
