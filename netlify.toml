@@ -15,11 +15,7 @@
   publish = ".next"
   targetPort = 5000
 
-# 重定向所有请求到 Next.js
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Next.js 插件会自动处理路由，无需手动重定向
 
 # 处理 Next.js 的静态资源
 [[headers]]
