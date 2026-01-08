@@ -110,12 +110,18 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       ? currentFeatures.filter((name: string) => name !== featureName)
       : [...currentFeatures, featureName];
 
-    // 单店模式下，计算年度费用
+    // 单店模式下，计算年度费用（上门陪跑1-2个月保持月度价格）
     const basePrice = 2980; // 单店基础价格（年度）
     const yearlyFee = updatedFeatures.reduce((total: number, featureName: string) => {
       for (const module of coreModules) {
         const feature = module.features.find(f => f.name === featureName);
-        if (feature) return total + feature.price * 12; // 乘以12转为年度费用
+        if (feature) {
+          // "上门陪跑1-2个月"保持月度价格，其他功能乘以12转为年度费用
+          if (feature.name === '上门陪跑1-2个月') {
+            return total + feature.price; // 不乘以12，保持月度价格
+          }
+          return total + feature.price * 12;
+        }
       }
       return total;
     }, 0);
@@ -131,6 +137,11 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
   };
 
   const isFeatureSelected = (featureName: string) => {
+    // 多门店或品牌连锁模式下，所有核心功能自动选中
+    if (isPremiumOrUltimate) {
+      return true;
+    }
+    // 单店模式下，检查 config.selectedFeatures 中是否包含该功能
     return (config.selectedFeatures || []).includes(featureName);
   };
 
@@ -151,8 +162,8 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       <div className="grid grid-cols-1 gap-4">
         {coreModules.map((module) => {
           const selectedCount = module.features.filter(f => isFeatureSelected(f.name)).length;
-          const moduleMonthlyPrice = module.features.reduce((sum, f) =>
-            isFeatureSelected(f.name) ? sum + f.price : sum, 0);
+          const modulePrice = module.features.reduce((sum, f) =>
+            isFeatureSelected(f.name) ? sum + (f.name === '上门陪跑1-2个月' ? f.price : f.price * 12) : sum, 0);
 
           return (
             <div
@@ -220,7 +231,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                               <div className="text-gray-900">{feature.name}</div>
                               {feature.price > 0 && (
                                 <div className={`font-medium mt-1 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
-                                  ¥{feature.price * 12}/年
+                                  {feature.name === '上门陪跑1-2个月' ? `¥${feature.price}/月` : `¥${feature.price * 12}/年`}
                                   {isPremiumOrUltimate && isSelected && (
                                     <span className="text-green-600 ml-1">(已包含)</span>
                                   )}
@@ -240,7 +251,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                       已选{selectedCount}项
                     </div>
                     <div className="text-2xl font-bold text-blue-600">
-                      {isPremiumOrUltimate ? '已包含' : `¥${moduleMonthlyPrice * 12}`}
+                      {isPremiumOrUltimate ? '已包含' : `¥${modulePrice}`}
                     </div>
                     <div className="text-xs text-gray-500">
                       {isPremiumOrUltimate ? '' : '/年'}
