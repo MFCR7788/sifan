@@ -16,6 +16,7 @@ export default function PricingPage() {
   const [data, setData] = useState<PricingData[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<'basic' | 'premium' | 'ultimate' | null>(null);
+  const [hoveredPlan, setHoveredPlan] = useState<'basic' | 'premium' | 'ultimate' | null>(null);
 
   useEffect(() => {
     fetchPricingData();
@@ -114,13 +115,17 @@ export default function PricingPage() {
                     <th
                       key={plan.id}
                       onClick={() => setSelectedPlan(plan.id)}
+                      onMouseEnter={() => setHoveredPlan(plan.id)}
+                      onMouseLeave={() => setHoveredPlan(null)}
                       className={`
                         p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-bottom relative
                         ${selectedPlan === plan.id
                           ? 'border-2 border-blue-600 bg-blue-50 shadow-xl scale-105'
+                          : hoveredPlan === plan.id
+                          ? 'border-2 border-blue-300 bg-blue-50 shadow-2xl scale-[1.02]'
                           : 'border-2 border-gray-200 hover:border-gray-300'
                         }
-                        ${plan.recommended && selectedPlan !== plan.id ? 'bg-gray-50' : ''}
+                        ${plan.recommended && selectedPlan !== plan.id && hoveredPlan !== plan.id ? 'bg-gray-50' : ''}
                       `}
                     >
                       {selectedPlan === plan.id && (
@@ -130,10 +135,16 @@ export default function PricingPage() {
                           </svg>
                         </div>
                       )}
+                      <div
+                        className={`
+                          absolute top-4 right-4 w-2 h-2 rounded-full transition-all duration-300
+                          ${hoveredPlan === plan.id && selectedPlan !== plan.id ? 'bg-blue-600 scale-150' : 'bg-gray-300'}
+                        `}
+                      />
                       {plan.recommended && (
                         <div className="mb-3">
                           <span className={`px-4 py-1 text-xs font-semibold rounded-full ${
-                            selectedPlan === plan.id
+                            selectedPlan === plan.id || hoveredPlan === plan.id
                               ? 'bg-blue-600 text-white'
                               : 'bg-gray-900 text-white'
                           }`}>
@@ -142,7 +153,7 @@ export default function PricingPage() {
                         </div>
                       )}
                       <div className={`text-2xl font-semibold transition-colors ${
-                        selectedPlan === plan.id
+                        selectedPlan === plan.id || hoveredPlan === plan.id
                           ? 'text-blue-900'
                           : plan.recommended
                           ? 'text-gray-900'
@@ -152,7 +163,7 @@ export default function PricingPage() {
                       </div>
                       <div className="text-sm text-gray-500 mb-6">{plan.description}</div>
                       <div className={`text-5xl font-bold transition-colors ${
-                        selectedPlan === plan.id ? 'text-blue-600' : 'text-gray-900'
+                        selectedPlan === plan.id || hoveredPlan === plan.id ? 'text-blue-600' : 'text-gray-900'
                       }`}>
                         ¥{plan.price}
                       </div>
@@ -162,6 +173,8 @@ export default function PricingPage() {
                         className={`
                           inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all
                           ${selectedPlan === plan.id
+                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                            : hoveredPlan === plan.id
                             ? 'bg-blue-600 text-white hover:bg-blue-700'
                             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                           }
