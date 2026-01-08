@@ -81,14 +81,6 @@ export default function FranchisePage() {
                   <span className="text-lg">系统费用</span>
                   <span className="text-lg font-semibold">按产品选择</span>
                 </div>
-                <div className="flex justify-between items-center py-4 border-b border-gray-200">
-                  <span className="text-lg">分 销 点（包含开抖店费用，形象招牌）</span>
-                  <span className="text-lg font-semibold">¥600 / 个</span>
-                </div>
-                <div className="flex justify-between items-center py-4 border-b border-gray-200">
-                  <span className="text-lg">门头形象</span>
-                  <span className="text-lg font-semibold">¥5000 / 店（实体店）</span>
-                </div>
               </div>
             </div>
 

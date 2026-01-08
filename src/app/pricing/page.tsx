@@ -28,7 +28,12 @@ export default function PricingPage() {
       const result = await response.json();
 
       if (result.success) {
-        setData(result.data);
+        // 过滤掉不需要显示的行
+        const filteredData = result.data.filter((item: any) => {
+          const name = item['功能名称'];
+          return !name.includes('分销点') && !name.includes('门头形象');
+        });
+        setData(filteredData);
       }
     } catch (err) {
       console.error('Failed to load pricing data');
