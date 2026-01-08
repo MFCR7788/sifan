@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import SuccessModal from './SuccessModal';
 
 interface SummaryPanelProps {
   config: any;
@@ -53,8 +52,6 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
   const [isExpanded, setIsExpanded] = useState(true);
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [submittedOrder, setSubmittedOrder] = useState<{ orderNumber: string; customerName: string; totalPrice: number } | null>(null);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     phone: '',
@@ -111,13 +108,9 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
       const result = await response.json();
 
       if (result.success) {
-        // 显示成功弹窗，不跳转支付页面
-        setSubmittedOrder({
-          orderNumber: result.data.orderNumber,
-          customerName: customerInfo.name,
-          totalPrice: config.totalPrice
-        });
-        setShowSuccessModal(true);
+        // 跳转到订单详情页面
+        const orderNumber = result.data.orderNumber;
+        router.push(`/order/${orderNumber}`);
 
         // 重置表单
         setShowCustomerForm(false);
@@ -136,13 +129,6 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleCloseSuccessModal = () => {
-    setShowSuccessModal(false);
-    setSubmittedOrder(null);
-    // 可选：跳转回首页或保持当前页面
-    // router.push('/');
   };
 
   return (
@@ -346,14 +332,6 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
       )}
 
       {/* 成功弹窗 */}
-      {showSuccessModal && submittedOrder && (
-        <SuccessModal
-          orderNumber={submittedOrder.orderNumber}
-          customerName={submittedOrder.customerName}
-          totalPrice={submittedOrder.totalPrice}
-          onClose={handleCloseSuccessModal}
-        />
-      )}
     </div>
   );
 }
