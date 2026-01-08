@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import Link from 'next/link';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface ContactMessage {
   id: string;
@@ -82,8 +83,9 @@ export default function ContactMessagesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <Navigation />
+    <ProtectedRoute>
+      <div className="min-h-screen bg-black text-white">
+        <Navigation />
 
       {/* Header */}
       <section className="pt-32 pb-8 px-4 relative">
@@ -226,5 +228,6 @@ export default function ContactMessagesPage() {
         </div>
       </footer>
     </div>
+    </ProtectedRoute>
   );
 }
