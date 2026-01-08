@@ -32,7 +32,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	// 获取当前用户信息
 	const refreshUser = async () => {
 		try {
-			const response = await fetch('/api/user/me');
+			const response = await fetch('/api/user/me', {
+				credentials: 'include',
+			});
 			if (response.ok) {
 				const data = await response.json();
 				setUser(data.user);
@@ -101,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		try {
 			await fetch('/api/auth/logout', {
 				method: 'POST',
+				credentials: 'include',
 			});
 		} catch (error) {
 			console.error('Logout error:', error);

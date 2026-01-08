@@ -48,7 +48,9 @@ export default function ProfilePage() {
 	const fetchMemberInfo = async () => {
 		try {
 			console.log('开始获取会员信息...');
-			const response = await fetch('/api/user/me/member');
+			const response = await fetch('/api/user/me/member', {
+				credentials: 'include', // 重要：包含Cookie
+			});
 			console.log('会员API响应状态:', response.status);
 
 			if (response.ok) {
@@ -80,6 +82,7 @@ export default function ProfilePage() {
 			const response = await fetch('/api/user/me/update', {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
 				body: JSON.stringify(editForm),
 			});
 
@@ -115,6 +118,7 @@ export default function ProfilePage() {
 			const response = await fetch('/api/user/me/password', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
 				body: JSON.stringify({
 					oldPassword: passwordForm.oldPassword,
 					newPassword: passwordForm.newPassword,
