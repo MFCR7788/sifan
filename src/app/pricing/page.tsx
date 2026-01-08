@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
+import Link from 'next/link';
 
 interface PricingData {
   '功能名称': string;
@@ -14,17 +15,9 @@ interface PricingData {
 export default function PricingPage() {
   const [data, setData] = useState<PricingData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPlan, setSelectedPlan] = useState<'basic' | 'premium' | 'ultimate'>('premium');
 
   useEffect(() => {
     fetchPricingData();
-
-    // 从URL参数获取选中的方案
-    const params = new URLSearchParams(window.location.search);
-    const planParam = params.get('plan');
-    if (planParam === 'basic' || planParam === 'premium' || planParam === 'ultimate') {
-      setSelectedPlan(planParam);
-    }
   }, []);
 
   const fetchPricingData = async () => {
@@ -49,8 +42,7 @@ export default function PricingPage() {
       version: '3.0',
       price: '2980',
       description: '适合门店、个体户',
-      color: 'text-gray-900',
-      badge: ''
+      columnKey: '基础版3.0系统' as const
     },
     {
       id: 'premium' as const,
@@ -58,8 +50,8 @@ export default function PricingPage() {
       version: '3.0',
       price: '12980',
       description: '适合中大型企业',
-      color: 'text-gray-900',
-      badge: '推荐'
+      recommended: true,
+      columnKey: '旗舰版3.0系统' as const
     },
     {
       id: 'ultimate' as const,
@@ -67,17 +59,9 @@ export default function PricingPage() {
       version: '3.0',
       price: '29800',
       description: '适合集团企业',
-      color: 'text-gray-900',
-      badge: '尊享'
+      columnKey: '至尊版3.0' as const
     }
   ];
-
-  const getPlanValue = (item: PricingData, planId: 'basic' | 'premium' | 'ultimate') => {
-    if (planId === 'basic') return item['基础版3.0系统'];
-    if (planId === 'premium') return item['旗舰版3.0系统'];
-    if (planId === 'ultimate') return item['至尊版3.0'];
-    return '';
-  };
 
   const isSupported = (value: string) => {
     return value === '√' || value === '支持';
@@ -98,12 +82,6 @@ export default function PricingPage() {
     );
   }
 
-  const currentPlan = plans.find(p => p.id === selectedPlan);
-  const filteredFeatures = data.filter(item => {
-    const value = getPlanValue(item, selectedPlan);
-    return !isNotSupported(value);
-  });
-
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Navigation />
@@ -120,85 +98,88 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* Plan Selection */}
+      {/* Comparison Table */}
       <section className="pb-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-6 mb-16">
-            {plans.map((plan) => (
-              <button
-                key={plan.id}
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`
-                  relative p-8 rounded-3xl transition-all
-                  ${selectedPlan === plan.id
-                    ? 'bg-gray-900 text-white shadow-2xl'
-                    : 'bg-gray-50 hover:bg-gray-100 text-gray-900'
-                  }
-                `}
-              >
-                {plan.badge && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className={`px-4 py-1 text-xs font-semibold rounded-full ${
-                      selectedPlan === plan.id ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
-                    }`}>
-                      {plan.badge}
-                    </span>
-                  </div>
-                )}
-                <h3 className="text-2xl font-semibold mb-2">{plan.name}{plan.version}</h3>
-                <p className={`text-sm ${selectedPlan === plan.id ? 'text-gray-400' : 'text-gray-600'} mb-6`}>
-                  {plan.description}
-                </p>
-                <div className="mb-6">
-                  <span className="text-5xl font-bold">¥{plan.price}</span>
-                  <span className={`text-sm ${selectedPlan === plan.id ? 'text-gray-400' : 'text-gray-600'}`}>/年</span>
-                </div>
-              </button>
-            ))}
-          </div>
+        <div className="max-w-6xl mx-auto">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              {/* Table Header */}
+              <thead>
+                <tr>
+                  <th className="text-left p-6 pb-8 min-w-[200px]">
+                    <div className="text-2xl font-semibold text-gray-900">功能对比</div>
+                  </th>
+                  {plans.map((plan) => (
+                    <th key={plan.id} className={`p-6 pb-8 min-w-[200px] relative ${plan.recommended ? 'bg-gray-50' : ''}`}>
+                      {plan.recommended && (
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                          <span className="px-4 py-1 text-xs font-semibold rounded-full bg-gray-900 text-white">
+                            推荐
+                          </span>
+                        </div>
+                      )}
+                      <div className={`text-2xl font-semibold mb-2 ${plan.recommended ? 'text-gray-900' : 'text-gray-700'}`}>
+                        {plan.name}{plan.version}
+                      </div>
+                      <div className="text-sm text-gray-500 mb-4">{plan.description}</div>
+                      <div className="text-5xl font-bold text-gray-900">
+                        ¥{plan.price}
+                      </div>
+                      <div className="text-sm text-gray-500">/年</div>
+                      <Link
+                        href={`/configurator?plan=${plan.id}`}
+                        className={`mt-6 inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all ${
+                          plan.recommended
+                            ? 'bg-gray-900 text-white hover:bg-gray-800'
+                            : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                        }`}
+                      >
+                        立即购买
+                      </Link>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
 
-          {/* Features List */}
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-semibold text-center mb-12">
-              {currentPlan?.name}功能列表
-            </h2>
-            <div className="space-y-4">
-              {filteredFeatures.map((item, index) => {
-                const value = getPlanValue(item, selectedPlan);
-                const monthlyPrice = item['价格/月'] as number;
-                return (
-                  <div
-                    key={index}
-                    className="flex items-start justify-between py-4 border-b border-gray-200 last:border-0"
-                  >
-                    <div className="flex-1">
-                      <div className="text-lg font-medium text-gray-900">{item['功能名称']}</div>
-                      {monthlyPrice > 0 && (
-                        <div className="text-sm text-gray-500 mt-1">¥{monthlyPrice * 12}/年</div>
+              {/* Table Body */}
+              <tbody>
+                {data.map((item, index) => (
+                  <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
+                    <td className="p-6 align-top">
+                      <div className="text-base font-medium text-gray-900 mb-1">{item['功能名称']}</div>
+                      {item['价格/月'] > 0 && (
+                        <div className="text-sm text-gray-500">¥{item['价格/月'] * 12}/年</div>
                       )}
-                    </div>
-                    <div className="ml-4 flex-shrink-0">
-                      {isSupported(value) ? (
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-900 text-white">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-gray-400 text-sm">
-                          {isNotSupported(value) ? '—' : value}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                    </td>
+                    {plans.map((plan) => {
+                      const value = item[plan.columnKey];
+                      return (
+                        <td key={plan.id} className={`p-6 align-top text-center ${plan.recommended ? 'bg-gray-50' : ''}`}>
+                          {isSupported(value) ? (
+                            <div className="flex items-center justify-center w-8 h-8 mx-auto rounded-full bg-gray-900 text-white">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          ) : isNotSupported(value) ? (
+                            <div className="flex items-center justify-center w-8 h-8 mx-auto rounded-full bg-gray-200 text-gray-400">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </div>
+                          ) : (
+                            <span className="text-gray-600">{value}</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </section>
-
-      {/* Stats */}
+      </section>      {/* Stats */}
       <section className="py-24 px-4 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-3 gap-12 text-center">
