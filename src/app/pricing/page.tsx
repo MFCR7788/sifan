@@ -107,7 +107,7 @@ export default function PricingPage() {
               {/* Table Header */}
               <thead>
                 <tr>
-                  <th className="text-center p-8 pb-12 min-w-[200px] align-top">
+                  <th className="text-center p-8 pb-12 min-w-[200px] align-middle">
                     <div className="text-2xl font-semibold text-gray-900">功能对比</div>
                   </th>
                   {plans.map((plan) => (
@@ -115,47 +115,44 @@ export default function PricingPage() {
                       key={plan.id}
                       onClick={() => setSelectedPlan(plan.id)}
                       className={`
-                        p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-bottom
-                        ${plan.recommended ? 'bg-gray-50' : ''}
-                        ${selectedPlan === plan.id ? 'bg-blue-50/50 ring-2 ring-blue-500 ring-offset-2' : ''}
+                        p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-middle relative
+                        ${selectedPlan === plan.id
+                          ? 'border-2 border-blue-600 bg-blue-50 shadow-xl scale-105'
+                          : 'border-2 border-gray-200 hover:border-gray-300'
+                        }
+                        ${plan.recommended && selectedPlan !== plan.id ? 'bg-gray-50' : ''}
                       `}
                     >
+                      {selectedPlan === plan.id && (
+                        <div className="absolute top-4 right-4 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center z-10">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      )}
                       {plan.recommended && (
                         <div className="mb-3">
                           <span className={`px-4 py-1 text-xs font-semibold rounded-full ${
                             selectedPlan === plan.id
-                              ? 'bg-blue-500 text-white'
+                              ? 'bg-blue-600 text-white'
                               : 'bg-gray-900 text-white'
                           }`}>
                             推荐
                           </span>
                         </div>
                       )}
-                      <div className="flex items-center justify-between mb-3">
-                        <div className={`text-2xl font-semibold transition-colors ${
-                          selectedPlan === plan.id
-                            ? 'text-blue-900'
-                            : plan.recommended
-                            ? 'text-gray-900'
-                            : 'text-gray-700'
-                        }`}>
-                          {plan.name}{plan.version}
-                        </div>
-                        <div className={`
-                          w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300
-                          ${selectedPlan === plan.id
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-300 hover:border-gray-400'
-                          }
-                        `}>
-                          {selectedPlan === plan.id && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-white"></div>
-                          )}
-                        </div>
+                      <div className={`text-2xl font-semibold transition-colors ${
+                        selectedPlan === plan.id
+                          ? 'text-blue-900'
+                          : plan.recommended
+                          ? 'text-gray-900'
+                          : 'text-gray-700'
+                      }`}>
+                        {plan.name}{plan.version}
                       </div>
                       <div className="text-sm text-gray-500 mb-6">{plan.description}</div>
                       <div className={`text-5xl font-bold transition-colors ${
-                        selectedPlan === plan.id ? 'text-blue-900' : 'text-gray-900'
+                        selectedPlan === plan.id ? 'text-blue-600' : 'text-gray-900'
                       }`}>
                         ¥{plan.price}
                       </div>
@@ -165,10 +162,9 @@ export default function PricingPage() {
                         className={`
                           inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all
                           ${selectedPlan === plan.id
-                            ? 'bg-gray-900 text-white hover:bg-gray-800'
+                            ? 'bg-blue-600 text-white hover:bg-blue-700'
                             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                           }
-                          ${selectedPlan === plan.id ? 'shadow-lg' : ''}
                         `}
                       >
                         立即购买
