@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import type { Member } from '@/storage/database/shared/schema';
 import type { User } from '@/storage/database/shared/schema';
 
@@ -55,7 +56,9 @@ export default function AdminMembersPage() {
 	const fetchMembers = async () => {
 		try {
 			setIsLoadingMembers(true);
-			const response = await fetch('/api/admin/members');
+			const response = await fetch('/api/admin/members', {
+				credentials: 'include',
+			});
 			if (response.ok) {
 				const data = await response.json();
 				setMembers(data.members);
@@ -87,6 +90,7 @@ export default function AdminMembersPage() {
 			const response = await fetch('/api/admin/members', {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
 				body: JSON.stringify({
 					memberId: editingMember.id,
 					...editForm,
@@ -124,9 +128,17 @@ export default function AdminMembersPage() {
 		<div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
 			<div className="container mx-auto px-4 py-8">
 				<div className="max-w-7xl mx-auto">
-					<div className="mb-8">
-						<h1 className="text-3xl font-bold text-gray-900 mb-2">会员管理</h1>
-						<p className="text-gray-600">管理所有会员信息和账户状态</p>
+					<div className="mb-8 flex items-center justify-between">
+						<div>
+							<Link
+								href="/"
+								className="text-gray-500 hover:text-gray-700 text-sm inline-flex items-center mb-4"
+							>
+								← 返回首页
+							</Link>
+							<h1 className="text-3xl font-bold text-gray-900 mb-2">会员管理</h1>
+							<p className="text-gray-600">管理所有会员信息和账户状态</p>
+						</div>
 					</div>
 
 					{successMessage && (

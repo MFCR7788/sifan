@@ -14,7 +14,17 @@ export async function GET(request: NextRequest) {
 		}
 
 		// 验证是否是管理员
-		const user = await userManager.getUserById(userId);
+		// admin用户ID是硬编码的 'admin-id'，不在数据库中
+		let user;
+		if (userId === 'admin-id') {
+			user = {
+				id: 'admin-id',
+				isAdmin: true,
+			};
+		} else {
+			user = await userManager.getUserById(userId);
+		}
+
 		if (!user || !user.isAdmin) {
 			return NextResponse.json(
 				{ error: '无权访问' },
@@ -59,7 +69,17 @@ export async function PATCH(request: NextRequest) {
 		}
 
 		// 验证是否是管理员
-		const user = await userManager.getUserById(userId);
+		// admin用户ID是硬编码的 'admin-id'，不在数据库中
+		let user;
+		if (userId === 'admin-id') {
+			user = {
+				id: 'admin-id',
+				isAdmin: true,
+			};
+		} else {
+			user = await userManager.getUserById(userId);
+		}
+
 		if (!user || !user.isAdmin) {
 			return NextResponse.json(
 				{ error: '无权访问' },
