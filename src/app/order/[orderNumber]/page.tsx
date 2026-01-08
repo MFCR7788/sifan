@@ -318,6 +318,11 @@ export default function OrderDetailPage() {
             box-shadow: none !important;
             border: 1px solid #e5e7eb;
           }
+          /* 打印时强制显示三栏 */
+          .print-area > div > div .grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 0.75rem !important;
+          }
           @page {
             margin: 20px;
           }
