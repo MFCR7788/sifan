@@ -56,17 +56,6 @@ export default function OrderDetailPage() {
   const handlePrint = () => {
     setPrinting(true);
 
-    // 创建页眉元素
-    const header = document.createElement('div');
-    header.id = 'print-header';
-    header.innerHTML = `
-      <div class="print-header-content">
-        魔法超人 3.0 - 定制方案订单表单<br/>
-        <span class="print-order-number">订单号: ${order?.orderNumber || ''}</span>
-      </div>
-    `;
-    document.body.prepend(header);
-
     // 创建页脚元素
     const footer = document.createElement('div');
     footer.id = 'print-footer';
@@ -87,25 +76,6 @@ export default function OrderDetailPage() {
         body {
           background: white !important;
           counter-reset: page;
-        }
-        #print-header {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          z-index: 1000;
-          background: white;
-          padding: 8mm 15mm 4mm;
-          border-bottom: 2px solid #e5e7eb;
-        }
-        #print-header .print-header-content {
-          text-align: center;
-          font-size: 14pt;
-          font-weight: bold;
-        }
-        #print-header .print-order-number {
-          font-size: 11pt;
-          font-weight: normal;
         }
         #print-footer {
           position: fixed;
@@ -132,7 +102,7 @@ export default function OrderDetailPage() {
         }
         .print-area {
           padding: 0 !important;
-          margin-top: 30mm !important;
+          margin-top: 10mm !important;
           margin-bottom: 20mm !important;
         }
         .print-area > div > div {
@@ -155,10 +125,8 @@ export default function OrderDetailPage() {
 
     // 清理打印样式和元素
     setTimeout(() => {
-      const printHeader = document.getElementById('print-header');
       const printFooter = document.getElementById('print-footer');
       const printStyle = document.getElementById('print-style');
-      if (printHeader) printHeader.remove();
       if (printFooter) printFooter.remove();
       if (printStyle) printStyle.remove();
       setPrinting(false);
