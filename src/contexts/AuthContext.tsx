@@ -32,17 +32,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	// 获取当前用户信息
 	const refreshUser = async () => {
 		try {
+			console.log('AuthContext: 开始刷新用户信息...');
 			const response = await fetch('/api/user/me', {
 				credentials: 'include',
 			});
+			console.log('AuthContext: 用户API响应状态:', response.status);
+			
 			if (response.ok) {
 				const data = await response.json();
+				console.log('AuthContext: 用户信息:', data.user);
 				setUser(data.user);
 			} else {
+				const errorText = await response.text();
+				console.error('AuthContext: 用户API错误:', response.status, errorText);
 				setUser(null);
 			}
 		} catch (error) {
-			console.error('Failed to fetch user:', error);
+			console.error('AuthContext: Failed to fetch user:', error);
 			// 数据库连接失败时，设置为未登录状态，不影响应用运行
 			setUser(null);
 		} finally {

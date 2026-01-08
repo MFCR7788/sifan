@@ -40,7 +40,9 @@ export default function ProfilePage() {
 
 	// 获取会员信息
 	useEffect(() => {
+		console.log('会员信息useEffect触发:', { isAuthenticated, user });
 		if (isAuthenticated && user) {
+			console.log('开始获取会员信息...');
 			fetchMemberInfo();
 		}
 	}, [isAuthenticated, user]);
