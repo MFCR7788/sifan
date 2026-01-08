@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,10 +8,20 @@ import { useRouter } from 'next/navigation';
 export default function LoginPage() {
 	const [phone, setPhone] = useState('');
 	const [password, setPassword] = useState('');
+	const [rememberMe, setRememberMe] = useState(false);
 	const [error, setError] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 	const { login, isAdmin } = useAuth();
 	const router = useRouter();
+
+	// 页面加载时检查是否有保存的登录信息
+	useEffect(() => {
+		const savedPhone = localStorage.getItem('savedLoginPhone');
+		if (savedPhone) {
+			setPhone(savedPhone);
+			setRememberMe(true);
+		}
+	}, []);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -20,6 +30,14 @@ export default function LoginPage() {
 
 		try {
 			await login(phone, password);
+			
+			// 如果勾选了记住密码，保存手机号（出于安全考虑，不保存密码）
+			if (rememberMe) {
+				localStorage.setItem('savedLoginPhone', phone);
+			} else {
+				localStorage.removeItem('savedLoginPhone');
+			}
+			
 			// 如果是admin，跳转到会员管理页面，否则跳转到首页
 			if (isAdmin) {
 				router.push('/admin/members');
@@ -77,6 +95,19 @@ export default function LoginPage() {
 								className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
 								placeholder="••••••••"
 							/>
+						</div>
+
+						<div className="flex items-center">
+							<input
+								id="rememberMe"
+								type="checkbox"
+								checked={rememberMe}
+								onChange={(e) => setRememberMe(e.target.checked)}
+								className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+							/>
+							<label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
+								记住我
+							</label>
 						</div>
 
 						<button
