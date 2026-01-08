@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
 		try {
 			await register(formData);
-			router.push('/dashboard');
+			router.push('/');
 		} catch (err: any) {
 			setError(err.message || '注册失败');
 		} finally {
