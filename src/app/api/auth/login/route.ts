@@ -3,25 +3,25 @@ import { userManager } from '@/storage/database/userManager';
 import bcrypt from 'bcrypt';
 
 // 硬编码的admin账户
+const ADMIN_PHONE = 'admin';
 const ADMIN_EMAIL = 'admin@magic-superman.com';
-const ADMIN_PASSWORD_HASH = '$2b$10$hashedPasswordPlaceholder'; // 稍后会设置
 
 export async function POST(request: NextRequest) {
 	try {
 		const body = await request.json();
-		const { email, password } = body;
+		const { phone, password } = body;
 
-		if (!email || !password) {
+		if (!phone || !password) {
 			return NextResponse.json(
-				{ error: '邮箱和密码不能为空' },
+				{ error: '手机号和密码不能为空' },
 				{ status: 400 }
 			);
 		}
 
 		let user;
 
-		// 检查是否是admin账户
-		if (email === ADMIN_EMAIL) {
+		// 检查是否是admin账户（支持手机号或邮箱登录）
+		if (phone === ADMIN_PHONE || phone === ADMIN_EMAIL) {
 			// 验证admin密码
 			const isValidAdmin = password === 'Qf229888777';
 
@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
 				// 创建临时的admin用户对象
 				user = {
 					id: 'admin-id',
+					phone: ADMIN_PHONE,
 					email: ADMIN_EMAIL,
 					name: 'Admin',
 					isAdmin: true,
@@ -37,13 +38,13 @@ export async function POST(request: NextRequest) {
 				};
 			}
 		} else {
-			// 验证普通用户登录
-			user = await userManager.login(email, password);
+			// 验证普通用户登录（通过手机号）
+			user = await userManager.login(phone, password);
 		}
-		
+
 		if (!user) {
 			return NextResponse.json(
-				{ error: '邮箱或密码错误' },
+				{ error: '手机号或密码错误' },
 				{ status: 401 }
 			);
 		}

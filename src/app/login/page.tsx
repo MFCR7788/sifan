@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-	const [email, setEmail] = useState('');
+	const [phone, setPhone] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function LoginPage() {
 		setIsLoading(true);
 
 		try {
-			await login(email, password);
+			await login(phone, password);
 			// 如果是admin，跳转到会员管理页面，否则跳转到首页
 			if (isAdmin) {
 				router.push('/admin/members');
@@ -50,17 +50,17 @@ export default function LoginPage() {
 
 					<form onSubmit={handleSubmit} className="space-y-6">
 						<div>
-							<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-								邮箱地址
+							<label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+								手机号码
 							</label>
 							<input
-								id="email"
-								type="email"
+								id="phone"
+								type="tel"
 								required
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
+								value={phone}
+								onChange={(e) => setPhone(e.target.value)}
 								className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-								placeholder="your@email.com"
+								placeholder="请输入手机号"
 							/>
 						</div>
 

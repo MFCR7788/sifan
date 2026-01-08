@@ -8,13 +8,32 @@ export async function POST(request: NextRequest) {
 		const body = await request.json();
 		const { email, name, password, phone, avatar } = body as InsertUser;
 
-		// 检查邮箱是否已存在
-		const existingUser = await userManager.getUserByEmail(email);
-		if (existingUser) {
+		// 验证必填字段
+		if (!phone || !name || !password) {
 			return NextResponse.json(
-				{ error: '该邮箱已被注册' },
+				{ error: '手机号、用户名和密码为必填项' },
 				{ status: 400 }
 			);
+		}
+
+		// 检查手机号是否已存在
+		const existingUser = await userManager.getUserByPhone(phone);
+		if (existingUser) {
+			return NextResponse.json(
+				{ error: '该手机号已被注册' },
+				{ status: 400 }
+			);
+		}
+
+		// 如果提供了邮箱，检查邮箱是否已存在
+		if (email) {
+			const existingEmailUser = await userManager.getUserByEmail(email);
+			if (existingEmailUser) {
+				return NextResponse.json(
+					{ error: '该邮箱已被使用' },
+					{ status: 400 }
+				);
+			}
 		}
 
 		// 创建用户

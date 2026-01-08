@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
 		// 创建admin用户
 		const user = await userManager.createUser({
 			email,
+			phone: email, // 使用邮箱作为phone（临时方案）
 			name: 'Admin',
 			password: hashedPassword,
 			isAdmin: true,

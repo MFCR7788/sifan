@@ -8,12 +8,12 @@ interface AuthContextType {
 	isLoading: boolean;
 	isAuthenticated: boolean;
 	isAdmin: boolean;
-	login: (email: string, password: string) => Promise<void>;
+	login: (phone: string, password: string) => Promise<void>;
 	register: (data: {
-		email: string;
+		phone: string;
 		name: string;
 		password: string;
-		phone?: string;
+		email?: string;
 		avatar?: string;
 	}) => Promise<void>;
 	logout: () => Promise<void>;
@@ -53,13 +53,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	// 登录
-	const login = async (email: string, password: string) => {
+	const login = async (phone: string, password: string) => {
 		const response = await fetch('/api/auth/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ email, password }),
+			body: JSON.stringify({ phone, password }),
 		});
 
 		if (!response.ok) {
@@ -73,10 +73,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	// 注册
 	const register = async (data: {
-		email: string;
+		phone: string;
 		name: string;
 		password: string;
-		phone?: string;
+		email?: string;
 		avatar?: string;
 	}) => {
 		const response = await fetch('/api/auth/register', {
@@ -88,8 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		});
 
 		if (!response.ok) {
-			const data = await response.json();
-			throw new Error(data.error || '注册失败');
+			const errorData = await response.json();
+			throw new Error(errorData.error || '注册失败');
 		}
 
 		const result = await response.json();

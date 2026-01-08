@@ -14,18 +14,17 @@ export const contactMessages = pgTable("contact_messages", {
 
 export const users = pgTable("users", {
 	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
-	email: varchar({ length: 255 }).notNull(),
+	phone: varchar({ length: 20 }).notNull(),
 	name: varchar({ length: 128 }).notNull(),
 	password: text().notNull(),
-	phone: varchar({ length: 20 }),
+	email: varchar({ length: 255 }),
 	avatar: varchar({ length: 500 }),
 	isAdmin: boolean("is_admin").default(false).notNull(),
 	isActive: boolean().default(true).notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
 }, (table) => [
-	index("users_email_idx").using("btree", table.email.asc().nullsLast().op("text_ops")),
-	unique("users_email_unique").on(table.email),
+	unique("users_phone_unique").on(table.phone),
 ]);
 
 export const orders = pgTable("orders", {
@@ -166,10 +165,10 @@ export type UpdateMemberTransaction = z.infer<typeof updateMemberTransactionSche
 
 // Users 表的验证 schema
 export const insertUserSchema = createCoercedInsertSchema(users).pick({
-	email: true,
+	phone: true,
 	name: true,
 	password: true,
-	phone: true,
+	email: true,
 	avatar: true,
 	isAdmin: true,
 	isActive: true,
@@ -177,9 +176,9 @@ export const insertUserSchema = createCoercedInsertSchema(users).pick({
 
 export const updateUserSchema = createCoercedInsertSchema(users)
 	.pick({
-		email: true,
-		name: true,
 		phone: true,
+		name: true,
+		email: true,
 		avatar: true,
 		isAdmin: true,
 		isActive: true,
@@ -188,7 +187,7 @@ export const updateUserSchema = createCoercedInsertSchema(users)
 
 // 登录验证 schema
 export const loginSchema = z.object({
-	email: z.string().email("邮箱格式不正确"),
+	phone: z.string().min(11, "手机号码格式不正确"),
 	password: z.string().min(6, "密码至少6位"),
 });
 

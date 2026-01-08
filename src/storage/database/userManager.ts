@@ -26,9 +26,19 @@ export class UserManager {
 	}
 
 	/**
-	 * 根据邮箱查找用户
+	 * 根据手机号查找用户
+	 */
+	async getUserByPhone(phone: string): Promise<User | null> {
+		const db = await getDb();
+		const [user] = await db.select().from(users).where(eq(users.phone, phone));
+		return user || null;
+	}
+
+	/**
+	 * 根据邮箱查找用户（可选字段）
 	 */
 	async getUserByEmail(email: string): Promise<User | null> {
+		if (!email) return null;
 		const db = await getDb();
 		const [user] = await db.select().from(users).where(eq(users.email, email));
 		return user || null;
@@ -49,10 +59,10 @@ export class UserManager {
 	/**
 	 * 用户登录验证
 	 */
-	async login(email: string, password: string): Promise<Omit<User, 'password'> | null> {
-		const loginData = loginSchema.parse({ email, password });
-		
-		const user = await this.getUserByEmail(loginData.email);
+	async login(phone: string, password: string): Promise<Omit<User, 'password'> | null> {
+		const loginData = loginSchema.parse({ phone, password });
+
+		const user = await this.getUserByPhone(loginData.phone);
 		if (!user) {
 			return null;
 		}

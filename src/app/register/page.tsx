@@ -8,9 +8,9 @@ import { useRouter } from 'next/navigation';
 export default function RegisterPage() {
 	const [formData, setFormData] = useState({
 		name: '',
+		phone: '',
 		email: '',
 		password: '',
-		phone: '',
 	});
 	const [error, setError] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +57,7 @@ export default function RegisterPage() {
 					<form onSubmit={handleSubmit} className="space-y-5">
 						<div>
 							<label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-								姓名
+								用户名
 							</label>
 							<input
 								id="name"
@@ -67,19 +67,35 @@ export default function RegisterPage() {
 								value={formData.name}
 								onChange={handleChange}
 								className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-								placeholder="您的姓名"
+								placeholder="您的用户名"
+							/>
+						</div>
+
+						<div>
+							<label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+								手机号码
+							</label>
+							<input
+								id="phone"
+								name="phone"
+								type="tel"
+								required
+								minLength={11}
+								value={formData.phone}
+								onChange={handleChange}
+								className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+								placeholder="您的手机号码"
 							/>
 						</div>
 
 						<div>
 							<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-								邮箱地址
+								邮箱地址（可选）
 							</label>
 							<input
 								id="email"
 								name="email"
 								type="email"
-								required
 								value={formData.email}
 								onChange={handleChange}
 								className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
@@ -101,21 +117,6 @@ export default function RegisterPage() {
 								onChange={handleChange}
 								className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
 								placeholder="至少6位密码"
-							/>
-						</div>
-
-						<div>
-							<label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-								手机号码（可选）
-							</label>
-							<input
-								id="phone"
-								name="phone"
-								type="tel"
-								value={formData.phone}
-								onChange={handleChange}
-								className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-								placeholder="您的手机号码"
 							/>
 						</div>
 
