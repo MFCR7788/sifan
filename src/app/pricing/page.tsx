@@ -15,6 +15,7 @@ interface PricingData {
 export default function PricingPage() {
   const [data, setData] = useState<PricingData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPlan, setSelectedPlan] = useState<'basic' | 'premium' | 'ultimate'>('premium');
 
   useEffect(() => {
     fetchPricingData();
@@ -110,29 +111,65 @@ export default function PricingPage() {
                     <div className="text-2xl font-semibold text-gray-900">功能对比</div>
                   </th>
                   {plans.map((plan) => (
-                    <th key={plan.id} className={`p-6 pb-8 min-w-[200px] relative ${plan.recommended ? 'bg-gray-50' : ''}`}>
+                    <th
+                      key={plan.id}
+                      onClick={() => setSelectedPlan(plan.id)}
+                      className={`
+                        p-6 pb-8 min-w-[200px] relative cursor-pointer transition-all duration-300
+                        ${plan.recommended ? 'bg-gray-50' : ''}
+                        ${selectedPlan === plan.id ? 'bg-blue-50/50 ring-2 ring-blue-500 ring-offset-2' : ''}
+                      `}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className={`text-2xl font-semibold transition-colors ${
+                          selectedPlan === plan.id
+                            ? 'text-blue-900'
+                            : plan.recommended
+                            ? 'text-gray-900'
+                            : 'text-gray-700'
+                        }`}>
+                          {plan.name}{plan.version}
+                        </div>
+                        <div className={`
+                          w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300
+                          ${selectedPlan === plan.id
+                            ? 'border-blue-500 bg-blue-500'
+                            : 'border-gray-300 hover:border-gray-400'
+                          }
+                        `}>
+                          {selectedPlan === plan.id && (
+                            <div className="w-2.5 h-2.5 rounded-full bg-white"></div>
+                          )}
+                        </div>
+                      </div>
                       {plan.recommended && (
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                          <span className="px-4 py-1 text-xs font-semibold rounded-full bg-gray-900 text-white">
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                          <span className={`px-4 py-1 text-xs font-semibold rounded-full ${
+                            selectedPlan === plan.id
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-gray-900 text-white'
+                          }`}>
                             推荐
                           </span>
                         </div>
                       )}
-                      <div className={`text-2xl font-semibold mb-2 ${plan.recommended ? 'text-gray-900' : 'text-gray-700'}`}>
-                        {plan.name}{plan.version}
-                      </div>
                       <div className="text-sm text-gray-500 mb-4">{plan.description}</div>
-                      <div className="text-5xl font-bold text-gray-900">
+                      <div className={`text-5xl font-bold transition-colors ${
+                        selectedPlan === plan.id ? 'text-blue-900' : 'text-gray-900'
+                      }`}>
                         ¥{plan.price}
                       </div>
                       <div className="text-sm text-gray-500">/年</div>
                       <Link
                         href={`/configurator?plan=${plan.id}`}
-                        className={`mt-6 inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all ${
-                          plan.recommended
+                        className={`
+                          mt-6 inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all
+                          ${plan.recommended || selectedPlan === plan.id
                             ? 'bg-gray-900 text-white hover:bg-gray-800'
                             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                        }`}
+                          }
+                          ${selectedPlan === plan.id ? 'shadow-lg' : ''}
+                        `}
                       >
                         立即购买
                       </Link>
@@ -153,10 +190,22 @@ export default function PricingPage() {
                     </td>
                     {plans.map((plan) => {
                       const value = item[plan.columnKey];
+                      const isSelected = selectedPlan === plan.id;
                       return (
-                        <td key={plan.id} className={`p-6 align-top text-center ${plan.recommended ? 'bg-gray-50' : ''}`}>
+                        <td
+                          key={plan.id}
+                          onClick={() => setSelectedPlan(plan.id)}
+                          className={`
+                            p-6 align-top text-center cursor-pointer transition-all duration-300
+                            ${plan.recommended ? 'bg-gray-50' : ''}
+                            ${isSelected ? 'bg-blue-50/50 ring-2 ring-blue-500 ring-offset-2' : ''}
+                          `}
+                        >
                           {isSupported(value) ? (
-                            <div className="flex items-center justify-center w-8 h-8 mx-auto rounded-full bg-gray-900 text-white">
+                            <div className={`
+                              flex items-center justify-center w-8 h-8 mx-auto rounded-full transition-all duration-300
+                              ${isSelected ? 'bg-blue-500 text-white scale-110' : 'bg-gray-900 text-white'}
+                            `}>
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                               </svg>
@@ -168,7 +217,10 @@ export default function PricingPage() {
                               </svg>
                             </div>
                           ) : (
-                            <span className="text-gray-600">{value}</span>
+                            <span className={`
+                              transition-colors duration-300
+                              ${isSelected ? 'text-blue-900 font-medium' : 'text-gray-600'}
+                            `}>{value}</span>
                           )}
                         </td>
                       );
