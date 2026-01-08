@@ -99,7 +99,7 @@ export default function Navigation() {
                       href="/login"
                       className="text-xs text-gray-600 transition-colors hover:opacity-60"
                     >
-                      系统会员登录
+                      登录
                     </Link>
                     <Link
                       href="/register"
@@ -185,7 +185,7 @@ export default function Navigation() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-3 py-3 text-sm text-gray-600 border-b border-gray-100"
                     >
-                      系统会员登录
+                      登录
                     </Link>
                     <Link
                       href="/register"
