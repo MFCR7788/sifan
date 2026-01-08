@@ -12,12 +12,27 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		const member = await memberManager.getMemberByUserId(userId);
+		let member = await memberManager.getMemberByUserId(userId);
+
+		// 如果会员不存在，自动创建基础会员
 		if (!member) {
-			return NextResponse.json(
-				{ error: '会员信息不存在' },
-				{ status: 404 }
-			);
+			try {
+				member = await memberManager.createMember({
+					userId,
+					memberLevel: 'basic',
+					balance: 0,
+					points: 0,
+					totalRecharge: 0,
+					totalConsumption: 0,
+					memberStatus: 'active',
+				});
+			} catch (createError) {
+				console.error('Auto-create member error:', createError);
+				return NextResponse.json(
+					{ error: '会员信息创建失败' },
+					{ status: 500 }
+				);
+			}
 		}
 
 		return NextResponse.json({ member });
