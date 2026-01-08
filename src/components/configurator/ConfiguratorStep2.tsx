@@ -88,6 +88,24 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
   // 判断当前是否为多门店或品牌连锁（功能已包含，不计额外费用）
   const isPremiumOrUltimate = config.platform === 'multi-store' || config.platform === 'brand-chain';
 
+  // 多门店连锁模式下的可选付费功能（不自动包含）
+  const multiStoreOptionalFeatures = ['多平台抓单', '区域合伙人（新）', '上门陪跑1-2个月'];
+
+  // 品牌连锁模式下的可选付费功能（不自动包含）
+  const brandChainOptionalFeatures = ['上门陪跑1-2个月'];
+
+  // 获取当前平台下的可选功能列表
+  const getOptionalFeatures = () => {
+    if (config.platform === 'multi-store') return multiStoreOptionalFeatures;
+    if (config.platform === 'brand-chain') return brandChainOptionalFeatures;
+    return [];
+  };
+
+  // 判断功能是否为可选功能（在多门店或品牌连锁模式下）
+  const isOptionalFeature = (featureName: string) => {
+    return getOptionalFeatures().includes(featureName);
+  };
+
   // 获取所有核心功能名称
   const getAllFeatureNames = () => {
     const allFeatures: string[] = [];
@@ -100,8 +118,8 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
   };
 
   const handleFeatureToggle = (featureName: string, price: number) => {
-    // 多门店或品牌连锁模式下，核心功能已包含，不可取消
-    if (isPremiumOrUltimate) {
+    // 多门店或品牌连锁模式下，已包含的功能不可操作
+    if (isPremiumOrUltimate && !isOptionalFeature(featureName)) {
       return;
     }
 
@@ -110,39 +128,57 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       ? currentFeatures.filter((name: string) => name !== featureName)
       : [...currentFeatures, featureName];
 
-    // 单店模式下，计算年度费用（上门陪跑1-2个月保持月度价格）
-    const basePrice = 2980; // 单店基础价格（年度）
-    const yearlyFee = updatedFeatures.reduce((total: number, featureName: string) => {
+    // 计算费用
+    let basePrice = 2980; // 默认单店基础价格
+    if (config.platform === 'multi-store') {
+      basePrice = 12980; // 多门店基础价格
+    } else if (config.platform === 'brand-chain') {
+      basePrice = 29800; // 品牌连锁基础价格
+    }
+
+    // 计算额外费用（仅包含已选的付费功能）
+    const extraFee = updatedFeatures.reduce((total: number, featureName: string) => {
       for (const module of coreModules) {
         const feature = module.features.find(f => f.name === featureName);
         if (feature) {
-          // "上门陪跑1-2个月"保持月度价格，其他功能乘以12转为年度费用
+          // "上门陪跑1-2个月"保持月度价格，其他付费功能乘以12转为年度费用
           if (feature.name === '上门陪跑1-2个月') {
             return total + feature.price; // 不乘以12，保持月度价格
           }
-          return total + feature.price * 12;
+          // 只有付费功能才计费（price > 0）
+          if (feature.price > 0) {
+            return total + feature.price * 12;
+          }
         }
       }
       return total;
     }, 0);
 
-    // 总价 = 基础价格 + 年度费用（单店模式下）
-    const totalPrice = basePrice + yearlyFee;
+    // 总价 = 基础价格 + 额外费用
+    const totalPrice = basePrice + extraFee;
 
     updateConfig({
       selectedFeatures: updatedFeatures,
-      monthlyFee: yearlyFee, // 字段名保持monthlyFee，但实际存储年度费用（已乘12）
+      monthlyFee: extraFee, // 字段名保持monthlyFee，但实际存储额外费用
       totalPrice: totalPrice
     });
   };
 
   const isFeatureSelected = (featureName: string) => {
-    // 多门店或品牌连锁模式下，所有核心功能自动选中
-    if (isPremiumOrUltimate) {
-      return true;
-    }
     // 单店模式下，检查 config.selectedFeatures 中是否包含该功能
-    return (config.selectedFeatures || []).includes(featureName);
+    if (!isPremiumOrUltimate) {
+      return (config.selectedFeatures || []).includes(featureName);
+    }
+
+    // 多门店或品牌连锁模式下：
+    // - 已包含的功能：返回 true
+    // - 可选功能：根据 config.selectedFeatures 判断
+    if (isOptionalFeature(featureName)) {
+      return (config.selectedFeatures || []).includes(featureName);
+    }
+
+    // 已包含的功能自动选中
+    return true;
   };
 
   return (
@@ -200,6 +236,9 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {module.features.map((feature, index) => {
                       const isSelected = isFeatureSelected(feature.name);
+                      const isIncluded = isPremiumOrUltimate && !isOptionalFeature(feature.name); // 已包含的功能
+                      const isOptional = isOptionalFeature(feature.name); // 可选功能
+
                       return (
                         <div
                           key={index}
@@ -212,7 +251,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                                 ? 'border-gray-200 bg-white hover:border-blue-300'
                                 : 'border-gray-100 bg-gray-50 hover:border-blue-200'
                             }
-                            ${isPremiumOrUltimate ? 'cursor-not-allowed' : 'cursor-pointer'}
+                            ${isIncluded ? 'cursor-not-allowed' : (isPremiumOrUltimate && !isOptional ? 'cursor-not-allowed' : 'cursor-pointer')}
                           `}
                         >
                           <div className="flex items-start gap-2">
@@ -231,9 +270,13 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                               <div className="text-gray-900">{feature.name}</div>
                               {feature.price > 0 && (
                                 <div className={`font-medium mt-1 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
-                                  {feature.name === '上门陪跑1-2个月' ? `¥${feature.price}/月` : `¥${feature.price * 12}/年`}
-                                  {isPremiumOrUltimate && isSelected && (
-                                    <span className="text-green-600 ml-1">(已包含)</span>
+                                  {isIncluded ? (
+                                    <>
+                                      {feature.name === '上门陪跑1-2个月' ? `¥${feature.price}/月` : `¥${feature.price * 12}/年`}
+                                      <span className="text-green-600 ml-1">(已包含)</span>
+                                    </>
+                                  ) : (
+                                    feature.name === '上门陪跑1-2个月' ? `¥${feature.price}/月` : `¥${feature.price * 12}/年`
                                   )}
                                 </div>
                               )}
