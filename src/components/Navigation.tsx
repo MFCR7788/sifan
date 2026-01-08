@@ -79,20 +79,12 @@ export default function Navigation() {
             {!isLoading && (
               <div className="flex items-center space-x-6 pl-6 border-l border-gray-200">
                 {isAuthenticated ? (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      className="text-xs text-gray-600 transition-colors hover:opacity-60"
-                    >
-                      业务管理
-                    </Link>
-                    <Link
-                      href="/profile"
-                      className="text-xs text-gray-600 transition-colors hover:opacity-60"
-                    >
-                      {user?.name || '个人中心'}
-                    </Link>
-                  </>
+                  <Link
+                    href="/profile"
+                    className="text-xs text-gray-600 transition-colors hover:opacity-60"
+                  >
+                    {user?.name || '个人中心'}
+                  </Link>
                 ) : (
                   <>
                     <Link
@@ -164,18 +156,11 @@ export default function Navigation() {
                 {isAuthenticated ? (
                   <>
                     <Link
-                      href="/dashboard"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-3 py-3 text-sm text-gray-600 border-b border-gray-100"
-                    >
-                      业务管理
-                    </Link>
-                    <Link
                       href="/profile"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-3 py-3 text-sm text-gray-600 border-b border-gray-100"
                     >
-                      个人中心
+                      {user?.name || '个人中心'}
                     </Link>
                   </>
                 ) : (
