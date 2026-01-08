@@ -163,3 +163,80 @@ export type MemberTransaction = typeof memberTransactions.$inferSelect;
 export type InsertMemberTransaction = z.infer<typeof insertMemberTransactionSchema>;
 export type UpdateMemberTransaction = z.infer<typeof updateMemberTransactionSchema>;
 
+// Users 表的验证 schema
+export const insertUserSchema = createCoercedInsertSchema(users).pick({
+	email: true,
+	name: true,
+	password: true,
+	phone: true,
+	avatar: true,
+});
+
+export const updateUserSchema = createCoercedInsertSchema(users)
+	.pick({
+		email: true,
+		name: true,
+		phone: true,
+		avatar: true,
+		isActive: true,
+	})
+	.partial();
+
+// 登录验证 schema
+export const loginSchema = z.object({
+	email: z.string().email("邮箱格式不正确"),
+	password: z.string().min(6, "密码至少6位"),
+});
+
+// Orders 表的验证 schema
+export const insertOrderSchema = createCoercedInsertSchema(orders).pick({
+	orderNumber: true,
+	customerName: true,
+	customerPhone: true,
+	customerEmail: true,
+	platform: true,
+	serviceLevel: true,
+	selectedFeatures: true,
+	valueServices: true,
+	totalPrice: true,
+	monthlyFee: true,
+	status: true,
+	paymentMethod: true,
+	paymentTime: true,
+	notes: true,
+});
+
+export const updateOrderSchema = createCoercedInsertSchema(orders)
+	.pick({
+		customerName: true,
+		customerPhone: true,
+		customerEmail: true,
+		serviceLevel: true,
+		selectedFeatures: true,
+		valueServices: true,
+		status: true,
+		paymentMethod: true,
+		paymentTime: true,
+		notes: true,
+	})
+	.partial();
+
+// ContactMessages 表的验证 schema
+export const insertContactMessageSchema = createCoercedInsertSchema(contactMessages).pick({
+	name: true,
+	phone: true,
+	email: true,
+	message: true,
+});
+
+// TypeScript types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UpdateUser = z.infer<typeof updateUserSchema>;
+export type LoginData = z.infer<typeof loginSchema>;
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type UpdateOrder = z.infer<typeof updateOrderSchema>;
+export type ContactMessage = typeof contactMessages.$inferSelect;
+export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+

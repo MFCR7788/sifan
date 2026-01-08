@@ -58,10 +58,10 @@ export class MemberTransactionManager {
 		if (filters.transactionType !== undefined) {
 			conditions.push(eq(memberTransactions.transactionType, filters.transactionType));
 		}
-		if (filters.status !== undefined) {
+		if (filters.status !== undefined && filters.status !== null) {
 			conditions.push(eq(memberTransactions.status, filters.status));
 		}
-		if (filters.paymentMethod !== undefined) {
+		if (filters.paymentMethod !== undefined && filters.paymentMethod !== null) {
 			conditions.push(eq(memberTransactions.paymentMethod, filters.paymentMethod));
 		}
 
@@ -100,10 +100,10 @@ export class MemberTransactionManager {
 		if (filters.transactionType !== undefined) {
 			conditions.push(eq(memberTransactions.transactionType, filters.transactionType));
 		}
-		if (filters.status !== undefined) {
+		if (filters.status !== undefined && filters.status !== null) {
 			conditions.push(eq(memberTransactions.status, filters.status));
 		}
-		if (filters.paymentMethod !== undefined) {
+		if (filters.paymentMethod !== undefined && filters.paymentMethod !== null) {
 			conditions.push(eq(memberTransactions.paymentMethod, filters.paymentMethod));
 		}
 
@@ -136,7 +136,7 @@ export class MemberTransactionManager {
 		const validated = updateMemberTransactionSchema.parse(data);
 		const [transaction] = await db
 			.update(memberTransactions)
-			.set({ ...validated, updatedAt: new Date() })
+			.set({ ...validated, updatedAt: new Date().toISOString() })
 			.where(eq(memberTransactions.id, id))
 			.returning();
 		return transaction || null;

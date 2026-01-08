@@ -62,10 +62,10 @@ export class MemberManager {
 		if (filters.userId !== undefined) {
 			conditions.push(eq(members.userId, filters.userId));
 		}
-		if (filters.memberLevel !== undefined) {
+		if (filters.memberLevel !== undefined && filters.memberLevel !== null) {
 			conditions.push(eq(members.memberLevel, filters.memberLevel));
 		}
-		if (filters.memberStatus !== undefined) {
+		if (filters.memberStatus !== undefined && filters.memberStatus !== null) {
 			conditions.push(eq(members.memberStatus, filters.memberStatus));
 		}
 
@@ -95,7 +95,7 @@ export class MemberManager {
 		const validated = updateMemberSchema.parse(data);
 		const [member] = await db
 			.update(members)
-			.set({ ...validated, updatedAt: new Date() })
+			.set({ ...validated, updatedAt: new Date().toISOString() })
 			.where(eq(members.id, id))
 			.returning();
 		return member || null;
@@ -147,7 +147,7 @@ export class MemberManager {
 			.set({
 				balance: balanceAfter,
 				totalRecharge: totalRechargeAfter,
-				updatedAt: new Date(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(members.id, memberId))
 			.returning();
@@ -165,7 +165,7 @@ export class MemberManager {
 			status: "completed",
 			paymentMethod: paymentMethod,
 			paymentTransactionId: paymentTransactionId,
-			completedAt: new Date(),
+			completedAt: new Date().toISOString(),
 		});
 
 		return updatedMember;
@@ -214,7 +214,7 @@ export class MemberManager {
 			.set({
 				balance: balanceAfter,
 				totalConsumption: totalConsumptionAfter,
-				updatedAt: new Date(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(members.id, memberId))
 			.returning();
@@ -232,7 +232,7 @@ export class MemberManager {
 			status: "completed",
 			paymentMethod: "balance",
 			metadata: metadata,
-			completedAt: new Date(),
+			completedAt: new Date().toISOString(),
 		});
 
 		return updatedMember;
@@ -271,7 +271,7 @@ export class MemberManager {
 			.update(members)
 			.set({
 				points: pointsAfter,
-				updatedAt: new Date(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(members.id, memberId))
 			.returning();
@@ -291,7 +291,7 @@ export class MemberManager {
 				...metadata,
 				pointsChange: points,
 			},
-			completedAt: new Date(),
+			completedAt: new Date().toISOString(),
 		});
 
 		return updatedMember;
@@ -334,7 +334,7 @@ export class MemberManager {
 			.update(members)
 			.set({
 				points: pointsAfter,
-				updatedAt: new Date(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(members.id, memberId))
 			.returning();
@@ -354,7 +354,7 @@ export class MemberManager {
 				...metadata,
 				pointsChange: -points,
 			},
-			completedAt: new Date(),
+			completedAt: new Date().toISOString(),
 		});
 
 		return updatedMember;
@@ -373,7 +373,7 @@ export class MemberManager {
 
 		// 会员等级验证（basic < silver < gold < platinum < diamond）
 		const levelOrder = ["basic", "silver", "gold", "platinum", "diamond"];
-		const currentLevelIndex = levelOrder.indexOf(member.memberLevel);
+		const currentLevelIndex = levelOrder.indexOf(member.memberLevel || "basic");
 		const newLevelIndex = levelOrder.indexOf(newLevel);
 
 		if (currentLevelIndex === -1 || newLevelIndex === -1) {
