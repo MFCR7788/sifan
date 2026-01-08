@@ -27,7 +27,7 @@ export default function ProfilePage() {
 	const { user, logout, refreshUser, isAuthenticated, isLoading } = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editForm, setEditForm] = useState<Partial<User>>({});
-	const [activeTab, setActiveTab] = useState<'info' | 'member' | 'password'>('info');
+	const [activeTab, setActiveTab] = useState<'info' | 'member' | 'password'>('member');
 	const [successMessage, setSuccessMessage] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
 	const [passwordForm, setPasswordForm] = useState({
@@ -40,17 +40,24 @@ export default function ProfilePage() {
 
 	// 获取会员信息
 	useEffect(() => {
-		if (isAuthenticated) {
+		if (isAuthenticated && user) {
 			fetchMemberInfo();
 		}
-	}, [isAuthenticated]);
+	}, [isAuthenticated, user]);
 
 	const fetchMemberInfo = async () => {
 		try {
+			console.log('开始获取会员信息...');
 			const response = await fetch('/api/user/me/member');
+			console.log('会员API响应状态:', response.status);
+
 			if (response.ok) {
 				const data = await response.json();
+				console.log('会员API返回数据:', data);
 				setMember(data.member);
+			} else {
+				const errorText = await response.text();
+				console.error('会员API返回错误:', response.status, errorText);
 			}
 		} catch (error) {
 			console.error('Failed to fetch member:', error);
