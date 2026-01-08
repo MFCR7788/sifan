@@ -3,13 +3,31 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
-import type { User } from '@/storage/database/shared/schema';
+import type { User, Member } from '@/storage/database/shared/schema';
+
+// 会员等级映射
+const MEMBER_LEVEL_MAP: Record<string, string> = {
+	basic: '基础会员',
+	silver: '银牌会员',
+	gold: '金牌会员',
+	platinum: '白金会员',
+	diamond: '钻石会员',
+};
+
+// 会员等级颜色
+const MEMBER_LEVEL_COLOR: Record<string, string> = {
+	basic: 'bg-gray-100 text-gray-700',
+	silver: 'bg-gray-200 text-gray-800',
+	gold: 'bg-yellow-100 text-yellow-700',
+	platinum: 'bg-blue-100 text-blue-700',
+	diamond: 'bg-purple-100 text-purple-700',
+};
 
 export default function ProfilePage() {
 	const { user, logout, refreshUser, isAuthenticated, isLoading } = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editForm, setEditForm] = useState<Partial<User>>({});
-	const [activeTab, setActiveTab] = useState<'info' | 'password'>('info');
+	const [activeTab, setActiveTab] = useState<'info' | 'member' | 'password'>('info');
 	const [successMessage, setSuccessMessage] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
 	const [passwordForm, setPasswordForm] = useState({
@@ -17,6 +35,29 @@ export default function ProfilePage() {
 		newPassword: '',
 		confirmPassword: '',
 	});
+	const [member, setMember] = useState<Member | null>(null);
+	const [isLoadingMember, setIsLoadingMember] = useState(true);
+
+	// 获取会员信息
+	useEffect(() => {
+		if (isAuthenticated) {
+			fetchMemberInfo();
+		}
+	}, [isAuthenticated]);
+
+	const fetchMemberInfo = async () => {
+		try {
+			const response = await fetch('/api/user/me/member');
+			if (response.ok) {
+				const data = await response.json();
+				setMember(data.member);
+			}
+		} catch (error) {
+			console.error('Failed to fetch member:', error);
+		} finally {
+			setIsLoadingMember(false);
+		}
+	};
 
 	useEffect(() => {
 		if (user) {
@@ -85,7 +126,7 @@ export default function ProfilePage() {
 		}
 	};
 
-	if (isLoading) {
+	if (isLoading || isLoadingMember) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				<div className="text-gray-600">加载中...</div>
@@ -151,6 +192,16 @@ export default function ProfilePage() {
 									}`}
 								>
 									个人信息
+								</button>
+								<button
+									onClick={() => setActiveTab('member')}
+									className={`pb-4 px-2 font-medium transition ${
+										activeTab === 'member'
+											? 'text-blue-600 border-b-2 border-blue-600'
+											: 'text-gray-600 hover:text-gray-900'
+									}`}
+								>
+									会员信息
 								</button>
 								<button
 									onClick={() => setActiveTab('password')}
@@ -261,6 +312,91 @@ export default function ProfilePage() {
 											>
 												编辑资料
 											</button>
+										</div>
+									)}
+								</div>
+							)}
+
+							{activeTab === 'member' && (
+								<div className="space-y-6">
+									{member ? (
+										<>
+											{/* 会员等级 */}
+											<div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl text-white">
+												<div className="flex items-center justify-between">
+													<div>
+														<div className="text-sm opacity-90 mb-1">会员等级</div>
+														<div className="text-2xl font-bold">
+															{member.memberLevel ? MEMBER_LEVEL_MAP[member.memberLevel] || '未知等级' : '未知等级'}
+														</div>
+													</div>
+													<div className={`px-4 py-2 rounded-full text-sm font-medium ${member.memberLevel ? MEMBER_LEVEL_COLOR[member.memberLevel] || 'bg-gray-100 text-gray-700' : 'bg-gray-100 text-gray-700'}`}>
+														{member.memberLevel ? member.memberLevel.toUpperCase() : 'UNKNOWN'}
+													</div>
+												</div>
+											</div>
+
+											{/* 会员详情 */}
+											<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+												<div className="bg-gray-50 p-6 rounded-lg">
+													<div className="text-sm text-gray-600 mb-1">会员余额</div>
+													<div className="text-2xl font-bold text-gray-900">
+														¥{(member.balance / 100).toFixed(2)}
+													</div>
+												</div>
+												<div className="bg-gray-50 p-6 rounded-lg">
+													<div className="text-sm text-gray-600 mb-1">会员积分</div>
+													<div className="text-2xl font-bold text-blue-600">
+														{member.points.toLocaleString()}
+													</div>
+												</div>
+												<div className="bg-gray-50 p-6 rounded-lg">
+													<div className="text-sm text-gray-600 mb-1">累计充值</div>
+													<div className="text-lg font-semibold text-gray-900">
+														¥{(member.totalRecharge / 100).toFixed(2)}
+													</div>
+												</div>
+												<div className="bg-gray-50 p-6 rounded-lg">
+													<div className="text-sm text-gray-600 mb-1">累计消费</div>
+													<div className="text-lg font-semibold text-gray-900">
+														¥{(member.totalConsumption / 100).toFixed(2)}
+													</div>
+												</div>
+												<div className="bg-gray-50 p-6 rounded-lg">
+													<div className="text-sm text-gray-600 mb-1">会员状态</div>
+													<div className="text-lg font-semibold text-green-600">
+														{member.memberStatus === 'active' ? '正常' : member.memberStatus}
+													</div>
+												</div>
+												<div className="bg-gray-50 p-6 rounded-lg">
+													<div className="text-sm text-gray-600 mb-1">成为会员时间</div>
+													<div className="text-lg font-semibold text-gray-900">
+														{new Date(member.createdAt).toLocaleDateString('zh-CN')}
+													</div>
+												</div>
+											</div>
+
+											{/* 会员过期时间 */}
+											{member.expiresAt && (
+												<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+													<div className="flex items-center gap-2">
+														<svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+															<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+														</svg>
+														<div>
+															<div className="text-sm text-gray-600">会员过期时间</div>
+															<div className="font-semibold text-blue-700">
+																{new Date(member.expiresAt).toLocaleDateString('zh-CN')}
+															</div>
+														</div>
+													</div>
+												</div>
+											)}
+										</>
+									) : (
+										<div className="text-center py-12 bg-gray-50 rounded-lg">
+											<div className="text-gray-500 mb-4">暂无会员信息</div>
+											<p className="text-sm text-gray-400">请联系管理员开通会员</p>
 										</div>
 									)}
 								</div>
