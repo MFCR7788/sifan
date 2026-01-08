@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { User, Member } from '@/storage/database/shared/schema';
 
 // 会员等级映射
@@ -25,6 +26,7 @@ const MEMBER_LEVEL_COLOR: Record<string, string> = {
 
 export default function ProfilePage() {
 	const { user, logout, refreshUser, isAuthenticated, isLoading } = useAuth();
+	const router = useRouter();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editForm, setEditForm] = useState<Partial<User>>({});
 	const [activeTab, setActiveTab] = useState<'info' | 'member' | 'password'>('member');
@@ -138,6 +140,16 @@ export default function ProfilePage() {
 			setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
 		} catch (err: any) {
 			setErrorMessage(err.message);
+		}
+	};
+
+	const handleLogout = async () => {
+		try {
+			await logout();
+			// 退出登录后跳转到首页
+			router.push('/');
+		} catch (error) {
+			console.error('Logout error:', error);
 		}
 	};
 
@@ -466,7 +478,7 @@ export default function ProfilePage() {
 
 						<div className="bg-gray-50 px-8 py-6 border-t border-gray-200">
 							<button
-								onClick={logout}
+								onClick={handleLogout}
 								className="w-full bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition"
 							>
 								退出登录
