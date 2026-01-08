@@ -115,7 +115,7 @@ export default function PricingPage() {
                       key={plan.id}
                       onClick={() => setSelectedPlan(plan.id)}
                       className={`
-                        p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-middle relative
+                        p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-bottom relative
                         ${selectedPlan === plan.id
                           ? 'border-2 border-blue-600 bg-blue-50 shadow-xl scale-105'
                           : 'border-2 border-gray-200 hover:border-gray-300'
