@@ -8,6 +8,7 @@ import ProductPreview from '@/components/ProductPreview';
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -24,12 +25,19 @@ export default function Home() {
           <div
             className="relative w-[70%] h-[70vh] md:h-[70%] rounded-3xl overflow-hidden shadow-2xl"
           >
-            <img
-              src="/assets/image.png"
-              alt="魔法超人"
-              className="w-full h-full object-cover"
-              style={{ opacity: 1 }}
-            />
+            {!imageError ? (
+              <img
+                src="/assets/image.png"
+                alt="魔法超人"
+                className="w-full h-full object-cover"
+                style={{ opacity: 1 }}
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center">
+                <p className="text-white text-lg">魔法超人 3.0</p>
+              </div>
+            )}
           </div>
         </div>
 
