@@ -7,7 +7,6 @@ import Link from 'next/link';
 interface PricingData {
   '功能名称': string;
   '价格/月': number;
-  '单位'?: string;
   '基础版3.0系统': string;
   '旗舰版3.0系统': string;
   '至尊版3.0': string;
@@ -195,9 +194,7 @@ export default function PricingPage() {
                     <td className="p-6 align-top">
                       <div className="text-base font-medium text-gray-900 mb-1">{item['功能名称']}</div>
                       {item['价格/月'] > 0 && (
-                        <div className="text-sm text-gray-500">
-                          ¥{item['价格/月'] * 12}/{item['单位'] || '年'}
-                        </div>
+                        <div className="text-sm text-gray-500">¥{item['价格/月'] * 12}/年</div>
                       )}
                     </td>
                     {plans.map((plan) => {
