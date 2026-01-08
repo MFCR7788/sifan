@@ -15,7 +15,7 @@ interface PricingData {
 export default function PricingPage() {
   const [data, setData] = useState<PricingData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPlan, setSelectedPlan] = useState<'basic' | 'premium' | 'ultimate'>('premium');
+  const [selectedPlan, setSelectedPlan] = useState<'basic' | 'premium' | 'ultimate' | null>(null);
 
   useEffect(() => {
     fetchPricingData();
@@ -107,7 +107,7 @@ export default function PricingPage() {
               {/* Table Header */}
               <thead>
                 <tr>
-                  <th className="text-left p-6 pb-8 min-w-[200px]">
+                  <th className="text-left p-8 pb-12 min-w-[200px] align-top">
                     <div className="text-2xl font-semibold text-gray-900">功能对比</div>
                   </th>
                   {plans.map((plan) => (
@@ -115,12 +115,23 @@ export default function PricingPage() {
                       key={plan.id}
                       onClick={() => setSelectedPlan(plan.id)}
                       className={`
-                        p-6 pb-8 min-w-[200px] relative cursor-pointer transition-all duration-300
+                        p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-top
                         ${plan.recommended ? 'bg-gray-50' : ''}
                         ${selectedPlan === plan.id ? 'bg-blue-50/50 ring-2 ring-blue-500 ring-offset-2' : ''}
                       `}
                     >
-                      <div className="flex items-center justify-between mb-2">
+                      {plan.recommended && (
+                        <div className="mb-3">
+                          <span className={`px-4 py-1 text-xs font-semibold rounded-full ${
+                            selectedPlan === plan.id
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-gray-900 text-white'
+                          }`}>
+                            推荐
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between mb-3">
                         <div className={`text-2xl font-semibold transition-colors ${
                           selectedPlan === plan.id
                             ? 'text-blue-900'
@@ -142,28 +153,17 @@ export default function PricingPage() {
                           )}
                         </div>
                       </div>
-                      {plan.recommended && (
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                          <span className={`px-4 py-1 text-xs font-semibold rounded-full ${
-                            selectedPlan === plan.id
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-gray-900 text-white'
-                          }`}>
-                            推荐
-                          </span>
-                        </div>
-                      )}
-                      <div className="text-sm text-gray-500 mb-4">{plan.description}</div>
+                      <div className="text-sm text-gray-500 mb-6">{plan.description}</div>
                       <div className={`text-5xl font-bold transition-colors ${
                         selectedPlan === plan.id ? 'text-blue-900' : 'text-gray-900'
                       }`}>
                         ¥{plan.price}
                       </div>
-                      <div className="text-sm text-gray-500">/年</div>
+                      <div className="text-sm text-gray-500 mb-6">/年</div>
                       <Link
                         href={`/configurator?plan=${plan.id}`}
                         className={`
-                          mt-6 inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all
+                          inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all
                           ${plan.recommended || selectedPlan === plan.id
                             ? 'bg-gray-900 text-white hover:bg-gray-800'
                             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
