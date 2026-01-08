@@ -225,15 +225,17 @@ export default function OrderDetailPage() {
                   <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">3</span>
                   核心功能
                 </h2>
-                <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-                  {order.selectedFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span className="text-gray-900">{feature}</span>
-                    </div>
-                  ))}
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {order.selectedFeatures.map((feature, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-gray-900">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -245,15 +247,17 @@ export default function OrderDetailPage() {
                   <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">4</span>
                   增值服务
                 </h2>
-                <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-                  {order.valueServices.map((service, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span className="text-gray-900">{getServiceName(service)}</span>
-                    </div>
-                  ))}
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {order.valueServices.map((service, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-gray-900">{getServiceName(service)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
