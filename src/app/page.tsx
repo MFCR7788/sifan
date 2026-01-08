@@ -70,12 +70,14 @@ export default function Home() {
             >
               了解产品
             </Link>
-            <Link
-              href="/about"
-              className="text-white hover:text-gray-200 hover:underline text-sm transition-all duration-200"
+            <a
+              href="https://mfcr.zjsifan.com/index.php/Retail/Login/register.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group px-8 py-3 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
-              了解更多 &gt;
-            </Link>
+              立即体验
+            </a>
           </div>
         </div>
       </section>
