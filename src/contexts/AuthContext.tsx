@@ -39,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			}
 		} catch (error) {
 			console.error('Failed to fetch user:', error);
+			// 数据库连接失败时，设置为未登录状态，不影响应用运行
 			setUser(null);
 		} finally {
 			setIsLoading(false);
