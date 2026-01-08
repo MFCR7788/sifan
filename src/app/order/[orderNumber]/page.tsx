@@ -298,7 +298,7 @@ export default function OrderDetailPage() {
             {/* 公司信息 */}
             <div className="pt-8 border-t-2 border-gray-100 text-center text-sm text-gray-600">
               <p className="font-semibold text-gray-900 mb-2">浙江思杋服饰有限公司 魔法超人团队</p>
-              <p>如有疑问，请联系客服 4000678558-0</p>
+              <p>如有疑问，请联系客服 400-0678-558</p>
               <p className="mt-2 text-xs text-gray-500">本表单由魔法超人系统自动生成</p>
             </div>
           </div>
