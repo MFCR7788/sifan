@@ -96,7 +96,7 @@ export default function Home() {
             选择最适合您的方案，开启智能之旅
           </p>
           <Link
-            href="/pricing"
+            href="/configurator"
             className="inline-block px-10 py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
           >
             定制您的方案
