@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import ValueProposition from '@/components/ValueProposition';
 import ProductPreview from '@/components/ProductPreview';
+import WeChatPrompt from '@/components/WeChatPrompt';
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -119,6 +120,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* 微信浏览器提示 */}
+      <WeChatPrompt />
     </div>
   );
 }
