@@ -56,7 +56,7 @@ export default function ConfiguratorPage() {
           </p>
           <Link
             href="/solution"
-            className="inline-block px-8 py-3 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-200"
+            className="inline-block px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
           >
             了解定制方案的详细信息
           </Link>

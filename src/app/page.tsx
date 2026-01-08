@@ -63,21 +63,13 @@ export default function Home() {
           <p className="mt-4 text-white font-semibold text-xl md:text-2xl max-w-2xl mx-auto">
             智能驱动，未来已来
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="mt-8 flex justify-center items-center">
             <Link
               href="/pricing"
               className="group px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               了解产品
             </Link>
-            <a
-              href="https://mfcr.zjsifan.com/index.php/Retail/Login/register.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group px-8 py-3 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-200"
-            >
-              立即体验
-            </a>
           </div>
         </div>
       </section>
