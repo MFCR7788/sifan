@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
@@ -24,7 +24,7 @@ interface OrderData {
 	updatedAt: string | null;
 }
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
 	const searchParams = useSearchParams();
 	const orderNumber = searchParams.get('orderNumber');
 
@@ -198,5 +198,20 @@ export default function PaymentSuccessPage() {
 				</div>
 			</div>
 		</div>
+	);
+}
+
+export default function PaymentSuccessPage() {
+	return (
+		<Suspense fallback={
+			<div className="min-h-screen bg-white flex items-center justify-center">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+					<p className="mt-4 text-gray-600">加载中...</p>
+				</div>
+			</div>
+		}>
+			<PaymentSuccessContent />
+		</Suspense>
 	);
 }
