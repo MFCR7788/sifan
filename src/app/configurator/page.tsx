@@ -56,12 +56,9 @@ export default function ConfiguratorPage() {
           </p>
           <Link
             href="/solution"
-            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 hover:underline"
+            className="inline-block px-8 py-3 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-200"
           >
             了解定制方案的详细信息
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
           </Link>
         </div>
       </div>
