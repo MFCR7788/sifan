@@ -95,18 +95,18 @@ export default function Navigation() {
                   </>
                 ) : (
                   <>
-                    <a
-                      href="https://mfcr.zjsifan.com/index.php/Retail/Login/index.html"
+                    <Link
+                      href="/login"
                       className="text-xs text-gray-600 transition-colors hover:opacity-60"
                     >
-                      登录
-                    </a>
-                    <a
-                      href="https://mfcr.zjsifan.com/index.php/Retail/Login/register.html"
+                      系统会员登录
+                    </Link>
+                    <Link
+                      href="/register"
                       className="text-xs bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
                     >
                       注册
-                    </a>
+                    </Link>
                   </>
                 )}
               </div>
@@ -180,18 +180,20 @@ export default function Navigation() {
                   </>
                 ) : (
                   <>
-                    <a
-                      href="https://mfcr.zjsifan.com/index.php/Retail/Login/index.html"
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-3 py-3 text-sm text-gray-600 border-b border-gray-100"
                     >
-                      登录
-                    </a>
-                    <a
-                      href="https://mfcr.zjsifan.com/index.php/Retail/Login/register.html"
+                      系统会员登录
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-3 py-3 text-sm text-blue-600 font-semibold"
                     >
                       注册
-                    </a>
+                    </Link>
                   </>
                 )}
               </div>

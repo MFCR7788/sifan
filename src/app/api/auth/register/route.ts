@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { userManager } from '@/storage/database/userManager';
+import { memberManager } from '@/storage/database';
 import type { InsertUser } from '@/storage/database/shared/schema';
 
 export async function POST(request: NextRequest) {
@@ -24,6 +25,19 @@ export async function POST(request: NextRequest) {
 			phone,
 			avatar,
 		});
+
+		// 自动创建会员账户
+		try {
+			await memberManager.createMember({
+				userId: user.id,
+				memberLevel: 'basic',
+				balance: 0,
+				points: 0,
+			});
+		} catch (memberError) {
+			console.error('Error creating member:', memberError);
+			// 会员创建失败不影响用户注册，只记录错误
+		}
 
 		return NextResponse.json({
 			message: '注册成功',
