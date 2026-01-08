@@ -17,8 +17,10 @@ export default function LoginPage() {
 	// 页面加载时检查是否有保存的登录信息
 	useEffect(() => {
 		const savedPhone = localStorage.getItem('savedLoginPhone');
-		if (savedPhone) {
+		const savedPassword = localStorage.getItem('savedLoginPassword');
+		if (savedPhone && savedPassword) {
 			setPhone(savedPhone);
+			setPassword(savedPassword);
 			setRememberMe(true);
 		}
 	}, []);
@@ -30,14 +32,16 @@ export default function LoginPage() {
 
 		try {
 			await login(phone, password);
-			
-			// 如果勾选了记住密码，保存手机号（出于安全考虑，不保存密码）
+
+			// 如果勾选了记住我，保存手机号和密码
 			if (rememberMe) {
 				localStorage.setItem('savedLoginPhone', phone);
+				localStorage.setItem('savedLoginPassword', password);
 			} else {
 				localStorage.removeItem('savedLoginPhone');
+				localStorage.removeItem('savedLoginPassword');
 			}
-			
+
 			// 如果是admin，跳转到会员管理页面，否则跳转到首页
 			if (isAdmin) {
 				router.push('/admin/members');
