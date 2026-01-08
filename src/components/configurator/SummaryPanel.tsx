@@ -248,11 +248,6 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                 功能费: ¥{config.monthlyFee}/年
               </div>
             )}
-            {config.companionMonths > 0 && (config.selectedFeatures || []).includes('上门陪跑1-2个月') && (
-              <div className="text-sm text-gray-500 mt-1">
-                上门陪跑: ¥{config.companionMonths * 10000} ({config.companionMonths}个月)
-              </div>
-            )}
           </div>
 
           {/* Action Buttons */}

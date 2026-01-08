@@ -84,14 +84,9 @@ const coreModules = [
   }
 ];
 
-const COMPANION_FEATURE_NAME = '上门陪跑1-2个月';
-
 export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev }: ConfiguratorStep2Props) {
   // 判断当前是否为多门店或品牌连锁（功能已包含，不计额外费用）
   const isPremiumOrUltimate = config.platform === 'multi-store' || config.platform === 'brand-chain';
-
-  // 获取或初始化上门陪跑的月份数
-  const companionMonths = config.companionMonths || 0;
 
   // 获取所有核心功能名称
   const getAllFeatureNames = () => {
@@ -115,24 +110,9 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       ? currentFeatures.filter((name: string) => name !== featureName)
       : [...currentFeatures, featureName];
 
-    // 如果是上门陪跑功能，默认选择1个月
-    let updatedCompanionMonths = companionMonths;
-    if (featureName === COMPANION_FEATURE_NAME) {
-      if (!currentFeatures.includes(featureName)) {
-        // 选中上门陪跑，默认1个月
-        updatedCompanionMonths = 1;
-      } else {
-        // 取消上门陪跑，重置月份数
-        updatedCompanionMonths = 0;
-      }
-    }
-
-    // 单店模式下，计算年度费用（不包括上门陪跑，因为它是按月单独计费的）
+    // 单店模式下，计算年度费用
     const basePrice = 2980; // 单店基础价格（年度）
     const yearlyFee = updatedFeatures.reduce((total: number, featureName: string) => {
-      // 跳过上门陪跑，单独计算
-      if (featureName === COMPANION_FEATURE_NAME) return total;
-
       for (const module of coreModules) {
         const feature = module.features.find(f => f.name === featureName);
         if (feature) return total + feature.price * 12; // 乘以12转为年度费用
@@ -140,51 +120,12 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       return total;
     }, 0);
 
-    // 上门陪跑费用 = 月份数 × 单价
-    const companionFee = updatedCompanionMonths * 10000;
-
-    // 总价 = 基础价格 + 年度功能费 + 上门陪跑费
-    const totalPrice = basePrice + yearlyFee + companionFee;
+    // 总价 = 基础价格 + 年度费用（单店模式下）
+    const totalPrice = basePrice + yearlyFee;
 
     updateConfig({
       selectedFeatures: updatedFeatures,
-      companionMonths: updatedCompanionMonths,
-      monthlyFee: yearlyFee, // 字段名保持monthlyFee，但实际存储年度费用（已乘12，不包括上门陪跑）
-      totalPrice: totalPrice
-    });
-  };
-
-  const handleCompanionMonthsChange = (months: number) => {
-    const currentFeatures = config.selectedFeatures || [];
-
-    // 如果上门陪跑未选中，先选中它
-    const updatedFeatures = currentFeatures.includes(COMPANION_FEATURE_NAME)
-      ? currentFeatures
-      : [...currentFeatures, COMPANION_FEATURE_NAME];
-
-    // 单店模式下，计算年度费用（不包括上门陪跑）
-    const basePrice = 2980; // 单店基础价格（年度）
-    const yearlyFee = updatedFeatures.reduce((total: number, featureName: string) => {
-      // 跳过上门陪跑，单独计算
-      if (featureName === COMPANION_FEATURE_NAME) return total;
-
-      for (const module of coreModules) {
-        const feature = module.features.find(f => f.name === featureName);
-        if (feature) return total + feature.price * 12;
-      }
-      return total;
-    }, 0);
-
-    // 上门陪跑费用 = 月份数 × 单价
-    const companionFee = months * 10000;
-
-    // 总价 = 基础价格 + 年度功能费 + 上门陪跑费
-    const totalPrice = basePrice + yearlyFee + companionFee;
-
-    updateConfig({
-      selectedFeatures: updatedFeatures,
-      companionMonths: months,
-      monthlyFee: yearlyFee,
+      monthlyFee: yearlyFee, // 字段名保持monthlyFee，但实际存储年度费用（已乘12）
       totalPrice: totalPrice
     });
   };
@@ -248,8 +189,6 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {module.features.map((feature, index) => {
                       const isSelected = isFeatureSelected(feature.name);
-                      const isCompanionFeature = feature.name === COMPANION_FEATURE_NAME;
-
                       return (
                         <div
                           key={index}
@@ -279,36 +218,12 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                             </div>
                             <div className="flex-1">
                               <div className="text-gray-900">{feature.name}</div>
-                              {feature.price > 0 && !isCompanionFeature && (
+                              {feature.price > 0 && (
                                 <div className={`font-medium mt-1 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
                                   ¥{feature.price * 12}/年
                                   {isPremiumOrUltimate && isSelected && (
                                     <span className="text-green-600 ml-1">(已包含)</span>
                                   )}
-                                </div>
-                              )}
-                              {isCompanionFeature && isSelected && !isPremiumOrUltimate && (
-                                <div className="mt-2">
-                                  <div className={`font-medium ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
-                                    ¥10000/月
-                                  </div>
-                                  <select
-                                    value={companionMonths}
-                                    onChange={(e) => {
-                                      e.stopPropagation();
-                                      handleCompanionMonthsChange(Number(e.target.value));
-                                    }}
-                                    className="mt-2 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                  >
-                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
-                                      <option key={m} value={m}>{m}个月</option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
-                              {isCompanionFeature && !isSelected && (
-                                <div className={`font-medium mt-1 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
-                                  ¥10000/月
                                 </div>
                               )}
                             </div>
