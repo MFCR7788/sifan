@@ -146,54 +146,20 @@ export default function OrderDetailPage() {
   const handlePrint = () => {
     setPrinting(true);
 
-    // 创建页脚元素
-    const footer = document.createElement('div');
-    footer.id = 'print-footer';
-    footer.innerHTML = `
-      <div class="print-footer-content">
-        <span class="print-company">浙江思杋服饰有限公司 魔法超人团队</span>
-        <span class="print-phone">客服电话: 400-0678-558</span>
-        <span class="print-page-numbers"></span>
-      </div>
-    `;
-    document.body.appendChild(footer);
-
-    // 添加打印样式
+    // 添加打印样式（移除页眉页脚）
     const style = document.createElement('style');
     style.id = 'print-style';
     style.textContent = `
       @media print {
+        @page {
+          margin: 10mm;
+          size: A4;
+        }
         body {
           background: white !important;
-          counter-reset: page;
-        }
-        #print-footer {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          z-index: 1000;
-          background: white;
-          padding: 4mm 15mm 8mm;
-          border-top: 1px solid #e5e7eb;
-        }
-        #print-footer .print-footer-content {
-          text-align: center;
-          font-size: 9pt;
-          color: #666;
-        }
-        #print-footer .print-company,
-        #print-footer .print-phone {
-          margin: 0 10px;
-        }
-        #print-footer .print-page-numbers::after {
-          content: "第 " counter(page) " 页";
-          margin-left: 10px;
         }
         .print-area {
           padding: 0 !important;
-          margin-top: 10mm !important;
-          margin-bottom: 20mm !important;
         }
         .print-area > div > div {
           box-shadow: none !important;
@@ -203,21 +169,15 @@ export default function OrderDetailPage() {
           grid-template-columns: repeat(3, 1fr) !important;
           gap: 0.75rem !important;
         }
-        @page {
-          margin: 0;
-          size: A4;
-        }
       }
     `;
     document.head.appendChild(style);
 
     window.print();
 
-    // 清理打印样式和元素
+    // 清理打印样式
     setTimeout(() => {
-      const printFooter = document.getElementById('print-footer');
       const printStyle = document.getElementById('print-style');
-      if (printFooter) printFooter.remove();
       if (printStyle) printStyle.remove();
       setPrinting(false);
     }, 100);
