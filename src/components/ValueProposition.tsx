@@ -112,7 +112,7 @@ export default function ValueProposition() {
             rel="noopener noreferrer"
             className="inline-block px-10 py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
           >
-            立即体验
+            立即体验试用版
           </a>
         </div>
       </div>
