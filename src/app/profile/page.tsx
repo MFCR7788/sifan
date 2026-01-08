@@ -58,7 +58,9 @@ export default function ProfilePage() {
 			if (response.ok) {
 				const data = await response.json();
 				console.log('会员API返回数据:', data);
-				setMember(data.member);
+				if (data.member) {
+					setMember(data.member);
+				}
 			} else {
 				const errorText = await response.text();
 				console.error('会员API返回错误:', response.status, errorText);
@@ -406,11 +408,6 @@ export default function ProfilePage() {
 												</div>
 											)}
 										</>
-									) : (
-										<div className="text-center py-12 bg-gray-50 rounded-lg">
-											<div className="text-gray-500 mb-4">暂无会员信息</div>
-											<p className="text-sm text-gray-400">请联系管理员开通会员</p>
-										</div>
 									)}
 								</div>
 							)}
