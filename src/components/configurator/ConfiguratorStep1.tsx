@@ -71,9 +71,14 @@ export default function ConfiguratorStep1({ config, updateConfig, onNext }: Conf
     // 自动选择对应版本的所有功能
     const features = versionFeatures[scenarioId as keyof typeof versionFeatures] || [];
 
+    // 如果包含上门陪跑功能，设置companionMonths
+    const hasCompanionFeature = features.includes('上门陪跑1-2个月');
+    const companionMonths = hasCompanionFeature ? 1 : 0;
+
     updateConfig({
       platform: scenarioId,
       selectedFeatures: features,
+      companionMonths: companionMonths,
       totalPrice: selectedScenario?.price || 0
     });
   };
