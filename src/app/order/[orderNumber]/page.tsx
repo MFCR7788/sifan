@@ -55,8 +55,114 @@ export default function OrderDetailPage() {
 
   const handlePrint = () => {
     setPrinting(true);
+
+    // 创建页眉元素
+    const header = document.createElement('div');
+    header.id = 'print-header';
+    header.innerHTML = `
+      <div class="print-header-content">
+        魔法超人 3.0 - 定制方案订单表单<br/>
+        <span class="print-order-number">订单号: ${order?.orderNumber || ''}</span>
+      </div>
+    `;
+    document.body.prepend(header);
+
+    // 创建页脚元素
+    const footer = document.createElement('div');
+    footer.id = 'print-footer';
+    footer.innerHTML = `
+      <div class="print-footer-content">
+        <span class="print-company">浙江思杋服饰有限公司 魔法超人团队</span>
+        <span class="print-phone">客服电话: 400-0678-558</span>
+        <span class="print-page-numbers"></span>
+      </div>
+    `;
+    document.body.appendChild(footer);
+
+    // 添加打印样式
+    const style = document.createElement('style');
+    style.id = 'print-style';
+    style.textContent = `
+      @media print {
+        body {
+          background: white !important;
+          counter-reset: page;
+        }
+        #print-header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          background: white;
+          padding: 8mm 15mm 4mm;
+          border-bottom: 2px solid #e5e7eb;
+        }
+        #print-header .print-header-content {
+          text-align: center;
+          font-size: 14pt;
+          font-weight: bold;
+        }
+        #print-header .print-order-number {
+          font-size: 11pt;
+          font-weight: normal;
+        }
+        #print-footer {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          background: white;
+          padding: 4mm 15mm 8mm;
+          border-top: 1px solid #e5e7eb;
+        }
+        #print-footer .print-footer-content {
+          text-align: center;
+          font-size: 9pt;
+          color: #666;
+        }
+        #print-footer .print-company,
+        #print-footer .print-phone {
+          margin: 0 10px;
+        }
+        #print-footer .print-page-numbers::after {
+          content: "第 " counter(page) " 页";
+          margin-left: 10px;
+        }
+        .print-area {
+          padding: 0 !important;
+          margin-top: 30mm !important;
+          margin-bottom: 20mm !important;
+        }
+        .print-area > div > div {
+          box-shadow: none !important;
+          border: 1px solid #e5e7eb;
+        }
+        .print-area > div > div .grid {
+          grid-template-columns: repeat(3, 1fr) !important;
+          gap: 0.75rem !important;
+        }
+        @page {
+          margin: 0;
+          size: A4;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
     window.print();
-    setTimeout(() => setPrinting(false), 1000);
+
+    // 清理打印样式和元素
+    setTimeout(() => {
+      const printHeader = document.getElementById('print-header');
+      const printFooter = document.getElementById('print-footer');
+      const printStyle = document.getElementById('print-style');
+      if (printHeader) printHeader.remove();
+      if (printFooter) printFooter.remove();
+      if (printStyle) printStyle.remove();
+      setPrinting(false);
+    }, 100);
   };
 
   const formatDate = (dateString: string) => {
@@ -305,7 +411,7 @@ export default function OrderDetailPage() {
         </div>
       </div>
 
-      {/* 打印样式 */}
+      {/* 打印样式 - 基础样式，详细打印样式在 JS 中动态添加 */}
       <style jsx global>{`
         @media print {
           body {
@@ -318,13 +424,9 @@ export default function OrderDetailPage() {
             box-shadow: none !important;
             border: 1px solid #e5e7eb;
           }
-          /* 打印时强制显示三栏 */
           .print-area > div > div .grid {
             grid-template-columns: repeat(3, 1fr) !important;
             gap: 0.75rem !important;
-          }
-          @page {
-            margin: 20px;
           }
         }
       `}</style>
