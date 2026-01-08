@@ -107,7 +107,7 @@ export default function PricingPage() {
               {/* Table Header */}
               <thead>
                 <tr>
-                  <th className="text-left p-8 pb-12 min-w-[200px] align-top">
+                  <th className="text-center p-8 pb-12 min-w-[200px] align-top">
                     <div className="text-2xl font-semibold text-gray-900">功能对比</div>
                   </th>
                   {plans.map((plan) => (
@@ -115,7 +115,7 @@ export default function PricingPage() {
                       key={plan.id}
                       onClick={() => setSelectedPlan(plan.id)}
                       className={`
-                        p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-top
+                        p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-bottom
                         ${plan.recommended ? 'bg-gray-50' : ''}
                         ${selectedPlan === plan.id ? 'bg-blue-50/50 ring-2 ring-blue-500 ring-offset-2' : ''}
                       `}
@@ -164,7 +164,7 @@ export default function PricingPage() {
                         href={`/configurator?plan=${plan.id}`}
                         className={`
                           inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all
-                          ${plan.recommended || selectedPlan === plan.id
+                          ${selectedPlan === plan.id
                             ? 'bg-gray-900 text-white hover:bg-gray-800'
                             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                           }
