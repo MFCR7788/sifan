@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { memberManager } from '@/storage/database/memberManager';
+import { userManager } from '@/storage/database/userManager';
 
 export async function GET(request: NextRequest) {
 	try {
@@ -17,6 +18,10 @@ export async function GET(request: NextRequest) {
 		// 如果会员不存在，自动创建基础会员
 		if (!member) {
 			try {
+				// 获取用户信息，使用用户注册时间作为成为会员的时间
+				const user = await userManager.getUserById(userId);
+				const createdAt = user?.createdAt || new Date().toISOString();
+
 				member = await memberManager.createMember({
 					userId,
 					memberLevel: 'basic',
@@ -25,6 +30,7 @@ export async function GET(request: NextRequest) {
 					totalRecharge: 0,
 					totalConsumption: 0,
 					memberStatus: 'active',
+					createdAt, // 使用用户注册时间
 				});
 			} catch (createError) {
 				console.error('Auto-create member error:', createError);

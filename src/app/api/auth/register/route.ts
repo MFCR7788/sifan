@@ -45,13 +45,17 @@ export async function POST(request: NextRequest) {
 			avatar,
 		});
 
-		// 自动创建会员账户
+		// 自动创建会员账户，使用用户注册时间作为成为会员的时间
 		try {
 			await memberManager.createMember({
 				userId: user.id,
 				memberLevel: 'basic',
 				balance: 0,
 				points: 0,
+				totalRecharge: 0,
+				totalConsumption: 0,
+				memberStatus: 'active',
+				createdAt: user.createdAt, // 使用用户注册时间
 			});
 		} catch (memberError) {
 			console.error('Error creating member:', memberError);

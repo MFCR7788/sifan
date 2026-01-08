@@ -112,6 +112,7 @@ export const insertMemberSchema = createCoercedInsertSchema(members).pick({
 	memberStatus: true,
 	expiresAt: true,
 	metadata: true,
+	createdAt: true,
 });
 
 export const updateMemberSchema = createCoercedInsertSchema(members)
