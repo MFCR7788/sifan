@@ -19,6 +19,7 @@ export const users = pgTable("users", {
 	password: text().notNull(),
 	phone: varchar({ length: 20 }),
 	avatar: varchar({ length: 500 }),
+	isAdmin: boolean("is_admin").default(false).notNull(),
 	isActive: boolean().default(true).notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
@@ -170,6 +171,8 @@ export const insertUserSchema = createCoercedInsertSchema(users).pick({
 	password: true,
 	phone: true,
 	avatar: true,
+	isAdmin: true,
+	isActive: true,
 });
 
 export const updateUserSchema = createCoercedInsertSchema(users)
@@ -178,6 +181,7 @@ export const updateUserSchema = createCoercedInsertSchema(users)
 		name: true,
 		phone: true,
 		avatar: true,
+		isAdmin: true,
 		isActive: true,
 	})
 	.partial();

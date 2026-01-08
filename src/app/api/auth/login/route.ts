@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { userManager } from '@/storage/database/userManager';
+import bcrypt from 'bcrypt';
+
+// 硬编码的admin账户
+const ADMIN_EMAIL = 'admin@magic-superman.com';
+const ADMIN_PASSWORD_HASH = '$2b$10$hashedPasswordPlaceholder'; // 稍后会设置
 
 export async function POST(request: NextRequest) {
 	try {
@@ -13,8 +18,28 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		// 验证用户登录
-		const user = await userManager.login(email, password);
+		let user;
+
+		// 检查是否是admin账户
+		if (email === ADMIN_EMAIL) {
+			// 验证admin密码
+			const isValidAdmin = password === 'Qf229888777';
+
+			if (isValidAdmin) {
+				// 创建临时的admin用户对象
+				user = {
+					id: 'admin-id',
+					email: ADMIN_EMAIL,
+					name: 'Admin',
+					isAdmin: true,
+					isActive: true,
+					createdAt: new Date().toISOString(),
+				};
+			}
+		} else {
+			// 验证普通用户登录
+			user = await userManager.login(email, password);
+		}
 		
 		if (!user) {
 			return NextResponse.json(

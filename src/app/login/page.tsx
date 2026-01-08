@@ -10,7 +10,7 @@ export default function LoginPage() {
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
-	const { login } = useAuth();
+	const { login, isAdmin } = useAuth();
 	const router = useRouter();
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -20,7 +20,12 @@ export default function LoginPage() {
 
 		try {
 			await login(email, password);
-			router.push('/');
+			// 如果是admin，跳转到会员管理页面，否则跳转到首页
+			if (isAdmin) {
+				router.push('/admin/members');
+			} else {
+				router.push('/');
+			}
 		} catch (err: any) {
 			setError(err.message || '登录失败');
 		} finally {

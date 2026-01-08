@@ -7,6 +7,7 @@ interface AuthContextType {
 	user: User | null;
 	isLoading: boolean;
 	isAuthenticated: boolean;
+	isAdmin: boolean;
 	login: (email: string, password: string) => Promise<void>;
 	register: (data: {
 		email: string;
@@ -26,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	const [isLoading, setIsLoading] = useState(true);
 
 	const isAuthenticated = !!user;
+	const isAdmin = user?.isAdmin || false;
 
 	// 获取当前用户信息
 	const refreshUser = async () => {
@@ -113,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				user,
 				isLoading,
 				isAuthenticated,
+				isAdmin,
 				login,
 				register,
 				logout,
