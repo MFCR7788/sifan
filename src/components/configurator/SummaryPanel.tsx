@@ -243,6 +243,11 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
               ¥{config.totalPrice.toLocaleString()}
               <span className="text-lg font-normal text-gray-600 ml-1">/年</span>
             </div>
+            {config.monthlyFee > 0 && (
+              <div className="text-sm text-gray-500 mt-1">
+                功能费: ¥{config.monthlyFee}/年
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
