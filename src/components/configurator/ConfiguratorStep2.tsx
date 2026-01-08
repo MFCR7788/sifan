@@ -110,22 +110,22 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
       ? currentFeatures.filter((name: string) => name !== featureName)
       : [...currentFeatures, featureName];
 
-    // 单店模式下，计算月度费用
+    // 单店模式下，计算年度费用
     const basePrice = 2980; // 单店基础价格（年度）
-    const monthlyFee = updatedFeatures.reduce((total: number, featureName: string) => {
+    const yearlyFee = updatedFeatures.reduce((total: number, featureName: string) => {
       for (const module of coreModules) {
         const feature = module.features.find(f => f.name === featureName);
-        if (feature) return total + feature.price;
+        if (feature) return total + feature.price * 12; // 乘以12转为年度费用
       }
       return total;
     }, 0);
 
-    // 总价 = 基础价格 + 月度费用（单店模式下）
-    const totalPrice = basePrice + monthlyFee;
+    // 总价 = 基础价格 + 年度费用（单店模式下）
+    const totalPrice = basePrice + yearlyFee;
 
     updateConfig({
       selectedFeatures: updatedFeatures,
-      monthlyFee: monthlyFee,
+      monthlyFee: yearlyFee, // 字段名保持monthlyFee，但实际存储年度费用（已乘12）
       totalPrice: totalPrice
     });
   };
@@ -220,7 +220,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                               <div className="text-gray-900">{feature.name}</div>
                               {feature.price > 0 && (
                                 <div className={`font-medium mt-1 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
-                                  ¥{feature.price}/月
+                                  ¥{feature.price * 12}/年
                                   {isPremiumOrUltimate && isSelected && (
                                     <span className="text-green-600 ml-1">(已包含)</span>
                                   )}
@@ -240,10 +240,10 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                       已选{selectedCount}项
                     </div>
                     <div className="text-2xl font-bold text-blue-600">
-                      {isPremiumOrUltimate ? '已包含' : `¥${moduleMonthlyPrice}`}
+                      {isPremiumOrUltimate ? '已包含' : `¥${moduleMonthlyPrice * 12}`}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {isPremiumOrUltimate ? '' : '/月'}
+                      {isPremiumOrUltimate ? '' : '/年'}
                     </div>
                   </div>
                 )}

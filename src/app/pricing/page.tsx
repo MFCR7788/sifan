@@ -174,7 +174,7 @@ export default function PricingPage() {
                     <div className="flex-1">
                       <div className="text-lg font-medium text-gray-900">{item['功能名称']}</div>
                       {monthlyPrice > 0 && (
-                        <div className="text-sm text-gray-500 mt-1">¥{monthlyPrice}/月</div>
+                        <div className="text-sm text-gray-500 mt-1">¥{monthlyPrice * 12}/年</div>
                       )}
                     </div>
                     <div className="ml-4 flex-shrink-0">

@@ -245,7 +245,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
             </div>
             {config.monthlyFee > 0 && (
               <div className="text-sm text-gray-500 mt-1">
-                功能费: ¥{config.monthlyFee}/月
+                功能费: ¥{config.monthlyFee}/年
               </div>
             )}
           </div>
