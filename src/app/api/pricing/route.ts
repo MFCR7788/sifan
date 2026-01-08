@@ -17,6 +17,16 @@ export async function GET() {
     // 转换为JSON（带表头）
     const data = XLSX.utils.sheet_to_json(worksheet) as any[];
 
+    // 更新特定功能的价格
+    data.forEach((item: any) => {
+      if (item['功能名称'] === '区域合伙人（新）') {
+        item['价格/月'] = 500; // 6000 / 12 = 500
+      }
+      if (item['功能名称'] === '多平台抓单') {
+        item['价格/月'] = 8000; // 96000 / 12 = 8000
+      }
+    });
+
     return NextResponse.json({
       success: true,
       data: data
