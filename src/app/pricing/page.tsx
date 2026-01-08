@@ -190,22 +190,13 @@ export default function PricingPage() {
                     </td>
                     {plans.map((plan) => {
                       const value = item[plan.columnKey];
-                      const isSelected = selectedPlan === plan.id;
                       return (
                         <td
                           key={plan.id}
-                          onClick={() => setSelectedPlan(plan.id)}
-                          className={`
-                            p-6 align-top text-center cursor-pointer transition-all duration-300
-                            ${plan.recommended ? 'bg-gray-50' : ''}
-                            ${isSelected ? 'bg-blue-50/50 ring-2 ring-blue-500 ring-offset-2' : ''}
-                          `}
+                          className="p-6 align-top text-center"
                         >
                           {isSupported(value) ? (
-                            <div className={`
-                              flex items-center justify-center w-8 h-8 mx-auto rounded-full transition-all duration-300
-                              ${isSelected ? 'bg-blue-500 text-white scale-110' : 'bg-gray-900 text-white'}
-                            `}>
+                            <div className="flex items-center justify-center w-8 h-8 mx-auto rounded-full bg-gray-900 text-white">
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                               </svg>
@@ -217,10 +208,7 @@ export default function PricingPage() {
                               </svg>
                             </div>
                           ) : (
-                            <span className={`
-                              transition-colors duration-300
-                              ${isSelected ? 'text-blue-900 font-medium' : 'text-gray-600'}
-                            `}>{value}</span>
+                            <span className="text-gray-600">{value}</span>
                           )}
                         </td>
                       );
