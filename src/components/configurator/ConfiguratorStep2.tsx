@@ -59,7 +59,7 @@ const coreModules = [
     description: '打通线上线下一盘货，实时同步库存数据',
     features: [
       { name: '进销存', price: 0 },
-      { name: '多平台抓单', price: 300 }
+      { name: '多平台抓单', price: 10000 }
     ],
     icon: '📦'
   },
@@ -78,7 +78,7 @@ const coreModules = [
     description: '智能化功能，提升运营效率',
     features: [
       { name: '开放接口', price: 150 },
-      { name: '区域合伙人（新）', price: 200 },
+      { name: '区域合伙人（新）', price: 5000 },
       { name: '电子发票', price: 50 },
       { name: '上门陪跑1-2个月', price: 10000 }
     ],
