@@ -3,7 +3,7 @@ import { userManager } from '@/storage/database/userManager';
 import bcrypt from 'bcrypt';
 
 // 硬编码的admin账户
-const ADMIN_PHONE = 'admin';
+const ADMIN_PHONE = '15967675767';
 const ADMIN_EMAIL = 'admin@magic-superman.com';
 
 export async function POST(request: NextRequest) {
