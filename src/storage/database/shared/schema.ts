@@ -194,7 +194,6 @@ export const loginSchema = z.object({
 
 // Orders 表的验证 schema
 export const insertOrderSchema = createCoercedInsertSchema(orders).pick({
-	orderNumber: true,
 	customerName: true,
 	customerPhone: true,
 	customerEmail: true,
