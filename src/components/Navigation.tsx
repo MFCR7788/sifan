@@ -14,11 +14,6 @@ const navItems = [
   { name: '联系', href: '/contact' },
 ];
 
-// 仅在登录时显示的菜单项
-const authenticatedNavItems = [
-  { name: '应用', href: '/dashboard' },
-];
-
 export default function Navigation() {
   const pathname = usePathname();
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -61,25 +56,6 @@ export default function Navigation() {
           <div className="hidden md:flex items-center space-x-8">
             <div className="flex items-baseline space-x-8">
               {navItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`
-                      text-xs transition-colors hover:opacity-60
-                      ${isActive
-                        ? 'text-gray-900 font-semibold'
-                        : 'text-gray-600'
-                      }
-                    `}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
-              {/* 仅在登录时显示的菜单项 */}
-              {!isLoading && isAuthenticated && authenticatedNavItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
                   <Link
@@ -173,27 +149,6 @@ export default function Navigation() {
                 </Link>
               );
             })}
-            {/* 仅在登录时显示的菜单项 */}
-            {!isLoading && isAuthenticated && authenticatedNavItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`
-                    block px-3 py-3 text-sm transition-colors border-b border-gray-100
-                    ${isActive
-                      ? 'text-gray-900 font-semibold'
-                      : 'text-gray-600'
-                    }
-                  `}
-                >
-                  {item.name}
-                </Link>
-              );
-            })}
-
             {/* Mobile Auth Links */}
             {!isLoading && (
               <div className="mt-4 pt-4 border-t border-gray-200">
