@@ -43,8 +43,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				console.log('AuthContext: 用户信息:', data.user);
 				setUser(data.user);
 			} else {
-				const errorText = await response.text();
-				console.error('AuthContext: 用户API错误:', response.status, errorText);
+				// 401表示未登录，这是正常状态，不需要打印错误日志
+				if (response.status === 401) {
+					console.log('AuthContext: 用户未登录');
+				} else {
+					const errorText = await response.text();
+					console.error('AuthContext: 用户API错误:', response.status, errorText);
+				}
 				setUser(null);
 			}
 		} catch (error) {
