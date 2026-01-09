@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
 				totalRecharge: 0,
 				totalConsumption: 0,
 				memberStatus: 'active',
-				createdAt: user.createdAt, // 使用用户注册时间
 			});
 		} catch (memberError) {
 			console.error('Error creating member:', memberError);

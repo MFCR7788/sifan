@@ -30,7 +30,6 @@ export async function GET(request: NextRequest) {
 					totalRecharge: 0,
 					totalConsumption: 0,
 					memberStatus: 'active',
-					createdAt, // 使用用户注册时间
 				});
 			} catch (createError) {
 				console.error('Auto-create member error:', createError);

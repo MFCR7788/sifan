@@ -1,7 +1,7 @@
 import { eq, and, SQL } from "drizzle-orm";
 import { getDb } from "coze-coding-dev-sdk";
 import { users, insertUserSchema, updateUserSchema, loginSchema } from "./shared/schema";
-import type { User, InsertUser, UpdateUser, LoginData } from "./shared/schema";
+import type { User, InsertUser, UpdateUser } from "./shared/schema";
 import bcrypt from "bcrypt";
 
 export class UserManager {
