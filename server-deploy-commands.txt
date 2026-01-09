@@ -1,0 +1,20 @@
+#!/bin/bash
+# 阿里云服务器部署命令
+
+# 1. 进入项目目录
+cd /root/sifan
+
+# 2. 给脚本添加执行权限
+chmod +x deploy-nginx-config.sh check-deployment.sh
+
+# 3. 部署Nginx配置
+./deploy-nginx-config.sh
+
+# 4. 检查部署状态
+./check-deployment.sh
+
+# 5. 验证域名访问
+echo "现在可以访问："
+echo "  - http://42.121.218.14"
+echo "  - http://www.zjsifan.com"
+echo "  - http://zjsifan.com"
