@@ -98,7 +98,6 @@ export default function DashboardPage() {
 										alt="Logo"
 										className="w-6 h-6"
 									/>
-									<span className="font-semibold text-gray-900">业务管理</span>
 								</div>
 							)}
 							<button

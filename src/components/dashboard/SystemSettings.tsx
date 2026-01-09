@@ -331,7 +331,7 @@ export default function SystemSettings() {
 										alt="Logo"
 										className="w-20 h-20 mx-auto mb-4"
 									/>
-									<h3 className="text-2xl font-bold text-gray-900">魔法超人业务管理系统</h3>
+									<h3 className="text-2xl font-bold text-gray-900">系统管理</h3>
 									<p className="text-gray-600 mt-2">版本 1.0.0</p>
 								</div>
 
