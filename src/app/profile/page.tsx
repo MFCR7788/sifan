@@ -15,15 +15,6 @@ const MEMBER_LEVEL_MAP: Record<string, string> = {
 	diamond: '钻石会员',
 };
 
-// 会员等级颜色
-const MEMBER_LEVEL_COLOR: Record<string, string> = {
-	basic: 'bg-gray-100 text-gray-700',
-	silver: 'bg-gray-200 text-gray-800',
-	gold: 'bg-yellow-100 text-yellow-700',
-	platinum: 'bg-blue-100 text-blue-700',
-	diamond: 'bg-purple-100 text-purple-700',
-};
-
 export default function ProfilePage() {
 	const { user, logout, refreshUser, isAuthenticated, isLoading } = useAuth();
 	const router = useRouter();
@@ -42,30 +33,22 @@ export default function ProfilePage() {
 
 	// 获取会员信息
 	useEffect(() => {
-		console.log('会员信息useEffect触发:', { isAuthenticated, user });
 		if (isAuthenticated && user) {
-			console.log('开始获取会员信息...');
 			fetchMemberInfo();
 		}
 	}, [isAuthenticated, user]);
 
 	const fetchMemberInfo = async () => {
 		try {
-			console.log('开始获取会员信息...');
 			const response = await fetch('/api/user/me/member', {
-				credentials: 'include', // 重要：包含Cookie
+				credentials: 'include',
 			});
-			console.log('会员API响应状态:', response.status);
 
 			if (response.ok) {
 				const data = await response.json();
-				console.log('会员API返回数据:', data);
 				if (data.member) {
 					setMember(data.member);
 				}
-			} else {
-				const errorText = await response.text();
-				console.error('会员API返回错误:', response.status, errorText);
 			}
 		} catch (error) {
 			console.error('Failed to fetch member:', error);
@@ -146,7 +129,6 @@ export default function ProfilePage() {
 	const handleLogout = async () => {
 		try {
 			await logout();
-			// 退出登录后跳转到首页
 			router.push('/');
 		} catch (error) {
 			console.error('Logout error:', error);
@@ -163,12 +145,12 @@ export default function ProfilePage() {
 
 	if (!isAuthenticated) {
 		return (
-			<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+			<div className="min-h-screen flex items-center justify-center">
 				<div className="text-center">
-					<h1 className="text-2xl font-bold text-gray-900 mb-4">请先登录</h1>
+					<h1 className="text-4xl font-semibold text-gray-900 mb-4">请先登录</h1>
 					<Link
 						href="/login"
-						className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
+						className="inline-block bg-gray-900 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200"
 					>
 						前往登录
 					</Link>
@@ -178,313 +160,300 @@ export default function ProfilePage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-			<div className="container mx-auto px-4 py-8">
-				<div className="max-w-4xl mx-auto">
-					<div className="mb-8">
-						<Link
-							href="/"
-							className="text-gray-500 hover:text-gray-700 text-sm inline-flex items-center"
+		<div className="min-h-screen bg-white">
+			<div className="max-w-[980px] mx-auto px-4 py-16">
+				{/* Back Link */}
+				<div className="mb-12">
+					<Link
+						href="/"
+						className="text-xs text-gray-600 hover:text-gray-900 inline-flex items-center gap-1 transition-colors"
+					>
+						← 首页
+					</Link>
+				</div>
+
+				{/* Header */}
+				<div className="mb-16">
+					<h1 className="text-5xl md:text-6xl font-semibold text-gray-900 tracking-tight mb-4">
+						个人中心
+					</h1>
+					<p className="text-xl text-gray-600">
+						管理您的账户信息
+					</p>
+				</div>
+
+				{/* Messages */}
+				{successMessage && (
+					<div className="bg-green-50 text-green-700 px-6 py-4 rounded-lg mb-6">
+						{successMessage}
+					</div>
+				)}
+
+				{errorMessage && (
+					<div className="bg-red-50 text-red-700 px-6 py-4 rounded-lg mb-6">
+						{errorMessage}
+					</div>
+				)}
+
+				{/* Tabs */}
+				<div className="border-b border-gray-200 mb-12">
+					<div className="flex gap-8">
+						<button
+							onClick={() => setActiveTab('info')}
+							className={`pb-4 text-sm font-medium transition-all duration-200 ${
+								activeTab === 'info'
+									? 'text-gray-900 border-b-2 border-gray-900'
+									: 'text-gray-600 hover:text-gray-900'
+							}`}
 						>
-							← 返回首页
-						</Link>
+							个人信息
+						</button>
+						<button
+							onClick={() => setActiveTab('member')}
+							className={`pb-4 text-sm font-medium transition-all duration-200 ${
+								activeTab === 'member'
+									? 'text-gray-900 border-b-2 border-gray-900'
+									: 'text-gray-600 hover:text-gray-900'
+							}`}
+						>
+							会员信息
+						</button>
+						<button
+							onClick={() => setActiveTab('password')}
+							className={`pb-4 text-sm font-medium transition-all duration-200 ${
+								activeTab === 'password'
+									? 'text-gray-900 border-b-2 border-gray-900'
+									: 'text-gray-600 hover:text-gray-900'
+							}`}
+						>
+							修改密码
+						</button>
 					</div>
+				</div>
 
-					<div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-						<div className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white">
-							<h1 className="text-3xl font-bold mb-2">个人中心</h1>
-							<p className="opacity-90">管理您的账户信息和设置</p>
-						</div>
-
-						{successMessage && (
-							<div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 mx-8 mt-6 rounded-lg">
-								{successMessage}
-							</div>
-						)}
-
-						{errorMessage && (
-							<div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 mx-8 mt-6 rounded-lg">
-								{errorMessage}
-							</div>
-						)}
-
-						<div className="p-8">
-							<div className="flex space-x-4 border-b border-gray-200 mb-6">
-								<button
-									onClick={() => setActiveTab('info')}
-									className={`pb-4 px-2 font-medium transition ${
-										activeTab === 'info'
-											? 'text-blue-600 border-b-2 border-blue-600'
-											: 'text-gray-600 hover:text-gray-900'
-									}`}
-								>
-									个人信息
-								</button>
-								<button
-									onClick={() => setActiveTab('member')}
-									className={`pb-4 px-2 font-medium transition ${
-										activeTab === 'member'
-											? 'text-blue-600 border-b-2 border-blue-600'
-											: 'text-gray-600 hover:text-gray-900'
-									}`}
-								>
-									会员信息
-								</button>
-								<button
-									onClick={() => setActiveTab('password')}
-									className={`pb-4 px-2 font-medium transition ${
-										activeTab === 'password'
-											? 'text-blue-600 border-b-2 border-blue-600'
-											: 'text-gray-600 hover:text-gray-900'
-									}`}
-								>
-									修改密码
-								</button>
-							</div>
-
-							{activeTab === 'info' && (
-								<div className="space-y-6">
-									{isEditing ? (
-										<div className="space-y-4">
-											<div>
-												<label className="block text-sm font-medium text-gray-700 mb-2">
-													姓名
-												</label>
-												<input
-													type="text"
-													value={editForm.name || ''}
-													onChange={(e) =>
-														setEditForm({ ...editForm, name: e.target.value })
-													}
-													className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-												/>
-											</div>
-											<div>
-												<label className="block text-sm font-medium text-gray-700 mb-2">
-													邮箱（不可修改）
-												</label>
-												<input
-													type="email"
-													value={user?.email || ''}
-													disabled
-													className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-												/>
-											</div>
-											<div>
-												<label className="block text-sm font-medium text-gray-700 mb-2">
-													手机号码
-												</label>
-												<input
-													type="tel"
-													value={editForm.phone || ''}
-													onChange={(e) =>
-														setEditForm({ ...editForm, phone: e.target.value })
-													}
-													className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-												/>
-											</div>
-											<div className="flex space-x-3">
-												<button
-													onClick={handleUpdateProfile}
-													className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
-												>
-													保存更改
-												</button>
-												<button
-													onClick={() => {
-														setIsEditing(false);
-														if (user) {
-															setEditForm({ name: user.name, phone: user.phone });
-														}
-													}}
-													className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition"
-												>
-													取消
-												</button>
-											</div>
-										</div>
-									) : (
-										<div className="space-y-6">
-											<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-												<div className="bg-gray-50 p-6 rounded-lg">
-													<div className="text-sm text-gray-600 mb-1">姓名</div>
-													<div className="text-lg font-semibold text-gray-900">
-														{user?.name}
-													</div>
-												</div>
-												<div className="bg-gray-50 p-6 rounded-lg">
-													<div className="text-sm text-gray-600 mb-1">邮箱</div>
-													<div className="text-lg font-semibold text-gray-900">
-														{user?.email}
-													</div>
-												</div>
-												<div className="bg-gray-50 p-6 rounded-lg">
-													<div className="text-sm text-gray-600 mb-1">手机号码</div>
-													<div className="text-lg font-semibold text-gray-900">
-														{user?.phone || '未设置'}
-													</div>
-												</div>
-												<div className="bg-gray-50 p-6 rounded-lg">
-													<div className="text-sm text-gray-600 mb-1">注册时间</div>
-													<div className="text-lg font-semibold text-gray-900">
-														{user?.createdAt
-															? new Date(user.createdAt).toLocaleDateString('zh-CN')
-															: '-'}
-													</div>
-												</div>
-											</div>
-											<button
-												onClick={() => setIsEditing(true)}
-												className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
-											>
-												编辑资料
-											</button>
-										</div>
-									)}
+				{/* Tab Content */}
+				{activeTab === 'info' && (
+					<div className="space-y-8">
+						{isEditing ? (
+							<div className="space-y-6">
+								<div>
+									<label className="block text-xs text-gray-600 mb-2">
+										姓名
+									</label>
+									<input
+										type="text"
+										value={editForm.name || ''}
+										onChange={(e) =>
+											setEditForm({ ...editForm, name: e.target.value })
+										}
+										className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+									/>
 								</div>
-							)}
-
-							{activeTab === 'member' && (
-								<div className="space-y-6">
-									{/* 会员等级 */}
-									<div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl text-white">
-										<div className="flex items-center justify-between">
-											<div>
-												<div className="text-sm opacity-90 mb-1">会员等级</div>
-												<div className="text-2xl font-bold">
-													{member?.memberLevel ? MEMBER_LEVEL_MAP[member.memberLevel] || '未知等级' : '未知等级'}
-												</div>
-											</div>
-											<div className={`px-4 py-2 rounded-full text-sm font-medium ${member?.memberLevel ? MEMBER_LEVEL_COLOR[member.memberLevel] || 'bg-gray-100 text-gray-700' : 'bg-gray-100 text-gray-700'}`}>
-												{member?.memberLevel ? member.memberLevel.toUpperCase() : 'UNKNOWN'}
-											</div>
-										</div>
-									</div>
-
-									{/* 会员详情 */}
-									<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-										<div className="bg-gray-50 p-6 rounded-lg">
-											<div className="text-sm text-gray-600 mb-1">会员余额</div>
-											<div className="text-2xl font-bold text-gray-900">
-												¥{member ? (member.balance / 100).toFixed(2) : '0.00'}
-											</div>
-										</div>
-										<div className="bg-gray-50 p-6 rounded-lg">
-											<div className="text-sm text-gray-600 mb-1">会员积分</div>
-											<div className="text-2xl font-bold text-blue-600">
-												{member?.points.toLocaleString() || '0'}
-											</div>
-										</div>
-										<div className="bg-gray-50 p-6 rounded-lg">
-											<div className="text-sm text-gray-600 mb-1">累计充值</div>
-											<div className="text-lg font-semibold text-gray-900">
-												¥{member ? (member.totalRecharge / 100).toFixed(2) : '0.00'}
-											</div>
-										</div>
-										<div className="bg-gray-50 p-6 rounded-lg">
-											<div className="text-sm text-gray-600 mb-1">累计消费</div>
-											<div className="text-lg font-semibold text-gray-900">
-												¥{member ? (member.totalConsumption / 100).toFixed(2) : '0.00'}
-											</div>
-										</div>
-										<div className="bg-gray-50 p-6 rounded-lg">
-											<div className="text-sm text-gray-600 mb-1">会员状态</div>
-											<div className="text-lg font-semibold text-green-600">
-												{member?.memberStatus === 'active' ? '正常' : member?.memberStatus || '正常'}
-											</div>
-										</div>
-										<div className="bg-gray-50 p-6 rounded-lg">
-											<div className="text-sm text-gray-600 mb-1">成为会员时间</div>
-											<div className="text-lg font-semibold text-gray-900">
-												{member ? new Date(member.createdAt).toLocaleDateString('zh-CN') : '-'}
-											</div>
-										</div>
-									</div>
-
-									{/* 会员过期时间 */}
-									{member?.expiresAt && (
-										<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-											<div className="flex items-center gap-2">
-												<svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-												</svg>
-												<div>
-													<div className="text-sm text-gray-600">会员过期时间</div>
-													<div className="font-semibold text-blue-700">
-														{new Date(member.expiresAt).toLocaleDateString('zh-CN')}
-													</div>
-												</div>
-											</div>
-										</div>
-									)}
+								<div>
+									<label className="block text-xs text-gray-600 mb-2">
+										邮箱
+									</label>
+									<input
+										type="email"
+										value={user?.email || ''}
+										disabled
+										className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 cursor-not-allowed"
+									/>
 								</div>
-							)}
-
-							{activeTab === 'password' && (
-								<form onSubmit={handleChangePassword} className="space-y-6 max-w-lg">
-									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-2">
-											当前密码
-										</label>
-										<input
-											type="password"
-											required
-											value={passwordForm.oldPassword}
-											onChange={(e) =>
-												setPasswordForm({ ...passwordForm, oldPassword: e.target.value })
-											}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-										/>
-									</div>
-									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-2">
-											新密码
-										</label>
-										<input
-											type="password"
-											required
-											minLength={6}
-											value={passwordForm.newPassword}
-											onChange={(e) =>
-												setPasswordForm({ ...passwordForm, newPassword: e.target.value })
-											}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-										/>
-									</div>
-									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-2">
-											确认新密码
-										</label>
-										<input
-											type="password"
-											required
-											minLength={6}
-											value={passwordForm.confirmPassword}
-											onChange={(e) =>
-												setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
-											}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-										/>
-									</div>
+								<div>
+									<label className="block text-xs text-gray-600 mb-2">
+										手机号码
+									</label>
+									<input
+										type="tel"
+										value={editForm.phone || ''}
+										onChange={(e) =>
+											setEditForm({ ...editForm, phone: e.target.value })
+										}
+										className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+									/>
+								</div>
+								<div className="flex gap-3">
 									<button
-										type="submit"
-										className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
+										onClick={handleUpdateProfile}
+										className="bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200"
 									>
-										修改密码
+										保存
 									</button>
-								</form>
-							)}
+									<button
+										onClick={() => {
+											setIsEditing(false);
+											if (user) {
+												setEditForm({ name: user.name, phone: user.phone });
+											}
+										}}
+										className="px-6 py-3 border border-gray-300 rounded-full text-sm font-medium hover:bg-gray-50 transition-all duration-200"
+									>
+										取消
+									</button>
+								</div>
+							</div>
+						) : (
+							<div className="space-y-6">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+									<div className="p-6 bg-gray-50 rounded-xl">
+										<div className="text-xs text-gray-600 mb-2">姓名</div>
+										<div className="text-2xl font-semibold text-gray-900">
+											{user?.name}
+										</div>
+									</div>
+									<div className="p-6 bg-gray-50 rounded-xl">
+										<div className="text-xs text-gray-600 mb-2">邮箱</div>
+										<div className="text-2xl font-semibold text-gray-900">
+											{user?.email}
+										</div>
+									</div>
+									<div className="p-6 bg-gray-50 rounded-xl">
+										<div className="text-xs text-gray-600 mb-2">手机号码</div>
+										<div className="text-2xl font-semibold text-gray-900">
+											{user?.phone || '未设置'}
+										</div>
+									</div>
+									<div className="p-6 bg-gray-50 rounded-xl">
+										<div className="text-xs text-gray-600 mb-2">注册时间</div>
+										<div className="text-2xl font-semibold text-gray-900">
+											{user?.createdAt
+												? new Date(user.createdAt).toLocaleDateString('zh-CN')
+												: '-'}
+										</div>
+									</div>
+								</div>
+								<button
+									onClick={() => setIsEditing(true)}
+									className="bg-gray-900 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
+								>
+									编辑资料
+								</button>
+							</div>
+						)}
+					</div>
+				)}
+
+				{activeTab === 'member' && (
+					<div className="space-y-8">
+						{/* 会员等级 */}
+						<div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl text-white">
+							<div className="flex items-center justify-between">
+								<div>
+									<div className="text-xs opacity-70 mb-2">会员等级</div>
+									<div className="text-4xl font-semibold">
+										{member?.memberLevel ? MEMBER_LEVEL_MAP[member.memberLevel] || '未知等级' : '未知等级'}
+									</div>
+								</div>
+								<div className="px-4 py-2 bg-white/20 rounded-full text-sm font-medium">
+									{member?.memberLevel ? member.memberLevel.toUpperCase() : 'UNKNOWN'}
+								</div>
+							</div>
 						</div>
 
-						<div className="bg-gray-50 px-8 py-6 border-t border-gray-200">
-							<button
-								onClick={handleLogout}
-								className="w-full bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition"
-							>
-								退出登录
-							</button>
+						{/* 会员详情 */}
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div className="p-6 bg-gray-50 rounded-xl">
+								<div className="text-xs text-gray-600 mb-2">会员余额</div>
+								<div className="text-3xl font-semibold text-gray-900">
+									¥{member ? (member.balance / 100).toFixed(2) : '0.00'}
+								</div>
+							</div>
+							<div className="p-6 bg-gray-50 rounded-xl">
+								<div className="text-xs text-gray-600 mb-2">会员积分</div>
+								<div className="text-3xl font-semibold text-gray-900">
+									{member?.points.toLocaleString() || '0'}
+								</div>
+							</div>
+							<div className="p-6 bg-gray-50 rounded-xl">
+								<div className="text-xs text-gray-600 mb-2">累计充值</div>
+								<div className="text-2xl font-semibold text-gray-900">
+									¥{member ? (member.totalRecharge / 100).toFixed(2) : '0.00'}
+								</div>
+							</div>
+							<div className="p-6 bg-gray-50 rounded-xl">
+								<div className="text-xs text-gray-600 mb-2">累计消费</div>
+								<div className="text-2xl font-semibold text-gray-900">
+									¥{member ? (member.totalConsumption / 100).toFixed(2) : '0.00'}
+								</div>
+							</div>
 						</div>
+
+						{/* 会员过期时间 */}
+						{member?.expiresAt && (
+							<div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
+								<div className="text-xs text-gray-600 mb-1">会员过期时间</div>
+								<div className="text-xl font-semibold text-gray-900">
+									{new Date(member.expiresAt).toLocaleDateString('zh-CN')}
+								</div>
+							</div>
+						)}
 					</div>
+				)}
+
+				{activeTab === 'password' && (
+					<form onSubmit={handleChangePassword} className="space-y-6 max-w-lg">
+						<div>
+							<label className="block text-xs text-gray-600 mb-2">
+								当前密码
+							</label>
+							<input
+								type="password"
+								required
+								value={passwordForm.oldPassword}
+								onChange={(e) =>
+									setPasswordForm({ ...passwordForm, oldPassword: e.target.value })
+								}
+								className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+							/>
+						</div>
+						<div>
+							<label className="block text-xs text-gray-600 mb-2">
+								新密码
+							</label>
+							<input
+								type="password"
+								required
+								minLength={6}
+								value={passwordForm.newPassword}
+								onChange={(e) =>
+									setPasswordForm({ ...passwordForm, newPassword: e.target.value })
+								}
+								className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+							/>
+						</div>
+						<div>
+							<label className="block text-xs text-gray-600 mb-2">
+								确认新密码
+							</label>
+							<input
+								type="password"
+								required
+								minLength={6}
+								value={passwordForm.confirmPassword}
+								onChange={(e) =>
+									setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
+								}
+								className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+							/>
+						</div>
+						<button
+							type="submit"
+							className="bg-gray-900 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
+						>
+							修改密码
+						</button>
+					</form>
+				)}
+
+				{/* Logout */}
+				<div className="mt-16 pt-8 border-t border-gray-200">
+					<button
+						onClick={handleLogout}
+						className="text-gray-600 hover:text-gray-900 text-sm transition-colors"
+					>
+						退出登录
+					</button>
 				</div>
 			</div>
 		</div>
