@@ -113,6 +113,7 @@ export const users = pgTable("users", {
 // Contact Messages
 export const insertContactMessageSchema = createCoercedInsertSchema(contactMessages)
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>
+export type ContactMessage = typeof contactMessages.$inferSelect
 
 // Orders
 export const insertOrderSchema = createCoercedInsertSchema(orders).omit({
@@ -131,7 +132,10 @@ export type Member = typeof members.$inferSelect
 
 // Member Transactions
 export const insertMemberTransactionSchema = createCoercedInsertSchema(memberTransactions)
+export const updateMemberTransactionSchema = createCoercedInsertSchema(memberTransactions).partial()
 export type InsertMemberTransaction = z.infer<typeof insertMemberTransactionSchema>
+export type UpdateMemberTransaction = z.infer<typeof updateMemberTransactionSchema>
+export type MemberTransaction = typeof memberTransactions.$inferSelect
 
 // Users
 export const insertUserSchema = createCoercedInsertSchema(users).pick({
