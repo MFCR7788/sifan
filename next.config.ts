@@ -3,23 +3,31 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    // 启用图片优化以支持移动端
-    unoptimized: false,
-    // 允许从外部域名加载图片（如果需要）
-    remotePatterns: [],
-    // 支持的图片格式
-    formats: ['image/avif', 'image/webp'],
-    // 设备尺寸配置
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    // 图片尺寸配置
+    // 允许的图片域名
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '42.121.218.14',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.zjsifan.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'zjsifan.com',
+      },
+    ],
+    // 优先使用 WebP 格式
+    formats: ['image/webp', 'image/avif'],
+    // 图片优化配置
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // 图片质量
+    quality: 75,
+    // 启用缓存
+    minimumCacheTTL: 60,
   },
-  typescript: {
-    // 生产环境禁用类型检查（如果构建时类型检查通过）
-    ignoreBuildErrors: false,
-  },
-  // 压缩配置
-  compress: true,
 };
 
 export default nextConfig;

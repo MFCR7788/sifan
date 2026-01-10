@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,11 +40,15 @@ export default function Navigation() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity">
-              <img
-                src="/小超人.png"
-                alt="魔法超人"
-                className="w-7 h-7 object-contain"
-              />
+              <div className="relative w-7 h-7">
+                <Image
+                  src="/小超人.png"
+                  alt="魔法超人"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
               <span className={`text-lg font-semibold transition-colors ${
                 isScrolled ? 'text-gray-900' : 'text-gray-900'
               }`}>

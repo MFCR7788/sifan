@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import ValueProposition from '@/components/ValueProposition';
@@ -27,11 +28,13 @@ export default function Home() {
             className="relative w-[70%] h-[70vh] md:h-[70%] rounded-3xl overflow-hidden shadow-2xl"
           >
             {!imageError ? (
-              <img
+              <Image
                 src="/assets/image-4.png"
                 alt="魔法超人"
-                className="w-full h-full object-cover"
-                style={{ opacity: 1 }}
+                fill
+                className="object-cover"
+                priority
+                quality={80}
                 onError={() => setImageError(true)}
               />
             ) : (
