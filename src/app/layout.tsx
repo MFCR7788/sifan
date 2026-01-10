@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "魔法超人3.0系统",
-  description: "魔法超人3.0系统 - 智能驱动，未来已来",
+  title: "魔法超人4.0系统",
+  description: "魔法超人4.0系统 - 智能驱动，未来已来",
 };
 
 export default function RootLayout({

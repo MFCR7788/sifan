@@ -39,7 +39,7 @@ export default function Home() {
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center">
-                <p className="text-white text-lg">魔法超人 3.0</p>
+                <p className="text-white text-lg">魔法超人 4.0</p>
               </div>
             )}
           </div>
@@ -53,7 +53,7 @@ export default function Home() {
               textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2)'
             }}
           >
-            3.0
+            4.0
           </h2>
           <h1
             className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight mt-2"
