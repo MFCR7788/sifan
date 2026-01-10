@@ -245,13 +245,13 @@ export default function PricingPage() {
             </div>
             <div>
               <div className="text-5xl md:text-6xl font-semibold text-gray-900 mb-2">
-                {data.filter(d => d['基础版3.0系统'] !== '×').length}
+                {data.filter(d => d['基础版4.0系统'] !== '×').length}
               </div>
               <div className="text-gray-600">基础版功能</div>
             </div>
             <div>
               <div className="text-5xl md:text-6xl font-semibold text-gray-900 mb-2">
-                {data.filter(d => d['旗舰版3.0系统'] !== '×').length}
+                {data.filter(d => d['旗舰版4.0系统'] !== '×').length}
               </div>
               <div className="text-gray-600">旗舰版功能</div>
             </div>
