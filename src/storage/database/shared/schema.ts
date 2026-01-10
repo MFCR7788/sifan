@@ -143,6 +143,7 @@ export const insertUserSchema = createCoercedInsertSchema(users).pick({
 	name: true,
 	email: true,
 	password: true,
+	avatar: true,
 })
 export const updateUserSchema = createCoercedInsertSchema(users)
 	.pick({
