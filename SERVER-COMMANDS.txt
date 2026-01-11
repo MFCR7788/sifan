@@ -1,0 +1,75 @@
+# 阿里云服务器执行命令
+
+## 一键执行（首次部署）
+
+```bash
+git clone https://ghproxy.com/https://github.com/MFCR7788/sifan.git /root/sifan && cd /root/sifan && chmod +x deploy-with-ssl.sh && bash deploy-with-ssl.sh
+```
+
+## 分步执行（如果已有项目）
+
+### 1. 拉取最新代码
+```bash
+cd /root/sifan
+git pull origin main
+```
+
+### 2. 执行部署和SSL安装
+```bash
+chmod +x deploy-with-ssl.sh
+bash deploy-with-ssl.sh
+```
+
+## 脚本功能说明
+
+`deploy-with-ssl.sh` 会自动执行以下步骤：
+
+1. ✓ 同步最新代码（使用 GitHub 镜像）
+2. ✓ 安装依赖并构建项目
+3. ✓ 配置环境变量
+4. ✓ 启动 Next.js 应用（PM2）
+5. ✓ 安装 Nginx 和 Certbot
+6. ✓ 申请 SSL 证书（Let's Encrypt）
+7. ✓ 配置 Nginx HTTPS 反向代理
+8. ✓ 配置 SSL 自动续期
+9. ✓ 验证部署状态
+
+## 前提条件
+
+1. 确保 DNS 解析已生效
+   - zjsifan.com → 42.121.218.14
+   - www.zjsifan.com → 42.121.218.14
+
+2. 确保端口已开放
+   - 80 端口（HTTP）
+   - 443 端口（HTTPS）
+   - 5000 端口（Next.js 内部）
+
+## 验证安装
+
+执行完成后，访问以下地址验证：
+
+- http://zjsifan.com （自动跳转到 HTTPS）
+- https://zjsifan.com
+- https://www.zjsifan.com
+
+浏览器地址栏应显示锁形图标，表示连接安全。
+
+## 查看服务状态
+
+```bash
+# 查看 PM2 服务状态
+pm2 list
+
+# 查看 PM2 日志
+pm2 logs enterprise-website
+
+# 查看 Nginx 状态
+systemctl status nginx
+
+# 查看 Nginx 日志
+tail -f /var/log/nginx/sifan-error.log
+
+# 查看 SSL 证书状态
+certbot certificates
+```
