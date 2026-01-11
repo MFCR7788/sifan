@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -17,9 +17,11 @@ const navItems = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isAuthenticated, user, isLoading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,6 +30,14 @@ export default function Navigation() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogoClick = () => {
+    if (isAuthenticated) {
+      router.push('/magic-ai');
+    } else {
+      setShowLoginPrompt(true);
+    }
+  };
 
   return (
     <nav className={`sticky top-0 z-50 transition-all duration-500 ${
@@ -39,7 +49,10 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/magic-ai" className="flex items-center gap-2 hover:opacity-75 transition-opacity">
+            <button
+              onClick={handleLogoClick}
+              className="flex items-center gap-2 hover:opacity-75 transition-opacity"
+            >
               <div className="relative w-7 h-7">
                 <Image
                   src="/小超人.png"
@@ -54,7 +67,7 @@ export default function Navigation() {
               }`}>
                 魔法超人AI
               </span>
-            </Link>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
@@ -187,6 +200,33 @@ export default function Navigation() {
                 )}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Login Prompt Modal */}
+      {showLoginPrompt && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">提示</h3>
+            <p className="text-gray-600 mb-6">您好，请登录后方可用AI功能！</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={() => {
+                  setShowLoginPrompt(false);
+                  router.push('/login');
+                }}
+                className="px-4 py-2 text-sm bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors"
+              >
+                确定
+              </button>
+            </div>
           </div>
         </div>
       )}
