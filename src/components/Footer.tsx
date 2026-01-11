@@ -14,13 +14,10 @@ const footerSections = [
   {
     title: '资源',
     links: [
-      { name: '资源', href: '#resources' },
-      { name: '下载', href: '#downloads' },
       { name: '更新日志', href: '#changelog' },
-      { name: '文档 ↗', href: '#docs' },
-      { name: '学习 ↗', href: '#learn' },
-      { name: '论坛 ↗', href: '#forum' },
-      { name: '状态 ↗', href: '#status' },
+      { name: '文档', href: '#docs' },
+      { name: '学习', href: '#learn' },
+      { name: '论坛', href: '#forum' },
     ],
   },
   {
