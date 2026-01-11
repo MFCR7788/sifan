@@ -59,123 +59,24 @@ jobs:
               mv .next .next.backup.$(date +%s)
             fi
 
-            # 从 GitHub 下载最新代码（使用 archive API）
-            echo "Downloading from GitHub..."
-            curl -L "https://github.com/MFCR7788/sifan/archive/refs/heads/main.zip" -o /tmp/sifan-main.zip || echo "Download failed, trying git pull..."
+            # 使用 git fetch + reset 来同步代码（更可靠）
+            echo "Syncing code from GitHub..."
+            git fetch origin main
+            git reset --hard origin/main
 
-            if [ -f "/tmp/sifan-main.zip" ]; then
-              # 解压到临时目录
-              rm -rf /tmp/sifan-main
-              unzip -q /tmp/sifan-main.zip -d /tmp/
-
-              # 检查解压后的目录结构
-              echo "Checking extraction structure..."
-              echo "Contents of /tmp/:"
-              ls -la /tmp/ | grep sifan
-
-              echo ""
-              echo "Downloaded files (first 50):"
-              ls -la /tmp/sifan-main/ | head -50
-              echo ""
-
-              echo "All directories:"
-              ls -la /tmp/sifan-main/ | grep "^d"
-
-              echo ""
-              echo "Checking for src/ directory:"
-              if [ -d "/tmp/sifan-main/src" ]; then
-                echo "✓ src/ exists"
-                echo "Contents of src/:"
-                ls -la /tmp/sifan-main/src/ | head -20
-              else
-                echo "✗ src/ NOT found"
-                echo "Searching for 'src' in archive..."
-                find /tmp/sifan-main -type d -name "src" 2>/dev/null || echo "No src directory found"
-              fi
-
-              # 复制关键文件（检查文件是否存在）
-              echo ""
-              echo "Copying files..."
-              echo "Removing old files..."
-              rm -rf src public package.json pnpm-lock.yaml next.config.js next.config.ts .github workflows 2>/dev/null || true
-
-              # 检查当前目录
-              echo "Current directory:"
-              pwd
-              echo "Current contents:"
-              ls -la | head -20
-
-              # 复制新文件（使用通配符更灵活）
-              echo ""
-              echo "Copying src/..."
-              if [ -d "/tmp/sifan-main/src" ]; then
-                echo "Source: /tmp/sifan-main/src"
-                echo "Target: ./src"
-                cp -rv /tmp/sifan-main/src ./src && echo "✓ Copied src/" || echo "✗ Failed to copy src/"
-              else
-                echo "⚠ src/ not found in archive, skipping..."
-              fi
-
-              echo ""
-              echo "Copying public/..."
-              if [ -d "/tmp/sifan-main/public" ]; then
-                cp -rv /tmp/sifan-main/public ./public && echo "✓ Copied public/" || echo "✗ Failed to copy public/"
-              else
-                echo "⚠ public/ not found in archive, skipping..."
-              fi
-
-              echo ""
-              echo "Copying package.json..."
-              if [ -f "/tmp/sifan-main/package.json" ]; then
-                cp -v /tmp/sifan-main/package.json ./package.json && echo "✓ Copied package.json" || echo "✗ Failed to copy package.json"
-              else
-                echo "⚠ package.json not found in archive, skipping..."
-              fi
-
-              echo ""
-              echo "Copying pnpm-lock.yaml..."
-              if [ -f "/tmp/sifan-main/pnpm-lock.yaml" ]; then
-                cp -v /tmp/sifan-main/pnpm-lock.yaml ./pnpm-lock.yaml && echo "✓ Copied pnpm-lock.yaml" || echo "✗ Failed to copy pnpm-lock.yaml"
-              else
-                echo "⚠ pnpm-lock.yaml not found, skipping..."
-              fi
-
-              echo ""
-              echo "Copying next.config..."
-              if [ -f "/tmp/sifan-main/next.config.js" ]; then
-                cp -v /tmp/sifan-main/next.config.js ./next.config.js && echo "✓ Copied next.config.js"
-              elif [ -f "/tmp/sifan-main/next.config.ts" ]; then
-                cp -v /tmp/sifan-main/next.config.ts ./next.config.ts && echo "✓ Copied next.config.ts"
-              else
-                echo "⚠ next.config not found in archive, skipping..."
-              fi
-
-              echo ""
-              echo "Copying .github/..."
-              if [ -d "/tmp/sifan-main/.github" ]; then
-                cp -rv /tmp/sifan-main/.github ./.github && echo "✓ Copied .github/"
-              else
-                echo "⚠ .github/ not found in archive, skipping..."
-              fi
-
-              echo ""
-              echo "File copy completed."
-
-              # 清理
-              rm -rf /tmp/sifan-main /tmp/sifan-main.zip
-            else
-              # 回退到 git pull
-              echo "Using git pull..."
-              git pull origin main || echo "Git pull also failed"
-            fi
+            # 清理未跟踪的文件
+            git clean -fd
 
             # 安装依赖
-            pnpm install --prod || pnpm install
+            echo "Installing dependencies..."
+            pnpm install
 
             # 构建
+            echo "Building Next.js..."
             pnpm run build
 
             # 重启服务
+            echo "Restarting PM2..."
             pm2 restart enterprise-website
 
             echo "Deploy successful at $(date)"
