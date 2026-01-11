@@ -12,6 +12,18 @@ const footerSections = [
     ],
   },
   {
+    title: '资源',
+    links: [
+      { name: '资源', href: '#resources' },
+      { name: '下载', href: '#downloads' },
+      { name: '更新日志', href: '#changelog' },
+      { name: '文档 ↗', href: '#docs' },
+      { name: '学习 ↗', href: '#learn' },
+      { name: '论坛 ↗', href: '#forum' },
+      { name: '状态 ↗', href: '#status' },
+    ],
+  },
+  {
     title: '公司',
     links: [
       { name: '关于我们', href: '/about' },
@@ -34,7 +46,7 @@ export default function Footer() {
     <footer className="bg-gray-50">
       <div className="max-w-[980px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Menu Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {footerSections.map((section) => (
             <div key={section.title} className="flex flex-col space-y-6">
               <h3 className="text-sm font-semibold text-gray-900">
