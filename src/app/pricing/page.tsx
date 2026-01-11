@@ -7,9 +7,9 @@ import Link from 'next/link';
 interface PricingData {
   '功能名称': string;
   '价格/月': number;
-  '基础版4.0系统': string;
-  '旗舰版4.0系统': string;
-  '至尊版4.0': string;
+  '基础版3.0系统': string;
+  '旗舰版3.0系统': string;
+  '至尊版3.0': string;
 }
 
 export default function PricingPage() {
@@ -46,27 +46,27 @@ export default function PricingPage() {
     {
       id: 'basic' as const,
       name: '基础版',
-      version: '4.0',
+      version: '3.0',
       price: '2980',
       description: '适合门店、个体户',
-      columnKey: '基础版4.0系统' as const
+      columnKey: '基础版3.0系统' as const
     },
     {
       id: 'premium' as const,
       name: '旗舰版',
-      version: '4.0',
+      version: '3.0',
       price: '12980',
       description: '适合中大型企业',
       recommended: true,
-      columnKey: '旗舰版4.0系统' as const
+      columnKey: '旗舰版3.0系统' as const
     },
     {
       id: 'ultimate' as const,
       name: '至尊版',
-      version: '4.0',
+      version: '3.0',
       price: '29800',
       description: '适合集团企业',
-      columnKey: '至尊版4.0' as const
+      columnKey: '至尊版3.0' as const
     }
   ];
 
@@ -245,13 +245,13 @@ export default function PricingPage() {
             </div>
             <div>
               <div className="text-5xl md:text-6xl font-semibold text-gray-900 mb-2">
-                {data.filter(d => d['基础版4.0系统'] !== '×').length}
+                {data.filter(d => d['基础版3.0系统'] !== '×').length}
               </div>
               <div className="text-gray-600">基础版功能</div>
             </div>
             <div>
               <div className="text-5xl md:text-6xl font-semibold text-gray-900 mb-2">
-                {data.filter(d => d['旗舰版4.0系统'] !== '×').length}
+                {data.filter(d => d['旗舰版3.0系统'] !== '×').length}
               </div>
               <div className="text-gray-600">旗舰版功能</div>
             </div>
