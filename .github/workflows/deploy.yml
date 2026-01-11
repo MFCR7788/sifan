@@ -27,8 +27,38 @@ jobs:
             # 进入项目目录
             cd /root/sifan || exit 1
 
-            # 配置 Git 镜像（如果服务器无法直接访问 GitHub）
-            git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"
+            # 清理旧的 Git 镜像配置
+            git config --global --unset-all url."https://ghproxy.com/https://github.com/".insteadOf 2>/dev/null || true
+            git config --global --unset-all url."https://github.com.cnpmjs.org/".insteadOf 2>/dev/null || true
+            git config --global --unset-all url."https://hub.fastgit.xyz/".insteadOf 2>/dev/null || true
+
+            # 测试 GitHub 直连
+            echo "测试 GitHub 直连..."
+            if timeout 5 curl -I https://github.com > /dev/null 2>&1; then
+                echo "✓ GitHub 直连成功，不使用镜像"
+            else
+                echo "⚠ GitHub 直连失败，尝试镜像站..."
+
+                # 尝试多个镜像站
+                MIRRORS=("github.com.cnpmjs.org" "ghproxy.com" "hub.fastgit.xyz")
+                MIRROR_FOUND=false
+
+                for mirror in "${MIRRORS[@]}"; do
+                    echo "测试镜像: $mirror"
+                    if timeout 3 curl -I https://$mirror > /dev/null 2>&1; then
+                        echo "✓ 使用镜像: $mirror"
+                        git config --global url."https://$mirror/".insteadOf "https://github.com/"
+                        MIRROR_FOUND=true
+                        break
+                    fi
+                done
+
+                if [ "$MIRROR_FOUND" = false ]; then
+                    echo "✗ 所有镜像站都无法连接！"
+                    echo "请手动部署：参考 LOCAL-DEPLOY-INSTRUCTIONS.md"
+                    exit 1
+                fi
+            fi
 
             # 拉取最新代码
             echo "正在拉取最新代码..."

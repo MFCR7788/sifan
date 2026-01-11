@@ -1,0 +1,80 @@
+name: Build and Deploy to Aliyun
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Create deployment package
+        run: |
+          cd .next
+          tar -czf ../build-package.tar.gz .
+          cd ..
+          ls -lh build-package.tar.gz
+
+      - name: Upload build package to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "build-package.tar.gz"
+          target: "/root/sifan/"
+          strip_components: 0
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            echo "开始部署..."
+
+            cd /root/sifan || exit 1
+
+            # 备份当前构建
+            if [ -d ".next" ]; then
+                echo "备份当前构建..."
+                mv .next .next.backup.$(date +%Y%m%d_%H%M%S)
+            fi
+
+            # 解压新构建
+            echo "解压新构建..."
+            tar -xzf build-package.tar.gz -C .next
+
+            # 重启服务
+            echo "重启服务..."
+            pm2 restart sifan
+
+            # 清理
+            rm -f build-package.tar.gz
+
+            echo "✓ 部署完成！"
