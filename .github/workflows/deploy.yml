@@ -68,13 +68,53 @@ jobs:
               rm -rf /tmp/sifan-main
               unzip -q /tmp/sifan-main.zip -d /tmp/
 
-              # 复制关键文件
-              rm -rf src public package.json pnpm-lock.yaml next.config.js
-              cp -r /tmp/sifan-main/src ./src
-              cp -r /tmp/sifan-main/public ./public
-              cp /tmp/sifan-main/package.json ./package.json
-              cp /tmp/sifan-main/pnpm-lock.yaml ./pnpm-lock.yaml
-              cp /tmp/sifan-main/next.config.js ./next.config.js
+              # 列出下载的文件
+              echo "Downloaded files:"
+              ls -la /tmp/sifan-main/ | head -20
+
+              # 复制关键文件（检查文件是否存在）
+              echo "Copying files..."
+
+              # 删除旧文件
+              rm -rf src public package.json pnpm-lock.yaml next.config.js .github workflows
+
+              # 复制新文件（使用通配符更灵活）
+              if [ -d "/tmp/sifan-main/src" ]; then
+                cp -r /tmp/sifan-main/src ./src
+                echo "✓ Copied src/"
+              fi
+
+              if [ -d "/tmp/sifan-main/public" ]; then
+                cp -r /tmp/sifan-main/public ./public
+                echo "✓ Copied public/"
+              fi
+
+              if [ -f "/tmp/sifan-main/package.json" ]; then
+                cp /tmp/sifan-main/package.json ./package.json
+                echo "✓ Copied package.json"
+              fi
+
+              if [ -f "/tmp/sifan-main/pnpm-lock.yaml" ]; then
+                cp /tmp/sifan-main/pnpm-lock.yaml ./pnpm-lock.yaml
+                echo "✓ Copied pnpm-lock.yaml"
+              else
+                echo "⚠ pnpm-lock.yaml not found, will regenerate..."
+              fi
+
+              if [ -f "/tmp/sifan-main/next.config.js" ]; then
+                cp /tmp/sifan-main/next.config.js ./next.config.js
+                echo "✓ Copied next.config.js"
+              fi
+
+              if [ -f "/tmp/sifan-main/next.config.ts" ]; then
+                cp /tmp/sifan-main/next.config.ts ./next.config.ts
+                echo "✓ Copied next.config.ts"
+              fi
+
+              if [ -d "/tmp/sifan-main/.github" ]; then
+                cp -r /tmp/sifan-main/.github ./.github
+                echo "✓ Copied .github/"
+              fi
 
               # 清理
               rm -rf /tmp/sifan-main /tmp/sifan-main.zip
