@@ -70,51 +70,65 @@ jobs:
 
               # 列出下载的文件
               echo "Downloaded files:"
-              ls -la /tmp/sifan-main/ | head -20
+              ls -la /tmp/sifan-main/ | head -40
+              echo ""
+              echo "Checking for key directories..."
+              ls -la /tmp/sifan-main/ | grep -E "^d" || echo "No directories found"
 
               # 复制关键文件（检查文件是否存在）
               echo "Copying files..."
 
               # 删除旧文件
-              rm -rf src public package.json pnpm-lock.yaml next.config.js .github workflows
+              echo "Removing old files..."
+              rm -rf src public package.json pnpm-lock.yaml next.config.js next.config.ts .github workflows 2>/dev/null || true
 
               # 复制新文件（使用通配符更灵活）
+              echo "Copying src/..."
               if [ -d "/tmp/sifan-main/src" ]; then
-                cp -r /tmp/sifan-main/src ./src
-                echo "✓ Copied src/"
+                cp -r /tmp/sifan-main/src ./src && echo "✓ Copied src/" || echo "✗ Failed to copy src/"
+              else
+                echo "⚠ src/ not found in archive"
               fi
 
+              echo "Copying public/..."
               if [ -d "/tmp/sifan-main/public" ]; then
-                cp -r /tmp/sifan-main/public ./public
-                echo "✓ Copied public/"
+                cp -r /tmp/sifan-main/public ./public && echo "✓ Copied public/" || echo "✗ Failed to copy public/"
+              else
+                echo "⚠ public/ not found in archive"
               fi
 
+              echo "Copying package.json..."
               if [ -f "/tmp/sifan-main/package.json" ]; then
-                cp /tmp/sifan-main/package.json ./package.json
-                echo "✓ Copied package.json"
+                cp /tmp/sifan-main/package.json ./package.json && echo "✓ Copied package.json" || echo "✗ Failed to copy package.json"
+              else
+                echo "⚠ package.json not found in archive"
               fi
 
+              echo "Copying pnpm-lock.yaml..."
               if [ -f "/tmp/sifan-main/pnpm-lock.yaml" ]; then
-                cp /tmp/sifan-main/pnpm-lock.yaml ./pnpm-lock.yaml
-                echo "✓ Copied pnpm-lock.yaml"
+                cp /tmp/sifan-main/pnpm-lock.yaml ./pnpm-lock.yaml && echo "✓ Copied pnpm-lock.yaml" || echo "✗ Failed to copy pnpm-lock.yaml"
               else
                 echo "⚠ pnpm-lock.yaml not found, will regenerate..."
               fi
 
+              echo "Copying next.config..."
               if [ -f "/tmp/sifan-main/next.config.js" ]; then
-                cp /tmp/sifan-main/next.config.js ./next.config.js
-                echo "✓ Copied next.config.js"
+                cp /tmp/sifan-main/next.config.js ./next.config.js && echo "✓ Copied next.config.js" || echo "✗ Failed to copy next.config.js"
+              elif [ -f "/tmp/sifan-main/next.config.ts" ]; then
+                cp /tmp/sifan-main/next.config.ts ./next.config.ts && echo "✓ Copied next.config.ts" || echo "✗ Failed to copy next.config.ts"
+              else
+                echo "⚠ next.config not found in archive"
               fi
 
-              if [ -f "/tmp/sifan-main/next.config.ts" ]; then
-                cp /tmp/sifan-main/next.config.ts ./next.config.ts
-                echo "✓ Copied next.config.ts"
-              fi
-
+              echo "Copying .github/..."
               if [ -d "/tmp/sifan-main/.github" ]; then
-                cp -r /tmp/sifan-main/.github ./.github
-                echo "✓ Copied .github/"
+                cp -r /tmp/sifan-main/.github ./.github && echo "✓ Copied .github/" || echo "✗ Failed to copy .github/"
+              else
+                echo "⚠ .github/ not found in archive"
               fi
+
+              echo ""
+              echo "File copy completed."
 
               # 清理
               rm -rf /tmp/sifan-main /tmp/sifan-main.zip
