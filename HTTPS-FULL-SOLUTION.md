@@ -1,5 +1,14 @@
 # HTTPS 不安全问题完整解决方案
 
+## ✅ 配置完成状态
+
+**项目**: 魔法超人系统
+**域名**: zjsifan.com, www.zjsifan.com
+**证书**: Let's Encrypt (有效期至 2026-04-11)
+**状态**: ✅ HTTPS 已配置并正常运行
+
+---
+
 ## 问题现象
 
 访问 `www.zjsifan.com` 时浏览器显示"不安全"或出现警告：
@@ -116,9 +125,9 @@ server {
     access_log /var/log/nginx/sifan-access.log;
     error_log /var/log/nginx/sifan-error.log;
 
-    # 反向代理到 Next.js (端口 5000)
+    # 反向代理到 Next.js (端口 3000)
     location / {
-        proxy_pass http://localhost:5000;
+        proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -436,7 +445,45 @@ curl -I https://www.zjsifan.com
 **关键点**：
 - DNS 解析必须正确
 - 80 和 443 端口必须开放
-- Next.js 必须在 5000 端口运行
+- Next.js 必须在 3000 端口运行（PM2 应用 enterprise-website）
 - Nginx 配置必须正确
 
 现在就去执行 `quick-https-install.sh` 脚本吧！
+
+---
+
+## 🎉 配置完成记录
+
+**2026-01-12 配置完成**：
+- ✅ Let's Encrypt SSL 证书申请成功
+- ✅ 证书有效期至 2026-04-11（89天）
+- ✅ Nginx HTTPS 配置完成
+- ✅ HTTP 自动重定向到 HTTPS
+- ✅ Next.js 应用运行在 3000 端口
+- ✅ Nginx 反向代理配置正确
+- ✅ 证书自动续期任务已配置
+
+**访问地址**：
+- HTTPS: https://zjsifan.com
+- HTTPS: https://www.zjsifan.com
+- HTTP: http://zjsifan.com (自动重定向到 HTTPS)
+
+**服务管理**：
+- PM2 应用名称: `enterprise-website`
+- Next.js 端口: 3000
+- Nginx 配置文件: `/etc/nginx/conf.d/sifan.conf`
+- 证书路径: `/etc/letsencrypt/live/zjsifan.com/`
+
+**遇到的问题和解决**：
+1. ❌ Nginx 配置冲突（多个配置文件定义了相同域名）
+   - ✅ 解决：清理了旧配置文件 `zjsifan.conf` 和备份文件
+2. ❌ 502 Bad Gateway（Next.js 应用未运行）
+   - ✅ 解决：PM2 应用已运行在 3000 端口
+3. ❌ Nginx 代理端口错误（配置为 5000，应用运行在 3000）
+   - ✅ 解决：修改 Nginx 配置，将 proxy_pass 改为 http://localhost:3000
+
+**验证结果**：
+- ✅ 浏览器访问 https://www.zjsifan.com 正常
+- ✅ 显示安全锁图标
+- ✅ 证书信息正确
+- ✅ 页面加载正常

@@ -128,17 +128,15 @@ fi
 echo ""
 echo "[步骤 4/5] 配置 Nginx..."
 
-# 检查 Next.js 是否在 5000 端口运行
-if netstat -tuln | grep -q ":5000"; then
-    echo "✓ Next.js 在 5000 端口运行"
+    # 检查 Next.js 是否在 3000 端口运行
+if netstat -tuln | grep -q ":3000"; then
+    echo "✓ Next.js 在 3000 端口运行"
 else
-    echo "⚠ Next.js 未在 5000 端口运行"
+    echo "⚠ Next.js 未在 3000 端口运行"
     echo "尝试启动 PM2 服务..."
-    if [ -f "/root/sifan/ecosystem.config.js" ]; then
-        cd /root/sifan
-        pm2 start ecosystem.config.js
-        pm2 save
-        echo "✓ PM2 服务已启动"
+    if pm2 list | grep -q "enterprise-website"; then
+        pm2 restart enterprise-website
+        echo "✓ PM2 服务已重启"
     fi
 fi
 
@@ -173,9 +171,9 @@ server {
     access_log /var/log/nginx/sifan-access.log;
     error_log /var/log/nginx/sifan-error.log;
 
-    # 反向代理到 Next.js (端口 5000)
+    # 反向代理到 Next.js (端口 3000)
     location / {
-        proxy_pass http://localhost:5000;
+        proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
