@@ -27,10 +27,17 @@ jobs:
             # 进入项目目录
             cd /root/sifan || exit 1
 
-            # 清理旧的 Git 镜像配置
+            # 清理所有 Git 镜像配置（全局和本地）
             git config --global --unset-all url."https://ghproxy.com/https://github.com/".insteadOf 2>/dev/null || true
             git config --global --unset-all url."https://github.com.cnpmjs.org/".insteadOf 2>/dev/null || true
             git config --global --unset-all url."https://hub.fastgit.xyz/".insteadOf 2>/dev/null || true
+            git config --local --unset-all url."https://ghproxy.com/https://github.com/".insteadOf 2>/dev/null || true
+            git config --local --unset-all url."https://github.com.cnpmjs.org/".insteadOf 2>/dev/null || true
+            git config --local --unset-all url."https://hub.fastgit.xyz/".insteadOf 2>/dev/null || true
+
+            # 重置远程 URL 为原始 GitHub 地址
+            echo "重置远程 URL..."
+            git remote set-url origin https://github.com/MFCR7788/sifan.git
 
             # 测试 GitHub 直连
             echo "测试 GitHub 直连..."
@@ -47,7 +54,7 @@ jobs:
                     echo "测试镜像: $mirror"
                     if timeout 3 curl -I https://$mirror > /dev/null 2>&1; then
                         echo "✓ 使用镜像: $mirror"
-                        git config --global url."https://$mirror/".insteadOf "https://github.com/"
+                        git remote set-url origin https://$mirror/MFCR7788/sifan.git
                         MIRROR_FOUND=true
                         break
                     fi
