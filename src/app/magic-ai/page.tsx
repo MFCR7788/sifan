@@ -1,6 +1,7 @@
 'use client';
 
 import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 export default function MagicAIPage() {
   return (
@@ -13,6 +14,9 @@ export default function MagicAIPage() {
           {/* 这里可以添加你的页面内容 */}
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
