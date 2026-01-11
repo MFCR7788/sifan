@@ -100,7 +100,7 @@ export default function Navigation() {
                     </Link>
                     <Link
                       href="/register"
-                      className="text-xs bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
+                      className="text-xs bg-gray-900 text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors"
                     >
                       注册
                     </Link>
@@ -179,7 +179,7 @@ export default function Navigation() {
                     <Link
                       href="/register"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-3 py-3 text-sm text-blue-600 font-semibold"
+                      className="block px-3 py-3 text-sm text-gray-900 font-semibold"
                     >
                       注册
                     </Link>
