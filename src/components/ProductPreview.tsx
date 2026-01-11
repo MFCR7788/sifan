@@ -13,15 +13,15 @@ const products = [
   },
   {
     id: 2,
-    name: '连锁品牌版',
+    name: '旗舰连锁版',
     price: '¥12980/年',
     features: ['多门店连锁', '线上线下一盘货', '新零售培训指导', '客服指导7*24小时'],
     popular: true
   },
   {
     id: 3,
-    name: '定制化方案',
-    price: '面议',
+    name: '至尊品牌版',
+    price: '¥29800/年',
     features: ['专属运营方案', '一对一顾问服务', '个性化定制', '专属项目经理'],
     popular: false
   }
