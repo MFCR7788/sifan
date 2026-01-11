@@ -43,17 +43,7 @@ jobs:
       - name: Build Next.js
         run: pnpm run build
 
-      - name: Upload to Aliyun Server
-        uses: easingthemes/ssh-deploy@v4.1.7
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.SSH_HOST }}
-          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
-          SOURCE: "src public package.json pnpm-lock.yaml next.config.js .next"
-          TARGET: "/root/sifan"
-          ARGS: "-rlgoDzvc -i"
-
-      - name: Restart PM2 on Aliyun
+      - name: Deploy to Aliyun via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -63,6 +53,44 @@ jobs:
           script_stop: true
           script: |
             cd /root/sifan
-            pnpm install --prod
+
+            # 备份当前构建
+            if [ -d ".next" ]; then
+              mv .next .next.backup.$(date +%s)
+            fi
+
+            # 从 GitHub 下载最新代码（使用 archive API）
+            echo "Downloading from GitHub..."
+            curl -L "https://github.com/MFCR7788/sifan/archive/refs/heads/main.zip" -o /tmp/sifan-main.zip || echo "Download failed, trying git pull..."
+
+            if [ -f "/tmp/sifan-main.zip" ]; then
+              # 解压到临时目录
+              rm -rf /tmp/sifan-main
+              unzip -q /tmp/sifan-main.zip -d /tmp/
+
+              # 复制关键文件
+              rm -rf src public package.json pnpm-lock.yaml next.config.js
+              cp -r /tmp/sifan-main/src ./src
+              cp -r /tmp/sifan-main/public ./public
+              cp /tmp/sifan-main/package.json ./package.json
+              cp /tmp/sifan-main/pnpm-lock.yaml ./pnpm-lock.yaml
+              cp /tmp/sifan-main/next.config.js ./next.config.js
+
+              # 清理
+              rm -rf /tmp/sifan-main /tmp/sifan-main.zip
+            else
+              # 回退到 git pull
+              echo "Using git pull..."
+              git pull origin main || echo "Git pull also failed"
+            fi
+
+            # 安装依赖
+            pnpm install --prod || pnpm install
+
+            # 构建
+            pnpm run build
+
+            # 重启服务
             pm2 restart enterprise-website
+
             echo "Deploy successful at $(date)"
