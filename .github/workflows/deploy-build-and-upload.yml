@@ -66,6 +66,10 @@ jobs:
                 mv .next .next.backup.$(date +%Y%m%d_%H%M%S)
             fi
 
+            # 创建 .next 目录
+            echo "创建 .next 目录..."
+            mkdir -p .next
+
             # 解压新构建
             echo "解压新构建..."
             tar -xzf build-package.tar.gz -C .next
