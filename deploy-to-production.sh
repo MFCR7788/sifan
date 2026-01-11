@@ -36,6 +36,10 @@ git push origin main
 ssh root@${SERVER_HOST} << 'ENDSSH'
 set -e
 
+# 配置 GitHub 镜像（解决服务器无法访问 GitHub 的问题）
+echo "配置 GitHub 镜像..."
+git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"
+
 echo ""
 echo "进入项目目录..."
 cd /root/sifan

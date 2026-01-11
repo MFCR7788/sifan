@@ -54,6 +54,10 @@ jobs:
           script: |
             cd /root/sifan
 
+            # 配置 GitHub 镜像（解决服务器无法访问 GitHub 的问题）
+            echo "Configuring GitHub mirror..."
+            git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"
+
             # 备份当前构建
             if [ -d ".next" ]; then
               mv .next .next.backup.$(date +%s)
