@@ -40,10 +40,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run type check
+      - name: Build Next.js
         run: pnpm run build
 
-      - name: Deploy to Aliyun Server
+      - name: Upload to Aliyun Server
+        uses: easingthemes/ssh-deploy@v4.1.7
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
+          SOURCE: "src public package.json pnpm-lock.yaml next.config.js .next"
+          TARGET: "/root/sifan"
+          ARGS: "-rlgoDzvc -i"
+
+      - name: Restart PM2 on Aliyun
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -53,8 +63,6 @@ jobs:
           script_stop: true
           script: |
             cd /root/sifan
-            git pull origin main
-            pnpm install
-            pnpm run build
+            pnpm install --prod
             pm2 restart enterprise-website
             echo "Deploy successful at $(date)"
