@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import ConfiguratorStep1 from '@/components/configurator/ConfiguratorStep1';
 import ConfiguratorStep2 from '@/components/configurator/ConfiguratorStep2';
 import ConfiguratorStep3 from '@/components/configurator/ConfiguratorStep3';
@@ -151,6 +152,9 @@ export default function ConfiguratorPage() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
