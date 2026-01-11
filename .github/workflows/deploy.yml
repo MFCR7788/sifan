@@ -9,8 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    if: false  # 禁用自动部署
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,4 +22,29 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
           script: |
-            echo "自动部署已禁用，请使用本地上传方式部署"
+            echo "开始自动部署..."
+
+            # 进入项目目录
+            cd /root/sifan || exit 1
+
+            # 配置 Git 镜像（如果服务器无法直接访问 GitHub）
+            git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"
+
+            # 拉取最新代码
+            echo "正在拉取最新代码..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 安装依赖
+            echo "正在安装依赖..."
+            pnpm install
+
+            # 构建项目
+            echo "正在构建项目..."
+            pnpm run build
+
+            # 重启服务
+            echo "正在重启服务..."
+            pm2 restart sifan || pm2 start ecosystem.config.js
+
+            echo "✓ 部署完成！"
