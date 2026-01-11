@@ -39,11 +39,11 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity">
+            <Link href="/magic-ai" className="flex items-center gap-2 hover:opacity-75 transition-opacity">
               <div className="relative w-7 h-7">
                 <Image
                   src="/小超人.png"
-                  alt="魔法超人"
+                  alt="魔法超人AI"
                   fill
                   className="object-contain"
                   priority
@@ -52,7 +52,7 @@ export default function Navigation() {
               <span className={`text-lg font-semibold transition-colors ${
                 isScrolled ? 'text-gray-900' : 'text-gray-900'
               }`}>
-                魔法超人
+                魔法超人AI
               </span>
             </Link>
           </div>
