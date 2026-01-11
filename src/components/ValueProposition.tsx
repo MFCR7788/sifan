@@ -107,7 +107,7 @@ export default function ValueProposition() {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <a
-            href="https://mfcr.zjsifan.com/index.php/Retail/Login/register.html"
+            href="https://mfcr.zjsifan.com/index.php/Retail/Login/index.html"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block px-10 py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
