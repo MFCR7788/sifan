@@ -1,5 +1,19 @@
 # 阿里云服务器执行命令
 
+## 快速修复 GitHub 连接问题
+
+如果遇到 "Failed to connect to github.com port 443" 错误，执行以下命令：
+
+```bash
+cd /root/sifan
+git remote set-url origin https://ghproxy.com/https://github.com/MFCR7788/sifan.git
+git fetch origin main
+git reset --hard origin/main
+pnpm install
+pnpm run build
+pm2 restart enterprise-website
+```
+
 ## 一键执行（首次部署）
 
 ```bash

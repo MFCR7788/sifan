@@ -25,15 +25,14 @@ echo ""
 echo "步骤 1: 同步代码"
 echo "----------------------------------------"
 
-# 配置 GitHub 镜像
-git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"
-
 # 克隆或拉取代码
 if [ ! -d "$APP_DIR" ]; then
     echo "克隆仓库..."
     git clone https://ghproxy.com/https://github.com/MFCR7788/sifan.git $APP_DIR
 else
     cd $APP_DIR
+    echo "设置 GitHub 镜像 URL..."
+    git remote set-url origin https://ghproxy.com/https://github.com/MFCR7788/sifan.git
     echo "拉取最新代码..."
     git fetch origin main
     git reset --hard origin/main

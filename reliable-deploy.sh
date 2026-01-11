@@ -7,10 +7,6 @@
 
 set -e
 
-# 配置 GitHub 镜像（解决服务器无法访问 GitHub 的问题）
-echo "配置 GitHub 镜像..."
-git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"
-
 echo "=========================================="
 echo "可靠部署 - 完全清理重建"
 echo "时间: $(date)"
@@ -34,6 +30,9 @@ echo "✓ 缓存已完全清理"
 echo ""
 echo "步骤 3: 同步代码"
 echo "----------------------------------------"
+# 设置 GitHub 镜像 URL
+git remote set-url origin https://ghproxy.com/https://github.com/MFCR7788/sifan.git
+
 git fetch origin main
 git reset --hard origin/main
 git clean -fd

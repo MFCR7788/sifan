@@ -54,9 +54,9 @@ jobs:
           script: |
             cd /root/sifan
 
-            # 配置 GitHub 镜像（解决服务器无法访问 GitHub 的问题）
-            echo "Configuring GitHub mirror..."
-            git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"
+            # 直接修改远程仓库 URL 为镜像地址（更可靠）
+            echo "Setting GitHub mirror URL..."
+            git remote set-url origin https://ghproxy.com/https://github.com/MFCR7788/sifan.git
 
             # 备份当前构建
             if [ -d ".next" ]; then

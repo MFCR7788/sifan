@@ -36,10 +36,6 @@ git push origin main
 ssh root@${SERVER_HOST} << 'ENDSSH'
 set -e
 
-# 配置 GitHub 镜像（解决服务器无法访问 GitHub 的问题）
-echo "配置 GitHub 镜像..."
-git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"
-
 echo ""
 echo "进入项目目录..."
 cd /root/sifan
@@ -47,6 +43,11 @@ cd /root/sifan
 echo ""
 echo "步骤 2: 拉取最新代码"
 echo "----------------------------------------"
+
+# 设置 GitHub 镜像 URL
+echo "设置 GitHub 镜像 URL..."
+git remote set-url origin https://ghproxy.com/https://github.com/MFCR7788/sifan.git
+
 git fetch origin main
 git reset --hard origin/main
 
