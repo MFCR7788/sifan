@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import Link from 'next/link';
 
 interface PricingData {
@@ -260,21 +261,7 @@ export default function PricingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xs text-gray-500 mb-4">
-            Copyright © 2025 浙江思杋服饰有限公司 魔法超人团队. All rights reserved.
-          </p>
-          <div className="flex justify-center gap-6 text-xs text-gray-500">
-            <a href="/" className="hover:underline">首页</a>
-            <a href="/pricing" className="hover:underline">产品</a>
-            <a href="/configurator" className="hover:underline">定制</a>
-            <a href="/franchise" className="hover:underline">加盟</a>
-            <a href="/about" className="hover:underline">关于</a>
-            <a href="/contact" className="hover:underline">联系</a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

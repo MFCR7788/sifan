@@ -1,0 +1,67 @@
+'use client';
+
+import Link from 'next/link';
+
+const footerSections = [
+  {
+    title: '产品',
+    links: [
+      { name: '产品方案', href: '/pricing' },
+      { name: '定制方案', href: '/configurator' },
+      { name: '功能介绍', href: '#features' },
+    ],
+  },
+  {
+    title: '公司',
+    links: [
+      { name: '关于我们', href: '/about' },
+      { name: '联系我们', href: '/contact' },
+      { name: '招商加盟', href: '/franchise' },
+    ],
+  },
+  {
+    title: '支持',
+    links: [
+      { name: '帮助中心', href: '#help' },
+      { name: '隐私政策', href: '#privacy' },
+      { name: '服务条款', href: '#terms' },
+    ],
+  },
+];
+
+export default function Footer() {
+  return (
+    <footer className="bg-gray-50">
+      <div className="max-w-[980px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Menu Links */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+          {footerSections.map((section) => (
+            <div key={section.title} className="flex flex-col space-y-6">
+              <h3 className="text-sm font-semibold text-gray-900">
+                {section.title}
+              </h3>
+              <div className="flex flex-col space-y-4">
+                {section.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Copyright */}
+        <div className="border-t border-gray-200 pt-8">
+          <p className="text-sm text-gray-500">
+            Copyright © 2025 浙江思杋服饰有限公司 魔法超人团队. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}

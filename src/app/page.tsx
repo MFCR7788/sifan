@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import ValueProposition from '@/components/ValueProposition';
 import ProductPreview from '@/components/ProductPreview';
+import Footer from '@/components/Footer';
 import WeChatPrompt from '@/components/WeChatPrompt';
 
 export default function Home() {
@@ -102,21 +103,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xs text-gray-500 mb-4">
-            Copyright © 2025 浙江思杋服饰有限公司 魔法超人团队. All rights reserved.
-          </p>
-          <div className="flex justify-center gap-6 text-xs text-gray-500">
-            <Link href="/" className="hover:underline">首页</Link>
-            <Link href="/pricing" className="hover:underline">产品</Link>
-            <Link href="/configurator" className="hover:underline">定制</Link>
-            <Link href="/franchise" className="hover:underline">加盟</Link>
-            <Link href="/about" className="hover:underline">关于</Link>
-            <Link href="/contact" className="hover:underline">联系</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* 微信浏览器提示 */}
       <WeChatPrompt />
