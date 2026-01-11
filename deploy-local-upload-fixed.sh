@@ -25,12 +25,7 @@ echo "----------------------------------------"
 
 # 确保代码是最新的
 if [ -n "$(git status --porcelain)" ]; then
-    echo "警告: 有未提交的更改"
-    read -p "是否继续？(y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
+    echo "警告: 有未提交的更改，继续部署..."
 fi
 
 # 本地安装依赖并构建
@@ -116,7 +111,12 @@ echo "步骤 3: 上传到服务器"
 echo "----------------------------------------"
 
 echo "上传压缩包到服务器..."
-scp "$LOCAL_BUILD_DIR/sifan-deploy.tar.gz" ${SERVER_USER}@${SERVER_HOST}:/tmp/
+if command -v scp &> /dev/null; then
+    scp "$LOCAL_BUILD_DIR/sifan-deploy.tar.gz" ${SERVER_USER}@${SERVER_HOST}:/tmp/
+else
+    echo "使用 cat + ssh 方式上传（可能较慢）..."
+    cat "$LOCAL_BUILD_DIR/sifan-deploy.tar.gz" | ssh ${SERVER_USER}@${SERVER_HOST} "cat > /tmp/sifan-deploy.tar.gz"
+fi
 
 if [ $? -eq 0 ]; then
     echo "✓ 上传成功"
