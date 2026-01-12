@@ -377,7 +377,13 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="text-2xl">💚</div>
+                  <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                      <path d="M8.5 4.5c-4.1 0-7.5 3.4-7.5 7.5s3.4 7.5 7.5 7.5h7c4.1 0 7.5-3.4 7.5-7.5s-3.4-7.5-7.5-7.5h-7zm0 2h7c3 0 5.5 2.5 5.5 5.5s-2.5 5.5-5.5 5.5h-7c-3 0-5.5-2.5-5.5-5.5s2.5-5.5 5.5-5.5z"/>
+                      <circle cx="7" cy="12" r="2"/>
+                      <circle cx="17" cy="12" r="2"/>
+                    </svg>
+                  </div>
                   <span className="ml-2 text-sm font-medium text-gray-900">
                     微信支付
                   </span>
@@ -390,7 +396,9 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="text-2xl">💳</div>
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
+                    支
+                  </div>
                   <span className="ml-2 text-sm font-medium text-gray-900">
                     支付宝
                   </span>
