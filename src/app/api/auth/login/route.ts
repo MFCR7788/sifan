@@ -55,6 +55,9 @@ export async function POST(request: NextRequest) {
 			user,
 		});
 
+		console.log('Login: 登录用户信息:', user);
+		console.log('Login: 用户ID:', user.id);
+
 		// 设置用户 ID 到 Cookie（简单实现，生产环境应使用 JWT）
 		response.cookies.set('userId', user.id, {
 			httpOnly: true,
@@ -63,6 +66,8 @@ export async function POST(request: NextRequest) {
 			path: '/',
 			maxAge: 60 * 60 * 24 * 7, // 7 天
 		});
+
+		console.log('Login: Cookie已设置，userId:', user.id);
 
 		return response;
 	} catch (error: any) {

@@ -5,8 +5,10 @@ import { userManager } from '@/storage/database/userManager';
 export async function GET(request: NextRequest) {
 	try {
 		const userId = request.cookies.get('userId')?.value;
+		console.log('Member API: Cookie中的userId:', userId);
 
 		if (!userId) {
+			console.log('Member API: userId不存在，返回401');
 			return NextResponse.json(
 				{ error: '未登录' },
 				{ status: 401 }
@@ -14,12 +16,15 @@ export async function GET(request: NextRequest) {
 		}
 
 		let member = await memberManager.getMemberByUserId(userId);
+		console.log('Member API: 查询到的会员信息:', member);
 
 		// 如果会员不存在，自动创建基础会员
 		if (!member) {
+			console.log('Member API: 会员不存在，尝试自动创建');
 			try {
 				// 获取用户信息，使用用户注册时间作为成为会员的时间
 				const user = await userManager.getUserById(userId);
+				console.log('Member API: 获取到的用户信息:', user);
 				const createdAt = user?.createdAt || new Date().toISOString();
 
 				member = await memberManager.createMember({
@@ -31,6 +36,7 @@ export async function GET(request: NextRequest) {
 					totalConsumption: 0,
 					memberStatus: 'active',
 				});
+				console.log('Member API: 创建的会员信息:', member);
 			} catch (createError) {
 				console.error('Auto-create member error:', createError);
 				return NextResponse.json(
