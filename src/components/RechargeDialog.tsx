@@ -101,6 +101,26 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   // 重置状态
   useEffect(() => {
     if (isOpen) {
+      console.log('=== 充值对话框打开 ===');
+      console.log('isAuthenticated:', isAuthenticated);
+      console.log('user:', user);
+      console.log('浏览器 Cookie:', document.cookie);
+
+      // 测试 cookie 读取接口
+      fetch('/api/test/cookies', { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+          console.log('测试接口返回的 Cookie 数据:', data);
+          if (!data.userId) {
+            console.error('❌ Cookie 未正确发送到后端！');
+            console.error('前端显示已登录（', isAuthenticated, '），但后端收到的 userId 为空');
+            console.error('建议：刷新页面或重新登录');
+          }
+        })
+        .catch(err => {
+          console.error('测试接口调用失败:', err);
+        });
+
       setActiveTab('member');
       setSelectedAmount(0);
       setCustomAmount('');
@@ -114,7 +134,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setPaymentAmount(0);
       setPaymentDescription('');
     }
-  }, [isOpen]);
+  }, [isOpen, isAuthenticated, user]);
 
   // 生成支付二维码
   useEffect(() => {

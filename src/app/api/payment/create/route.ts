@@ -8,9 +8,18 @@ import { useAuth } from '@/contexts/AuthContext';
 export async function POST(request: NextRequest) {
   try {
     // 获取用户身份
+    const allCookies = request.cookies.getAll();
     const userId = request.cookies.get('userId')?.value;
 
+    // 详细日志：调试 cookie 读取问题
+    console.log('=== 支付接口 Cookie 调试 ===');
+    console.log('Cookie数量:', allCookies.length);
+    console.log('所有Cookie:', allCookies.map(c => ({ name: c.name, value: c.value?.substring(0, 10) + '...' })));
+    console.log('userId:', userId);
+    console.log('==========================');
+
     if (!userId) {
+      console.warn('⚠️ 支付接口: 未登录 - Cookie 中不存在 userId');
       return NextResponse.json(
         { success: false, error: '用户未登录，请刷新页面重试或重新登录' },
         { status: 401 }

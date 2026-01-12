@@ -37,6 +37,11 @@ export default function LoginPage() {
 			console.log('=== 登录成功，检查 Cookie ===');
 			console.log('浏览器 Cookie:', document.cookie);
 
+			// 测试 cookie 是否正确设置
+			const testResponse = await fetch('/api/test/cookies', { credentials: 'include' });
+			const testData = await testResponse.json();
+			console.log('测试接口返回:', testData);
+
 			// 如果勾选了记住我，保存手机号和密码
 			if (rememberMe) {
 				localStorage.setItem('savedLoginPhone', phone);

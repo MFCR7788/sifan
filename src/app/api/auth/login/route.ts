@@ -55,9 +55,10 @@ export async function POST(request: NextRequest) {
 			user,
 		});
 
-		console.log('Login: 登录用户信息:', user);
-		console.log('Login: 用户ID:', user.id);
-		console.log('Login: NODE_ENV:', process.env.NODE_ENV);
+		console.log('=== 登录接口日志 ===');
+		console.log('登录用户信息:', user);
+		console.log('用户ID:', user.id);
+		console.log('NODE_ENV:', process.env.NODE_ENV);
 
 		// 设置用户 ID 到 Cookie（简单实现，生产环境应使用 JWT）
 		response.cookies.set('userId', user.id, {
@@ -66,15 +67,18 @@ export async function POST(request: NextRequest) {
 			sameSite: 'lax',
 			path: '/',
 			maxAge: 60 * 60 * 24 * 7, // 7 天
+			domain: undefined, // undefined 表示使用当前域
 		});
 
-		console.log('Login: Cookie已设置，userId:', user.id);
-		console.log('Login: Cookie配置:', {
+		console.log('✅ Cookie已设置，userId:', user.id);
+		console.log('Cookie配置:', {
 			httpOnly: false,
 			secure: false,
 			sameSite: 'lax',
 			path: '/',
+			maxAge: 60 * 60 * 24 * 7,
 		});
+		console.log('==================');
 
 		return response;
 	} catch (error: any) {
