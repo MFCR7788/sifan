@@ -164,6 +164,14 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
                     {member.points.toLocaleString()}
                   </span>
                 </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-600">到期时间</span>
+                  <span className="text-xs font-semibold text-gray-900">
+                    {member.expiresAt
+                      ? new Date(member.expiresAt).toLocaleDateString('zh-CN')
+                      : '永久'}
+                  </span>
+                </div>
               </div>
             ) : errorMessage ? (
               <div className="text-xs text-red-500">{errorMessage}</div>
@@ -174,6 +182,13 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
 
           {/* 操作按钮 */}
           <div className="px-6 py-3 space-y-2">
+            <Link
+              href="/recharge"
+              className="block w-full text-center text-xs bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+              onClick={() => setShowCard(false)}
+            >
+              充值
+            </Link>
             <Link
               href="/profile"
               className="block w-full text-center text-xs bg-gray-100 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
