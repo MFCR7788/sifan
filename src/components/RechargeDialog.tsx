@@ -88,6 +88,11 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   const [paymentMethod, setPaymentMethod] = useState<'wechat' | 'alipay'>('alipay');
   const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [selectedPoints, setSelectedPoints] = useState<number>(0);
+  const [qrCodeImage, setQrCodeImage] = useState<string>('');
+  const [orderNo, setOrderNo] = useState<string>('');
+  const [isPolling, setIsPolling] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed'>('pending');
+  const [isGeneratingQr, setIsGeneratingQr] = useState(false);
 
   // 重置状态
   useEffect(() => {
@@ -98,8 +103,125 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setPaymentMethod('alipay');
       setSelectedPlan('');
       setSelectedPoints(0);
+      setQrCodeImage('');
+      setOrderNo('');
+      setPaymentStatus('pending');
+      setIsPolling(false);
     }
   }, [isOpen]);
+
+  // 生成支付二维码
+  useEffect(() => {
+    const generatePaymentQr = async () => {
+      if ((activeTab === 'balance' && selectedAmount > 0) ||
+          (activeTab === 'member' && selectedPlan) ||
+          (activeTab === 'points' && selectedPoints > 0)) {
+
+        let amount = 0;
+        let description = '';
+        let metadata = {};
+
+        if (activeTab === 'balance') {
+          amount = selectedAmount;
+          description = `充值 ¥${selectedAmount}`;
+        } else if (activeTab === 'member') {
+          const plan = MEMBERSHIP_PLANS.find(p => p.id === selectedPlan);
+          amount = plan?.price || 0;
+          description = `${plan?.name} - ${plan?.period}`;
+          metadata = { planId: plan?.id };
+        } else if (activeTab === 'points') {
+          const pkg = POINTS_PACKAGES.find(p => p.points === selectedPoints);
+          amount = pkg?.price || 0;
+          description = `${pkg?.points.toLocaleString()} 积分`;
+          metadata = { points: pkg?.points };
+        }
+
+        setIsGeneratingQr(true);
+        setQrCodeImage('');
+        setPaymentStatus('pending');
+
+        try {
+          const response = await fetch('/api/payment/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              paymentMethod,
+              amount,
+              description,
+              type: activeTab,
+              metadata,
+            }),
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            setQrCodeImage(data.qrCodeImage);
+            setOrderNo(data.orderNo);
+          } else {
+            console.error('生成支付二维码失败:', data.error);
+          }
+        } catch (error) {
+          console.error('生成支付二维码错误:', error);
+        } finally {
+          setIsGeneratingQr(false);
+        }
+      } else {
+        setQrCodeImage('');
+        setOrderNo('');
+        setPaymentStatus('pending');
+      }
+    };
+
+    generatePaymentQr();
+  }, [selectedAmount, selectedPlan, selectedPoints, paymentMethod, activeTab]);
+
+  // 轮询支付状态
+  useEffect(() => {
+    if (!qrCodeImage || isPolling || paymentStatus !== 'pending') return;
+
+    const pollPaymentStatus = async () => {
+      setIsPolling(true);
+      let attempts = 0;
+      const maxAttempts = 60; // 最多轮询60次（5分钟）
+
+      const interval = setInterval(async () => {
+        attempts++;
+
+        try {
+          const response = await fetch(
+            `/api/payment/query?orderNo=${orderNo}`,
+            { credentials: 'include' }
+          );
+
+          const data = await response.json();
+
+          if (data.success && data.isPaid) {
+            setPaymentStatus('success');
+            clearInterval(interval);
+            setIsPolling(false);
+
+            // 支付成功，2秒后关闭对话框
+            setTimeout(() => {
+              onClose();
+              // 刷新页面
+              window.location.reload();
+            }, 2000);
+          } else if (attempts >= maxAttempts) {
+            setPaymentStatus('failed');
+            clearInterval(interval);
+            setIsPolling(false);
+          }
+        } catch (error) {
+          console.error('查询支付状态错误:', error);
+        }
+      }, 5000); // 每5秒查询一次
+
+      return () => clearInterval(interval);
+    };
+
+    pollPaymentStatus();
+  }, [qrCodeImage, orderNo, paymentStatus, onClose, isPolling]);
 
   const calculateBonus = (amount: number): number => {
     const preset = PRESET_AMOUNTS.find((p) => p.amount === amount);
@@ -412,44 +534,88 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                 收款二维码
               </div>
               <div className="flex-1 flex items-center justify-center">
-                {(activeTab === 'balance' && selectedAmount > 0) ||
-                (activeTab === 'member' && selectedPlan) ||
-                (activeTab === 'points' && selectedPoints > 0) ? (
+                {isGeneratingQr ? (
+                  <div className="text-center text-gray-400 text-sm">
+                    生成中...
+                  </div>
+                ) : qrCodeImage ? (
                   <div className="text-center w-full">
-                    <div className="w-48 h-48 bg-gray-100 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                      <div className="text-gray-400 text-sm">
-                        {paymentMethod === 'wechat' ? '微信' : '支付宝'}
-                        <br />
-                        二维码
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {activeTab === 'balance' && (
-                        <div className="text-lg font-semibold text-gray-900">
-                          ¥{selectedAmount}
+                    {paymentStatus === 'success' ? (
+                      <div className="space-y-4">
+                        <div className="w-48 h-48 bg-green-50 rounded-xl flex items-center justify-center mx-auto border-2 border-green-200">
+                          <div className="text-green-500">
+                            <svg className="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
                         </div>
-                      )}
-                      {activeTab === 'member' && selectedPlan && (
-                        <>
-                          <div className="text-lg font-semibold text-gray-900">
-                            ¥{MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.price}
+                        <div className="text-lg font-semibold text-green-600">
+                          支付成功
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          正在跳转...
+                        </div>
+                      </div>
+                    ) : paymentStatus === 'failed' ? (
+                      <div className="space-y-4">
+                        <div className="w-48 h-48 bg-red-50 rounded-xl flex items-center justify-center mx-auto border-2 border-red-200">
+                          <div className="text-red-500">
+                            <svg className="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
                           </div>
-                          <div className="text-xs text-gray-500">
-                            {MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.name}
+                        </div>
+                        <div className="text-lg font-semibold text-red-600">
+                          支付超时
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          请重新生成订单
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <img
+                          src={qrCodeImage}
+                          alt="支付二维码"
+                          className="w-48 h-48 rounded-xl mx-auto mb-4"
+                        />
+                        <div className="text-xs text-gray-500 mb-2">
+                          请使用{paymentMethod === 'wechat' ? '微信' : '支付宝'}扫码支付
+                        </div>
+                        <div className="space-y-2">
+                          {activeTab === 'balance' && (
+                            <div className="text-lg font-semibold text-gray-900">
+                              ¥{selectedAmount}
+                            </div>
+                          )}
+                          {activeTab === 'member' && selectedPlan && (
+                            <>
+                              <div className="text-lg font-semibold text-gray-900">
+                                ¥{MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.price}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.name}
+                              </div>
+                            </>
+                          )}
+                          {activeTab === 'points' && selectedPoints > 0 && (
+                            <>
+                              <div className="text-lg font-semibold text-gray-900">
+                                ¥{POINTS_PACKAGES.find(p => p.points === selectedPoints)?.price}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {POINTS_PACKAGES.find(p => p.points === selectedPoints)?.points.toLocaleString()} 积分
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        {isPolling && (
+                          <div className="text-xs text-gray-400 mt-3">
+                            正在查询支付状态...
                           </div>
-                        </>
-                      )}
-                      {activeTab === 'points' && selectedPoints > 0 && (
-                        <>
-                          <div className="text-lg font-semibold text-gray-900">
-                            ¥{POINTS_PACKAGES.find(p => p.points === selectedPoints)?.price}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {POINTS_PACKAGES.find(p => p.points === selectedPoints)?.points.toLocaleString()} 积分
-                          </div>
-                        </>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center text-gray-400 text-sm">
@@ -459,15 +625,6 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button
-            className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-800 transition-all"
-          >
-            确认支付
-          </button>
         </div>
       </div>
     </div>

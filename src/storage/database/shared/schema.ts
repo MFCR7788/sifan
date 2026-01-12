@@ -91,6 +91,40 @@ export const memberTransactions = pgTable("member_transactions", {
 		}).onDelete("cascade"),
 ]);
 
+// 支付订单表
+export const paymentOrders = pgTable("payment_orders", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	orderNo: varchar("order_no", { length: 64 }).notNull().unique(),
+	userId: varchar("user_id", { length: 36 }).notNull(),
+	memberId: varchar("member_id", { length: 36 }),
+	orderType: varchar("order_type", { length: 50 }).notNull(), // 'recharge' | 'membership' | 'points'
+	amount: integer().notNull(), // 单位：分
+	paymentMethod: varchar("payment_method", { length: 50 }).notNull(), // 'wechat' | 'alipay'
+	status: varchar("status", { length: 50 }).default('pending').notNull(), // 'pending' | 'paid' | 'failed' | 'cancelled'
+	tradeNo: varchar("trade_no", { length: 128 }), // 第三方支付平台的交易号
+	transactionId: varchar("transaction_id", { length: 128 }), // 支付平台的订单号
+	qrCodeUrl: varchar("qr_code_url", { length: 500 }), // 二维码链接
+	description: varchar("description", { length: 255 }),
+	metadata: jsonb(),
+	paidAt: timestamp("paid_at", { withTimezone: true, mode: 'string' }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+}, (table) => [
+	index("payment_orders_order_no_idx").using("btree", table.orderNo.asc().nullsLast().op("text_ops")),
+	index("payment_orders_user_id_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	index("payment_orders_status_idx").using("btree", table.status.asc().nullsLast().op("text_ops")),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "payment_orders_user_id_users_id_fk"
+		}).onDelete("cascade"),
+	foreignKey({
+			columns: [table.memberId],
+			foreignColumns: [members.id],
+			name: "payment_orders_member_id_members_id_fk"
+		}).onDelete("set null"),
+]);
+
 export const users = pgTable("users", {
 	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
 	email: varchar({ length: 255 }),
@@ -136,6 +170,13 @@ export const updateMemberTransactionSchema = createCoercedInsertSchema(memberTra
 export type InsertMemberTransaction = z.infer<typeof insertMemberTransactionSchema>
 export type UpdateMemberTransaction = z.infer<typeof updateMemberTransactionSchema>
 export type MemberTransaction = typeof memberTransactions.$inferSelect
+
+// Payment Orders
+export const insertPaymentOrderSchema = createCoercedInsertSchema(paymentOrders)
+export const updatePaymentOrderSchema = createCoercedInsertSchema(paymentOrders).partial()
+export type InsertPaymentOrder = z.infer<typeof insertPaymentOrderSchema>
+export type UpdatePaymentOrder = z.infer<typeof updatePaymentOrderSchema>
+export type PaymentOrder = typeof paymentOrders.$inferSelect
 
 // Users
 export const insertUserSchema = createCoercedInsertSchema(users).pick({
