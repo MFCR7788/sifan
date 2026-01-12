@@ -155,9 +155,74 @@ export async function POST(request: NextRequest) {
       amount: amount,
     });
   } catch (error: any) {
-    console.error('Create Payment Order Error:', error);
+    console.error('=== Create Payment Order Error ===');
+    console.error('Error message:', error.message);
+    console.error('Error name:', error.name);
+    console.error('Error stack:', error.stack);
+
+    // 判断错误类型，返回更详细的错误信息
+    if (error.message?.includes('微信支付未初始化')) {
+      console.error('❌ 微信支付 SDK 未初始化，请检查证书配置');
+      return NextResponse.json(
+        {
+          success: false,
+          error: '微信支付配置错误',
+          details: '微信支付 SDK 未正确初始化，请联系管理员检查服务器配置',
+        },
+        { status: 500 }
+      );
+    }
+
+    if (error.message?.includes('创建微信支付订单失败')) {
+      console.error('❌ 调用微信支付 API 失败');
+      return NextResponse.json(
+        {
+          success: false,
+          error: '微信支付接口调用失败',
+          details: error.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    if (error.message?.includes('code_url')) {
+      console.error('❌ 微信支付返回数据异常');
+      return NextResponse.json(
+        {
+          success: false,
+          error: '微信支付返回数据异常',
+          details: error.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    // 数据库错误
+    if (error.message?.includes('Database') || error.message?.includes('PGDATABASE')) {
+      console.error('❌ 数据库错误');
+      return NextResponse.json(
+        {
+          success: false,
+          error: '数据库错误',
+          details: '无法连接到数据库，请联系管理员',
+        },
+        { status: 500 }
+      );
+    }
+
+    // 其他未知错误
+    console.error('❌ 未知错误:', error);
     return NextResponse.json(
-      { success: false, error: error.message || '创建支付订单失败' },
+      {
+        success: false,
+        error: '创建支付订单失败',
+        details: error.message || '服务器内部错误',
+        debug: process.env.NODE_ENV === 'development' ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack?.substring(0, 500),
+        } : undefined,
+      },
       { status: 500 }
     );
   }
