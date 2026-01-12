@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
 
 		console.log('Login: 登录用户信息:', user);
 		console.log('Login: 用户ID:', user.id);
+		console.log('Login: NODE_ENV:', process.env.NODE_ENV);
 
 		// 设置用户 ID 到 Cookie（简单实现，生产环境应使用 JWT）
 		response.cookies.set('userId', user.id, {
@@ -68,6 +69,12 @@ export async function POST(request: NextRequest) {
 		});
 
 		console.log('Login: Cookie已设置，userId:', user.id);
+		console.log('Login: Cookie配置:', {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'lax',
+			path: '/',
+		});
 
 		return response;
 	} catch (error: any) {

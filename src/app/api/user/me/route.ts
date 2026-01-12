@@ -4,22 +4,41 @@ import { userManager } from '@/storage/database/userManager';
 export async function GET(request: NextRequest) {
 	try {
 		const userId = request.cookies.get('userId')?.value;
+		console.log('/api/user/me: Cookie中的userId:', userId);
 
 		if (!userId) {
+			console.log('/api/user/me: userId不存在，返回401');
 			return NextResponse.json(
 				{ error: '未登录' },
 				{ status: 401 }
 			);
 		}
 
+		// 对于管理员账户，返回硬编码的用户信息
+		if (userId === 'admin-id') {
+			console.log('/api/user/me: 检测到管理员账户');
+			const adminUser = {
+				id: 'admin-id',
+				phone: '15967675767',
+				email: 'admin@magic-superman.com',
+				name: 'Admin',
+				isAdmin: true,
+				isActive: true,
+				createdAt: new Date().toISOString(),
+			};
+			return NextResponse.json({ user: adminUser });
+		}
+
 		const user = await userManager.getUserById(userId);
 		if (!user) {
+			console.log('/api/user/me: 用户不存在，userId:', userId);
 			return NextResponse.json(
 				{ error: '用户不存在' },
 				{ status: 404 }
 			);
 		}
 
+		console.log('/api/user/me: 返回用户信息:', user);
 		return NextResponse.json({ user });
 	} catch (error: any) {
 		console.error('Get user error:', error);

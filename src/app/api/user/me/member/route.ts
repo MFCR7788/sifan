@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
 	try {
 		const userId = request.cookies.get('userId')?.value;
 		console.log('Member API: Cookie中的userId:', userId);
+		console.log('Member API: 所有Cookie:', request.cookies.getAll());
 
 		if (!userId) {
 			console.log('Member API: userId不存在，返回401');
@@ -22,21 +23,36 @@ export async function GET(request: NextRequest) {
 		if (!member) {
 			console.log('Member API: 会员不存在，尝试自动创建');
 			try {
-				// 获取用户信息，使用用户注册时间作为成为会员的时间
-				const user = await userManager.getUserById(userId);
-				console.log('Member API: 获取到的用户信息:', user);
-				const createdAt = user?.createdAt || new Date().toISOString();
+				// 对于管理员账户，直接创建会员记录
+				if (userId === 'admin-id') {
+					console.log('Member API: 检测到管理员账户，创建会员记录');
+					member = await memberManager.createMember({
+						userId,
+						memberLevel: 'platinum', // 管理员给白金会员
+						balance: 0,
+						points: 0,
+						totalRecharge: 0,
+						totalConsumption: 0,
+						memberStatus: 'active',
+					});
+					console.log('Member API: 创建的管理员会员信息:', member);
+				} else {
+					// 获取用户信息，使用用户注册时间作为成为会员的时间
+					const user = await userManager.getUserById(userId);
+					console.log('Member API: 获取到的用户信息:', user);
+					const createdAt = user?.createdAt || new Date().toISOString();
 
-				member = await memberManager.createMember({
-					userId,
-					memberLevel: 'basic',
-					balance: 0,
-					points: 0,
-					totalRecharge: 0,
-					totalConsumption: 0,
-					memberStatus: 'active',
-				});
-				console.log('Member API: 创建的会员信息:', member);
+					member = await memberManager.createMember({
+						userId,
+						memberLevel: 'basic',
+						balance: 0,
+						points: 0,
+						totalRecharge: 0,
+						totalConsumption: 0,
+						memberStatus: 'active',
+					});
+					console.log('Member API: 创建的会员信息:', member);
+				}
 			} catch (createError) {
 				console.error('Auto-create member error:', createError);
 				return NextResponse.json(
