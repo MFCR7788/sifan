@@ -29,16 +29,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	const isAuthenticated = !!user;
 	const isAdmin = user?.isAdmin || false;
 
+	// 获取请求头配置（包含自定义 userId header）
+	const getAuthHeaders = () => {
+		const headers: Record<string, string> = {};
+		// 备选方案：从 sessionStorage 读取 userId，添加到 header
+		const sessionUserId = typeof window !== 'undefined' ? sessionStorage.getItem('userId') : null;
+		if (sessionUserId) {
+			headers['x-user-id'] = sessionUserId;
+		}
+		return headers;
+	};
+
 	// 获取当前用户信息
 	const refreshUser = useCallback(async () => {
 		try {
+			const headers = getAuthHeaders();
 			const response = await fetch('/api/user/me', {
 				credentials: 'include',
+				headers,
 			});
 
 			if (response.ok) {
 				const data = await response.json();
 				setUser(data.user);
+				// 同步 userId 到 sessionStorage（备选方案）
+				if (typeof window !== 'undefined' && data.user?.id) {
+					sessionStorage.setItem('userId', data.user.id);
+				}
 			} else {
 				// 401表示未登录，这是正常状态，不需要打印错误日志
 				if (response.status === 401) {
@@ -81,6 +98,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		const data = await response.json();
 		setUser(data.user);
 		setIsLoading(false);
+		// 备选方案：将 userId 存到 sessionStorage
+		if (typeof window !== 'undefined' && data.user?.id) {
+			sessionStorage.setItem('userId', data.user.id);
+			console.log('✅ userId 已保存到 sessionStorage:', data.user.id);
+		}
 	};
 
 	// 注册
@@ -121,6 +143,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			console.error('Logout error:', error);
 		} finally {
 			setUser(null);
+			// 清除 sessionStorage 中的 userId
+			if (typeof window !== 'undefined') {
+				sessionStorage.removeItem('userId');
+			}
 		}
 	};
 

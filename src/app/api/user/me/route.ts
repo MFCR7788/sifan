@@ -3,8 +3,16 @@ import { userManager } from '@/storage/database/userManager';
 
 export async function GET(request: NextRequest) {
 	try {
-		const userId = request.cookies.get('userId')?.value;
-		console.log('/api/user/me: Cookie中的userId:', userId);
+		// 支持从 Cookie 和 Header 两种方式读取 userId
+		let userId = request.cookies.get('userId')?.value;
+
+		// 备选方案：从自定义 header 中读取（解决 localhost cookie 不发送的问题）
+		if (!userId) {
+			userId = request.headers.get('x-user-id');
+			console.log('/api/user/me: Cookie 中无 userId，尝试从 Header 读取:', userId);
+		}
+
+		console.log('/api/user/me: 最终userId:', userId);
 
 		if (!userId) {
 			console.log('/api/user/me: userId不存在，返回401');

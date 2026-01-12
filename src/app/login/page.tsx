@@ -33,12 +33,19 @@ export default function LoginPage() {
 		try {
 			await login(phone, password);
 
-			// 登录后检查 Cookie
-			console.log('=== 登录成功，检查 Cookie ===');
+			// 登录后检查 Cookie 和 SessionStorage
+			console.log('=== 登录成功，检查认证信息 ===');
 			console.log('浏览器 Cookie:', document.cookie);
+			console.log('sessionStorage userId:', sessionStorage.getItem('userId'));
 
-			// 测试 cookie 是否正确设置
-			const testResponse = await fetch('/api/test/cookies', { credentials: 'include' });
+			// 测试 cookie/header 是否正确设置
+			const headers: Record<string, string> = {};
+			const sessionUserId = sessionStorage.getItem('userId');
+			if (sessionUserId) {
+				headers['x-user-id'] = sessionUserId;
+			}
+
+			const testResponse = await fetch('/api/test/cookies', { credentials: 'include', headers });
 			const testData = await testResponse.json();
 			console.log('测试接口返回:', testData);
 

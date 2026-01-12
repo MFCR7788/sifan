@@ -7,19 +7,27 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export async function POST(request: NextRequest) {
   try {
-    // 获取用户身份
+    // 获取用户身份 - 支持从 Cookie 和 Header 两种方式读取
     const allCookies = request.cookies.getAll();
-    const userId = request.cookies.get('userId')?.value;
+    let userId = request.cookies.get('userId')?.value;
 
-    // 详细日志：调试 cookie 读取问题
-    console.log('=== 支付接口 Cookie 调试 ===');
+    // 备选方案：从自定义 header 中读取（解决 localhost cookie 不发送的问题）
+    if (!userId) {
+      userId = request.headers.get('x-user-id');
+      console.log('Cookie 中无 userId，尝试从 Header 读取:', userId);
+    }
+
+    // 详细日志：调试 cookie/header 读取
+    console.log('=== 支付接口认证调试 ===');
     console.log('Cookie数量:', allCookies.length);
     console.log('所有Cookie:', allCookies.map(c => ({ name: c.name, value: c.value?.substring(0, 10) + '...' })));
-    console.log('userId:', userId);
+    console.log('Cookie userId:', request.cookies.get('userId')?.value);
+    console.log('Header userId:', request.headers.get('x-user-id'));
+    console.log('最终 userId:', userId);
     console.log('==========================');
 
     if (!userId) {
-      console.warn('⚠️ 支付接口: 未登录 - Cookie 中不存在 userId');
+      console.warn('⚠️ 支付接口: 未登录 - Cookie 和 Header 中都不存在 userId');
       return NextResponse.json(
         { success: false, error: '用户未登录，请刷新页面重试或重新登录' },
         { status: 401 }

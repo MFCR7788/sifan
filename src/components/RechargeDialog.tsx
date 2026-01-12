@@ -105,16 +105,25 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       console.log('isAuthenticated:', isAuthenticated);
       console.log('user:', user);
       console.log('浏览器 Cookie:', document.cookie);
+      console.log('sessionStorage userId:', sessionStorage.getItem('userId'));
 
-      // 测试 cookie 读取接口
-      fetch('/api/test/cookies', { credentials: 'include' })
+      // 测试 cookie/header 读取接口
+      const headers: Record<string, string> = {};
+      const sessionUserId = sessionStorage.getItem('userId');
+      if (sessionUserId) {
+        headers['x-user-id'] = sessionUserId;
+      }
+
+      fetch('/api/test/cookies', { credentials: 'include', headers })
         .then(res => res.json())
         .then(data => {
-          console.log('测试接口返回的 Cookie 数据:', data);
-          if (!data.userId) {
-            console.error('❌ Cookie 未正确发送到后端！');
+          console.log('测试接口返回的数据:', data);
+          if (!data.finalUserId) {
+            console.error('❌ Cookie 和 Header 都未正确发送到后端！');
             console.error('前端显示已登录（', isAuthenticated, '），但后端收到的 userId 为空');
             console.error('建议：刷新页面或重新登录');
+          } else {
+            console.log('✅ 认证信息已正确发送到后端，来源:', data.cookieUserId ? 'Cookie' : 'Header');
           }
         })
         .catch(err => {
@@ -179,9 +188,17 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
         setPaymentStatus('pending');
 
         try {
+          // 构建请求头（包含自定义 userId header 作为备选方案）
+          const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+          const sessionUserId = sessionStorage.getItem('userId');
+          if (sessionUserId) {
+            headers['x-user-id'] = sessionUserId;
+            console.log('✅ 从 sessionStorage 读取 userId:', sessionUserId);
+          }
+
           const response = await fetch('/api/payment/create', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             credentials: 'include',
             body: JSON.stringify({
               paymentMethod: 'wechat', // 固定使用微信支付
