@@ -24,22 +24,52 @@ const MEMBERSHIP_PLANS = [
     id: 'silver',
     name: '银牌会员',
     price: 500,
+    originalPrice: 800,
     period: '月',
-    features: ['基础会员权限', '专属客服', '会员折扣'],
+    badge: '超值',
+    features: [
+      { icon: '✓', text: '基础会员全部权益' },
+      { icon: '✓', text: '专属客服一对一服务' },
+      { icon: '✓', text: '全站商品9.5折优惠' },
+      { icon: '✓', text: '免费方案咨询' },
+      { icon: '✓', text: '优先技术支持' },
+    ],
+    color: 'from-gray-500 to-gray-600',
   },
   {
     id: 'gold',
     name: '金牌会员',
     price: 2000,
+    originalPrice: 3000,
     period: '月',
-    features: ['银牌会员权限', '高级功能', '专属顾问', '快速通道'],
+    badge: '热门',
+    features: [
+      { icon: '✓', text: '银牌会员全部权益' },
+      { icon: '✓', text: '全站商品8.8折优惠' },
+      { icon: '✓', text: '专属客户经理' },
+      { icon: '✓', text: '高级功能使用权' },
+      { icon: '✓', text: '快速绿色通道' },
+      { icon: '✓', text: '月度运营报告' },
+    ],
+    color: 'from-yellow-400 to-yellow-500',
   },
   {
     id: 'platinum',
     name: '白金会员',
     price: 5000,
+    originalPrice: 8000,
     period: '年',
-    features: ['金牌会员权限', '定制服务', '优先支持', '专属活动'],
+    badge: '尊享',
+    features: [
+      { icon: '✓', text: '金牌会员全部权益' },
+      { icon: '✓', text: '全站商品7.5折优惠' },
+      { icon: '✓', text: '专属定制服务' },
+      { icon: '✓', text: '24小时专属客服' },
+      { icon: '✓', text: '优先体验新功能' },
+      { icon: '✓', text: '专属活动邀请' },
+      { icon: '✓', text: '专属顾问团队' },
+    ],
+    color: 'from-purple-500 to-purple-600',
   },
 ];
 
@@ -158,38 +188,59 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
             <div className="flex-1 overflow-y-auto p-8">
               {/* 购买会员 */}
               {activeTab === 'member' && (
-                <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-6">
                   {MEMBERSHIP_PLANS.map((plan) => (
                     <div
                       key={plan.id}
                       onClick={() => setSelectedPlan(plan.id)}
-                      className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
+                      className={`relative rounded-2xl border-2 cursor-pointer transition-all overflow-hidden ${
                         selectedPlan === plan.id
-                          ? 'border-gray-900 bg-gray-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-gray-900 shadow-xl scale-105'
+                          : 'border-gray-200 hover:border-gray-300 hover:shadow-lg'
                       }`}
                     >
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {plan.name}
-                        </h3>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-gray-900">
-                            ¥{plan.price}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            /{plan.period}
-                          </div>
+                      {/* 顶部标签 */}
+                      {plan.badge && (
+                        <div
+                          className={`absolute top-0 left-0 right-0 bg-gradient-to-r ${plan.color} text-white text-xs font-medium py-1.5 text-center`}
+                        >
+                          {plan.badge}
                         </div>
+                      )}
+
+                      {/* 会员标题 */}
+                      <div className={`bg-gradient-to-r ${plan.color} px-6 pt-10 pb-6 text-white`}>
+                        <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-3xl font-bold">¥{plan.price}</span>
+                          <span className="text-sm opacity-80">/{plan.period}</span>
+                        </div>
+                        {plan.originalPrice > plan.price && (
+                          <div className="text-xs opacity-70 line-through mt-1">
+                            原价 ¥{plan.originalPrice}
+                          </div>
+                        )}
                       </div>
-                      <ul className="space-y-2">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="text-sm text-gray-600 flex items-center">
-                            <span className="w-2 h-2 bg-gray-900 rounded-full mr-2"></span>
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
+
+                      {/* 特权列表 */}
+                      <div className="bg-white p-6">
+                        <div className="text-xs font-medium text-gray-500 mb-4">
+                          会员特权
+                        </div>
+                        <ul className="space-y-3">
+                          {plan.features.map((feature, index) => (
+                            <li
+                              key={index}
+                              className="text-sm text-gray-700 flex items-start"
+                            >
+                              <span className={`flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r ${plan.color} flex items-center justify-center text-white text-xs mr-2 mt-0.5`}>
+                                {feature.icon}
+                              </span>
+                              <span>{feature.text}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -353,8 +404,10 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                 收款二维码
               </div>
               <div className="flex-1 flex items-center justify-center">
-                {selectedAmount > 0 || selectedPlan || selectedPoints > 0 ? (
-                  <div className="text-center">
+                {(activeTab === 'balance' && selectedAmount > 0) ||
+                (activeTab === 'member' && selectedPlan) ||
+                (activeTab === 'points' && selectedPoints > 0) ? (
+                  <div className="text-center w-full">
                     <div className="w-48 h-48 bg-gray-100 rounded-xl flex items-center justify-center mb-4 mx-auto">
                       <div className="text-gray-400 text-sm">
                         {paymentMethod === 'wechat' ? '微信' : '支付宝'}
@@ -362,10 +415,32 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                         二维码
                       </div>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      {activeTab === 'balance' && `¥${selectedAmount}`}
-                      {activeTab === 'member' && selectedPlan && `¥${MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.price}`}
-                      {activeTab === 'points' && `¥${POINTS_PACKAGES.find(p => p.points === selectedPoints)?.price}`}
+                    <div className="space-y-2">
+                      {activeTab === 'balance' && (
+                        <div className="text-lg font-semibold text-gray-900">
+                          ¥{selectedAmount}
+                        </div>
+                      )}
+                      {activeTab === 'member' && selectedPlan && (
+                        <>
+                          <div className="text-lg font-semibold text-gray-900">
+                            ¥{MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.price}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.name}
+                          </div>
+                        </>
+                      )}
+                      {activeTab === 'points' && selectedPoints > 0 && (
+                        <>
+                          <div className="text-lg font-semibold text-gray-900">
+                            ¥{POINTS_PACKAGES.find(p => p.points === selectedPoints)?.price}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {POINTS_PACKAGES.find(p => p.points === selectedPoints)?.points.toLocaleString()} 积分
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 ) : (
