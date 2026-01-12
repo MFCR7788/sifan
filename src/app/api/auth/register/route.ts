@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
 		}
 
 		// 如果提供了邮箱，检查邮箱是否已存在
-		if (email) {
-			const existingEmailUser = await userManager.getUserByEmail(email);
+		if (email && email.trim()) {
+			const existingEmailUser = await userManager.getUserByEmail(email.trim());
 			if (existingEmailUser) {
 				return NextResponse.json(
 					{ error: '该邮箱已被使用' },
@@ -36,9 +36,9 @@ export async function POST(request: NextRequest) {
 			}
 		}
 
-		// 创建用户
+		// 创建用户，邮箱为空时不传
 		const user = await userManager.createUser({
-			email,
+			email: email && email.trim() ? email.trim() : undefined,
 			name,
 			password,
 			phone,

@@ -11,15 +11,19 @@ export class UserManager {
 	async createUser(data: InsertUser): Promise<Omit<User, 'password'>> {
 		const db = await getDb();
 		const validated = insertUserSchema.parse(data);
-		
+
 		// 加密密码
 		const hashedPassword = await bcrypt.hash(validated.password, 10);
-		
+
+		// 处理空邮箱，确保 undefined 或空字符串不插入数据库
+		const emailValue = validated.email && validated.email.trim() ? validated.email.trim() : null;
+
 		const [user] = await db.insert(users).values({
 			...validated,
+			email: emailValue,
 			password: hashedPassword,
 		}).returning();
-		
+
 		// 返回用户信息时不包含密码
 		const { password, ...userWithoutPassword } = user;
 		return userWithoutPassword;
