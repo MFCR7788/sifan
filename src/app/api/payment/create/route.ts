@@ -84,14 +84,44 @@ export async function POST(request: NextRequest) {
 
     // 调用支付接口
     if (paymentMethod === 'wechat') {
-      // 微信支付（单位：分）
-      const result = await createWechatNativePay({
-        description,
-        out_trade_no: order.orderNo,
-        amount: Math.round(amount * 100),
-      });
-      qrCodeUrl = result.code_url;
-      transactionId = result.prepay_id;
+      // 检查是否为开发环境，如果是，使用模拟支付
+      const isDev = process.env.NODE_ENV === 'development';
+
+      if (isDev && !process.env.WECHAT_PAY_ENABLE_REAL) {
+        // 开发环境：使用模拟支付
+        console.log('=== 使用模拟支付（开发环境）===');
+        // 使用一个假的 code_url 用于测试
+        qrCodeUrl = `https://pay.weixin.qq.com/mock?q=${order.orderNo}`;
+        transactionId = `mock_${order.orderNo}`;
+      } else {
+        // 生产环境：调用真实的微信支付接口
+        console.log('=== 调用微信支付接口 ===');
+        console.log('参数:', {
+          description,
+          out_trade_no: order.orderNo,
+          amount: Math.round(amount * 100),
+        });
+
+        try {
+          const result = await createWechatNativePay({
+            description,
+            out_trade_no: order.orderNo,
+            amount: Math.round(amount * 100),
+          });
+
+          console.log('微信支付返回结果:', result);
+          qrCodeUrl = result.code_url;
+          transactionId = result.prepay_id;
+
+          if (!qrCodeUrl) {
+            throw new Error('微信支付接口未返回 code_url');
+          }
+        } catch (wechatError: any) {
+          console.error('❌ 微信支付接口调用失败:', wechatError.message);
+          console.error('错误详情:', wechatError);
+          throw new Error(`微信支付失败: ${wechatError.message}`);
+        }
+      }
     } else if (paymentMethod === 'alipay') {
       // 支付宝（单位：元）
       const result = await createAlipayQrPay({

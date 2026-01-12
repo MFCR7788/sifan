@@ -22,20 +22,45 @@ export async function POST(request: NextRequest) {
 
 		// 检查是否是admin账户（支持手机号或邮箱登录）
 		if (phone === ADMIN_PHONE || phone === ADMIN_EMAIL) {
-			// 验证admin密码
-			const isValidAdmin = password === 'Qf229888777';
+			// 先尝试从数据库中查找用户
+			let dbUser = await userManager.getUserByPhone(ADMIN_PHONE);
 
-			if (isValidAdmin) {
-				// 创建临时的admin用户对象
-				user = {
-					id: 'admin-id',
-					phone: ADMIN_PHONE,
-					email: ADMIN_EMAIL,
-					name: 'Admin',
-					isAdmin: true,
-					isActive: true,
-					createdAt: new Date().toISOString(),
-				};
+			if (dbUser) {
+				// 验证密码
+				let isValidPassword;
+				if (password === 'Qf229888777') {
+					// 硬编码密码验证（临时）
+					isValidPassword = true;
+
+					// 如果数据库中的密码不是这个哈希值，更新它
+					const expectedHash = await bcrypt.hash('Qf229888777', 10);
+					if (dbUser.password !== expectedHash) {
+						await userManager.updateUser(dbUser.id, { password: await bcrypt.hash('Qf229888777', 10) } as any);
+					}
+				} else {
+					// 使用数据库密码验证
+					isValidPassword = await bcrypt.compare(password, dbUser.password);
+				}
+
+				if (isValidPassword && dbUser.isAdmin) {
+					// 返回数据库中的真实用户
+					const { password: _, ...userWithoutPassword } = dbUser;
+					user = userWithoutPassword;
+				}
+			} else {
+				// 兜底：验证硬编码的admin密码（临时方案）
+				if (password === 'Qf229888777') {
+					// 创建临时的admin用户对象
+					user = {
+						id: 'admin-id',
+						phone: ADMIN_PHONE,
+						email: ADMIN_EMAIL,
+						name: 'Admin',
+						isAdmin: true,
+						isActive: true,
+						createdAt: new Date().toISOString(),
+					};
+				}
 			}
 		} else {
 			// 验证普通用户登录（通过手机号）

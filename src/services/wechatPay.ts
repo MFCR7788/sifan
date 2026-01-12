@@ -9,6 +9,16 @@ try {
   const privateKeyPath = process.env.WECHAT_PAY_PRIVATE_KEY_PATH || '';
   const certPath = process.env.WECHAT_PAY_CERT_PATH || '';
 
+  console.log('=== 微信支付 SDK 初始化 ===');
+  console.log('私钥路径:', privateKeyPath);
+  console.log('证书路径:', certPath);
+  console.log('私钥文件存在:', fs.existsSync(privateKeyPath));
+  console.log('证书文件存在:', fs.existsSync(certPath));
+  console.log('APPID:', process.env.WECHAT_PAY_APPID);
+  console.log('MCHID:', process.env.WECHAT_PAY_MCHID);
+  console.log('API V3 KEY 已配置:', !!process.env.WECHAT_PAY_API_V3_KEY);
+  console.log('SERIAL NO 已配置:', !!process.env.WECHAT_PAY_SERIAL_NO);
+
   const privateKeyContent = fs.existsSync(privateKeyPath)
     ? fs.readFileSync(privateKeyPath)
     : Buffer.from('');
@@ -27,9 +37,22 @@ try {
     config.publicKey = fs.readFileSync(certPath);
   }
 
+  console.log('配置:', {
+    appid: config.appid,
+    mchid: config.mchid,
+    hasPrivateKey: !!config.privateKey,
+    hasPublicKey: !!config.publicKey,
+    hasSerialNo: !!config.serial_no,
+  });
+
   pay = new WxPay(config);
-} catch (error) {
-  console.warn('微信支付SDK初始化失败，可能是缺少证书配置');
+  console.log('✅ 微信支付 SDK 初始化成功');
+  console.log('========================');
+} catch (error: any) {
+  console.error('❌ 微信支付 SDK 初始化失败:', error.message);
+  console.error(error.stack);
+  console.warn('⚠️ 支付功能将不可用');
+  console.log('========================');
 }
 
 export interface CreateOrderParams {
@@ -49,11 +72,18 @@ export interface CreateOrderResult {
 export async function createWechatNativePay(
   params: CreateOrderParams
 ): Promise<CreateOrderResult> {
+  console.log('=== createWechatNativePay 调用 ===');
+  console.log('pay 实例:', pay ? '已初始化' : 'null');
+
   if (!pay) {
-    throw new Error('微信支付未初始化');
+    const errorMsg = '微信支付未初始化，请检查证书配置和环境变量';
+    console.error('❌', errorMsg);
+    throw new Error(errorMsg);
   }
 
   try {
+    console.log('创建订单参数:', params);
+
     const result = await pay.transactions_native({
       description: params.description,
       out_trade_no: params.out_trade_no,
@@ -64,12 +94,22 @@ export async function createWechatNativePay(
       },
     }) as any;
 
+    console.log('微信支付 API 返回:', result);
+    console.log('code_url:', result?.code_url);
+    console.log('prepay_id:', result?.prepay_id);
+
+    if (!result?.code_url) {
+      console.error('❌ 微信支付 API 返回的 code_url 为空');
+      throw new Error('微信支付接口返回数据异常：缺少 code_url');
+    }
+
     return {
-      code_url: result?.code_url || '',
-      prepay_id: result?.prepay_id || '',
+      code_url: result.code_url,
+      prepay_id: result.prepay_id || '',
     };
   } catch (error: any) {
-    console.error('WeChat Pay Create Error:', error);
+    console.error('❌ WeChat Pay Create Error:', error.message);
+    console.error('错误详情:', error);
     throw new Error(error.message || '创建微信支付订单失败');
   }
 }
