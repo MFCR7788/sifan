@@ -1,6 +1,7 @@
 import { db } from './db';
 import { paymentOrders } from './shared/schema';
 import { eq, and, desc } from 'drizzle-orm';
+import { memberManager } from './memberManager';
 
 export interface CreatePaymentOrderParams {
   userId: string;
@@ -115,12 +116,57 @@ export async function markOrderAsPaid(
   tradeNo: string,
   transactionId: string
 ) {
-  return await updatePaymentOrder(orderNo, {
+  // 获取订单信息
+  const order = await getPaymentOrderByOrderNo(orderNo);
+  if (!order) {
+    throw new Error('订单不存在');
+  }
+
+  // 更新订单状态
+  const updatedOrder = await updatePaymentOrder(orderNo, {
     status: 'paid',
     tradeNo,
     transactionId,
     paidAt: new Date().toISOString(),
   });
+
+  // 根据订单类型处理业务逻辑
+  if (order.orderType === 'recharge') {
+    // 余额充值
+    await memberManager.rechargeBalance(
+      order.userId,
+      order.amount,
+      order.paymentMethod,
+      transactionId,
+      order.description || '余额充值'
+    );
+  } else if (order.orderType === 'points') {
+    // 积分充值
+    const points = order.metadata?.points || 0;
+    await memberManager.rechargePoints(
+      order.userId,
+      points,
+      order.amount,
+      order.paymentMethod,
+      transactionId,
+      order.description || '积分充值'
+    );
+  } else if (order.orderType === 'membership') {
+    // 购买会员
+    const planId = order.metadata?.planId;
+    if (planId) {
+      await memberManager.purchaseMembership(
+        order.userId,
+        planId,
+        order.amount,
+        order.paymentMethod,
+        transactionId,
+        order.description || '购买会员'
+      );
+    }
+  }
+
+  return updatedOrder;
 }
 
 /**

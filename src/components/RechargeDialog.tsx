@@ -87,7 +87,6 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   const [activeTab, setActiveTab] = useState<'member' | 'balance' | 'points'>('member');
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'wechat' | 'alipay'>('alipay');
   const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [selectedPoints, setSelectedPoints] = useState<number>(0);
   const [qrCodeImage, setQrCodeImage] = useState<string>('');
@@ -96,6 +95,8 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed'>('pending');
   const [isGeneratingQr, setIsGeneratingQr] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState<number>(0); // 存储当前支付金额
+  const [paymentDescription, setPaymentDescription] = useState<string>(''); // 存储支付描述
 
   // 重置状态
   useEffect(() => {
@@ -103,7 +104,6 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setActiveTab('member');
       setSelectedAmount(0);
       setCustomAmount('');
-      setPaymentMethod('alipay');
       setSelectedPlan('');
       setSelectedPoints(0);
       setQrCodeImage('');
@@ -111,6 +111,8 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setPaymentStatus('pending');
       setIsPolling(false);
       setShowLoginPrompt(false);
+      setPaymentAmount(0);
+      setPaymentDescription('');
     }
   }, [isOpen]);
 
@@ -148,6 +150,10 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
           metadata = { points: pkg?.points };
         }
 
+        // 存储支付信息用于显示
+        setPaymentAmount(amount);
+        setPaymentDescription(description);
+
         setIsGeneratingQr(true);
         setQrCodeImage('');
         setPaymentStatus('pending');
@@ -158,7 +164,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({
-              paymentMethod,
+              paymentMethod: 'wechat', // 固定使用微信支付
               amount,
               description,
               type: activeTab,
@@ -182,11 +188,13 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
         setQrCodeImage('');
         setOrderNo('');
         setPaymentStatus('pending');
+        setPaymentAmount(0);
+        setPaymentDescription('');
       }
     };
 
     generatePaymentQr();
-  }, [selectedAmount, selectedPlan, selectedPoints, paymentMethod, activeTab]);
+  }, [selectedAmount, selectedPlan, selectedPoints, activeTab]);
 
   // 轮询支付状态
   useEffect(() => {
@@ -212,13 +220,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
             setPaymentStatus('success');
             clearInterval(interval);
             setIsPolling(false);
-
-            // 支付成功，2秒后关闭对话框
-            setTimeout(() => {
-              onClose();
-              // 刷新页面
-              window.location.reload();
-            }, 2000);
+            // 支付成功后不自动关闭，等待用户点击完成按钮
           } else if (attempts >= maxAttempts) {
             setPaymentStatus('failed');
             clearInterval(interval);
@@ -528,41 +530,17 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
               <div className="text-sm font-medium text-gray-900 mb-4">
                 支付方式
               </div>
-              <div className="space-y-3">
-                <button
-                  onClick={() => setPaymentMethod('wechat')}
-                  className={`w-full p-4 rounded-xl border-2 transition-all flex items-center justify-center ${
-                    paymentMethod === 'wechat'
-                      ? 'border-gray-900 bg-gray-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                      <path d="M8.5 4.5c-4.1 0-7.5 3.4-7.5 7.5s3.4 7.5 7.5 7.5h7c4.1 0 7.5-3.4 7.5-7.5s-3.4-7.5-7.5-7.5h-7zm0 2h7c3 0 5.5 2.5 5.5 5.5s-2.5 5.5-5.5 5.5h-7c-3 0-5.5-2.5-5.5-5.5s2.5-5.5 5.5-5.5z"/>
-                      <circle cx="7" cy="12" r="2"/>
-                      <circle cx="17" cy="12" r="2"/>
-                    </svg>
-                  </div>
-                  <span className="ml-2 text-sm font-medium text-gray-900">
-                    微信支付
-                  </span>
-                </button>
-                <button
-                  onClick={() => setPaymentMethod('alipay')}
-                  className={`w-full p-4 rounded-xl border-2 transition-all flex items-center justify-center ${
-                    paymentMethod === 'alipay'
-                      ? 'border-gray-900 bg-gray-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
-                    支
-                  </div>
-                  <span className="ml-2 text-sm font-medium text-gray-900">
-                    支付宝
-                  </span>
-                </button>
+              <div className="p-4 rounded-xl border-2 border-gray-900 bg-gray-50 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                    <path d="M8.5 4.5c-4.1 0-7.5 3.4-7.5 7.5s3.4 7.5 7.5 7.5h7c4.1 0 7.5-3.4 7.5-7.5s-3.4-7.5-7.5-7.5h-7zm0 2h7c3 0 5.5 2.5 5.5 5.5s-2.5 5.5-5.5 5.5h-7c-3 0-5.5-2.5-5.5-5.5s2.5-5.5 5.5-5.5z"/>
+                    <circle cx="7" cy="12" r="2"/>
+                    <circle cx="17" cy="12" r="2"/>
+                  </svg>
+                </div>
+                <span className="ml-2 text-sm font-medium text-gray-900">
+                  微信支付
+                </span>
               </div>
             </div>
 
@@ -590,9 +568,15 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                         <div className="text-lg font-semibold text-green-600">
                           支付成功
                         </div>
-                        <div className="text-xs text-gray-500">
-                          正在跳转...
-                        </div>
+                        <button
+                          onClick={() => {
+                            onClose();
+                            window.location.reload();
+                          }}
+                          className="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                        >
+                          完成
+                        </button>
                       </div>
                     ) : paymentStatus === 'failed' ? (
                       <div className="space-y-4">
@@ -618,33 +602,16 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                           className="w-48 h-48 rounded-xl mx-auto mb-4"
                         />
                         <div className="text-xs text-gray-500 mb-2">
-                          请使用{paymentMethod === 'wechat' ? '微信' : '支付宝'}扫码支付
+                          请使用微信扫码支付
                         </div>
                         <div className="space-y-2">
-                          {activeTab === 'balance' && (
-                            <div className="text-lg font-semibold text-gray-900">
-                              ¥{selectedAmount}
+                          <div className="text-lg font-semibold text-gray-900">
+                            ¥{paymentAmount}
+                          </div>
+                          {paymentDescription && (
+                            <div className="text-xs text-gray-500">
+                              {paymentDescription}
                             </div>
-                          )}
-                          {activeTab === 'member' && selectedPlan && (
-                            <>
-                              <div className="text-lg font-semibold text-gray-900">
-                                ¥{MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.price}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {MEMBERSHIP_PLANS.find(p => p.id === selectedPlan)?.name}
-                              </div>
-                            </>
-                          )}
-                          {activeTab === 'points' && selectedPoints > 0 && (
-                            <>
-                              <div className="text-lg font-semibold text-gray-900">
-                                ¥{POINTS_PACKAGES.find(p => p.points === selectedPoints)?.price}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {POINTS_PACKAGES.find(p => p.points === selectedPoints)?.points.toLocaleString()} 积分
-                              </div>
-                            </>
                           )}
                         </div>
                         {isPolling && (
