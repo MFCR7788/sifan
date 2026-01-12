@@ -102,34 +102,37 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   // 重置状态
   useEffect(() => {
     if (isOpen) {
-      console.log('=== 充值对话框打开 ===');
-      console.log('isAuthenticated:', isAuthenticated);
-      console.log('user:', user);
-      console.log('浏览器 Cookie:', document.cookie);
-      console.log('sessionStorage userId:', sessionStorage.getItem('userId'));
+      // 开发环境：输出调试信息
+      if (process.env.NODE_ENV === 'development') {
+        console.log('=== 充值对话框打开 ===');
+        console.log('isAuthenticated:', isAuthenticated);
+        console.log('user:', user);
+        console.log('浏览器 Cookie:', document.cookie);
+        console.log('sessionStorage userId:', sessionStorage.getItem('userId'));
 
-      // 测试 cookie/header 读取接口
-      const headers: Record<string, string> = {};
-      const sessionUserId = sessionStorage.getItem('userId');
-      if (sessionUserId) {
-        headers['x-user-id'] = sessionUserId;
+        // 测试 cookie/header 读取接口
+        const headers: Record<string, string> = {};
+        const sessionUserId = sessionStorage.getItem('userId');
+        if (sessionUserId) {
+          headers['x-user-id'] = sessionUserId;
+        }
+
+        fetch('/api/test/cookies', { credentials: 'include', headers })
+          .then(res => res.json())
+          .then(data => {
+            console.log('测试接口返回的数据:', data);
+            if (!data.finalUserId) {
+              console.error('❌ Cookie 和 Header 都未正确发送到后端！');
+              console.error('前端显示已登录（', isAuthenticated, '），但后端收到的 userId 为空');
+              console.error('建议：刷新页面或重新登录');
+            } else {
+              console.log('✅ 认证信息已正确发送到后端，来源:', data.cookieUserId ? 'Cookie' : 'Header');
+            }
+          })
+          .catch(err => {
+            console.error('测试接口调用失败:', err);
+          });
       }
-
-      fetch('/api/test/cookies', { credentials: 'include', headers })
-        .then(res => res.json())
-        .then(data => {
-          console.log('测试接口返回的数据:', data);
-          if (!data.finalUserId) {
-            console.error('❌ Cookie 和 Header 都未正确发送到后端！');
-            console.error('前端显示已登录（', isAuthenticated, '），但后端收到的 userId 为空');
-            console.error('建议：刷新页面或重新登录');
-          } else {
-            console.log('✅ 认证信息已正确发送到后端，来源:', data.cookieUserId ? 'Cookie' : 'Header');
-          }
-        })
-        .catch(err => {
-          console.error('测试接口调用失败:', err);
-        });
 
       setActiveTab('member');
       setSelectedAmount(0);
@@ -196,7 +199,9 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
           const sessionUserId = sessionStorage.getItem('userId');
           if (sessionUserId) {
             headers['x-user-id'] = sessionUserId;
-            console.log('✅ 从 sessionStorage 读取 userId:', sessionUserId);
+            if (process.env.NODE_ENV === 'development') {
+              console.log('✅ 从 sessionStorage 读取 userId:', sessionUserId);
+            }
           }
 
           const response = await fetch('/api/payment/create', {
@@ -212,23 +217,31 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
             }),
           });
 
-          console.log('=== 支付接口响应 ===');
-          console.log('Response status:', response.status);
-          console.log('Response Content-Type:', response.headers.get('content-type'));
+          if (process.env.NODE_ENV === 'development') {
+            console.log('=== 支付接口响应 ===');
+            console.log('Response status:', response.status);
+            console.log('Response Content-Type:', response.headers.get('content-type'));
+          }
 
           let data;
           let rawData: string | null = null;
           try {
             // 先读取原始文本，避免重复读取导致的错误
             rawData = await response.text();
-            console.log('原始响应内容 (前 500 字符):', rawData.substring(0, 500));
-            
+            if (process.env.NODE_ENV === 'development') {
+              console.log('原始响应内容 (前 500 字符):', rawData.substring(0, 500));
+            }
+
             // 尝试解析为 JSON
             data = JSON.parse(rawData);
-            console.log('解析后的数据:', data);
+            if (process.env.NODE_ENV === 'development') {
+              console.log('解析后的数据:', data);
+            }
           } catch (parseError) {
             // 如果解析 JSON 失败，使用原始文本作为错误信息
-            console.error('❌ JSON 解析失败:', parseError);
+            if (process.env.NODE_ENV === 'development') {
+              console.error('❌ JSON 解析失败:', parseError);
+            }
 
             // 设置错误信息
             setPaymentError(
@@ -237,28 +250,37 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
             setIsGeneratingQr(false);
             return;
           }
-          console.log('====================');
+
+          if (process.env.NODE_ENV === 'development') {
+            console.log('====================');
+          }
 
           if (data.success) {
             setQrCodeImage(data.qrCodeImage);
             setOrderNo(data.orderNo);
           } else {
-            console.error('❌ 生成支付二维码失败');
-            console.error('错误信息:', data.error);
-            console.error('HTTP 状态码:', response.status);
+            if (process.env.NODE_ENV === 'development') {
+              console.error('❌ 生成支付二维码失败');
+              console.error('错误信息:', data.error);
+              console.error('HTTP 状态码:', response.status);
+            }
 
             // 设置错误信息供显示
             setPaymentError(data.error || '未知错误');
 
             // 如果是未登录错误，显示登录提示
             if (response.status === 401 || data.error?.includes('未登录')) {
-              console.error('检测到未登录错误，显示登录提示');
+              if (process.env.NODE_ENV === 'development') {
+                console.error('检测到未登录错误，显示登录提示');
+              }
               setShowLoginPrompt(true);
             }
           }
         } catch (error: any) {
-          console.error('生成支付二维码错误:', error);
-          console.error('错误堆栈:', error.stack);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('生成支付二维码错误:', error);
+            console.error('错误堆栈:', error.stack);
+          }
           setPaymentError(error.message || '网络错误，请稍后重试');
         } finally {
           setIsGeneratingQr(false);
@@ -345,17 +367,11 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-      onClick={(e) => {
-        console.log('RechargeDialog: 点击背景，调用 onClose');
-        onClose();
-      }}
+      onClick={onClose}
     >
       <div
         className="bg-white rounded-2xl shadow-2xl w-[1200px] h-[800px] overflow-hidden flex flex-col"
-        onClick={(e) => {
-          console.log('RechargeDialog: 点击对话框内容，阻止冒泡');
-          e.stopPropagation();
-        }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100">
@@ -657,15 +673,26 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                         {paymentError}
                       </div>
                     </div>
-                    <button
-                      onClick={() => {
-                        setPaymentError('');
-                        setShowLoginPrompt(true);
-                      }}
-                      className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
-                    >
-                      查看调试信息
-                    </button>
+                    {paymentError.includes('未登录') ? (
+                      <button
+                        onClick={() => {
+                          setPaymentError('');
+                          setShowLoginPrompt(true);
+                        }}
+                        className="mt-4 px-6 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                      >
+                        前往登录
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setPaymentError('');
+                        }}
+                        className="mt-4 px-6 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                      >
+                        重试
+                      </button>
+                    )}
                   </div>
                 ) : qrCodeImage ? (
                   <div className="text-center w-full">
