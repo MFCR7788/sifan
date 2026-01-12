@@ -26,7 +26,14 @@ export interface UpdatePaymentOrderParams {
  */
 export async function createPaymentOrder(params: CreatePaymentOrderParams) {
   const db = await getDb();
-  const orderNo = `${params.orderType}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  // 生成订单号，确保不超过 32 字节（微信支付限制）
+  // 格式: {type前缀3位}_{时间戳后10位}_{随机字符串6位}
+  // 总长度: 3 + 1 + 10 + 1 + 6 = 21 字节 < 32 ✓
+  const typePrefix = params.orderType === 'recharge' ? 'rch' :
+                    params.orderType === 'membership' ? 'mem' : 'pts';
+  const timestamp = Date.now().toString().slice(-10); // 取时间戳后10位
+  const random = Math.random().toString(36).substring(2, 8); // 6位随机字符串
+  const orderNo = `${typePrefix}_${timestamp}_${random}`;
 
   const [order] = await db
     .insert(paymentOrders)
