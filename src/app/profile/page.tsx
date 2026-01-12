@@ -46,9 +46,15 @@ export default function ProfilePage() {
 
 			if (response.ok) {
 				const data = await response.json();
+				console.log('会员API返回数据:', data);
 				if (data.member) {
+					console.log('会员详细信息:', data.member);
+					console.log('会员等级:', data.member.memberLevel);
 					setMember(data.member);
 				}
+			} else {
+				const errorData = await response.json();
+				console.error('会员API错误:', errorData);
 			}
 		} catch (error) {
 			console.error('Failed to fetch member:', error);
@@ -336,6 +342,17 @@ export default function ProfilePage() {
 
 				{activeTab === 'member' && (
 					<div className="space-y-8">
+						{/* 调试信息 */}
+						<div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs">
+							<strong className="text-gray-700">调试信息:</strong>
+							<pre className="mt-2 text-gray-600 overflow-x-auto">
+member: {JSON.stringify(member, null, 2)}
+memberLevel: {member?.memberLevel || 'null'}
+memberLevel typeof: {typeof member?.memberLevel}
+MEMBER_LEVEL_MAP: {JSON.stringify(MEMBER_LEVEL_MAP, null, 2)}
+                            </pre>
+						</div>
+
 						{/* 会员等级 */}
 						<div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl text-white">
 							<div className="flex items-center justify-between">
