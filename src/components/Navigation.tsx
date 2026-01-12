@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
@@ -34,6 +34,15 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
   const [showCard, setShowCard] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (showCard && !member) {
@@ -45,6 +54,7 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
     setIsLoading(true);
     setErrorMessage(null);
     try {
+      console.log('开始获取会员信息...');
       const response = await fetch('/api/user/me/member', {
         credentials: 'include',
       });
@@ -55,6 +65,7 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
         console.log('Member data:', data);
         setMember(data.member);
       } else if (response.status === 401) {
+        console.log('用户未登录或Cookie丢失');
         setErrorMessage('请先登录');
       } else {
         const errorData = await response.json();
@@ -68,19 +79,38 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
     }
   };
 
-  const handleMouseLeave = (e: React.MouseEvent) => {
-    // 检查鼠标是否移动到了悬浮卡片内
-    const card = e.currentTarget.querySelector('.user-hover-card');
-    if (card && card.contains(e.relatedTarget as Node)) {
-      return;
+  const handleMouseLeave = () => {
+    // 延迟关闭，给用户时间移动鼠标到悬浮卡片
+    timeoutRef.current = setTimeout(() => {
+      setShowCard(false);
+    }, 150);
+  };
+
+  const handleCardMouseEnter = () => {
+    // 鼠标进入卡片，清除关闭定时器
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
-    setShowCard(false);
+  };
+
+  const handleCardMouseLeave = () => {
+    // 鼠标离开卡片，延迟关闭
+    timeoutRef.current = setTimeout(() => {
+      setShowCard(false);
+    }, 150);
   };
 
   return (
     <div
       className="relative"
-      onMouseEnter={() => setShowCard(true)}
+      onMouseEnter={() => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setShowCard(true);
+      }}
       onMouseLeave={handleMouseLeave}
     >
       {/* 触发按钮 */}
@@ -92,8 +122,8 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
       {showCard && (
         <div
           className="user-hover-card absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
-          onMouseEnter={() => setShowCard(true)}
-          onMouseLeave={() => setShowCard(false)}
+          onMouseEnter={handleCardMouseEnter}
+          onMouseLeave={handleCardMouseLeave}
         >
           {/* 用户信息头部 */}
           <div className="bg-gradient-to-br from-gray-900 to-gray-800 px-6 py-4 text-white">
