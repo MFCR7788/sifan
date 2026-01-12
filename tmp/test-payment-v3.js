@@ -1,9 +1,6 @@
 /**
- * 微信支付接口测试脚本 V2
- * 功能：
- * 1. 注册测试用户（如果不存在）
- * 2. 登录获取 Cookie
- * 3. 测试支付接口
+ * 微信支付接口测试脚本 V3
+ * 功能：使用管理员账户测试支付接口
  */
 
 const http = require('http');
@@ -11,15 +8,13 @@ const http = require('http');
 // 配置
 const BASE_URL = 'http://localhost:5000';
 
-// 测试用户信息
-const testUser = {
-  name: '测试用户',
-  email: `test_${Date.now()}@example.com`,
-  phone: `138${Math.floor(Math.random() * 100000000)}`,
-  password: 'test123456'
+// 管理员账户（从登录接口代码中获取）
+const adminUser = {
+  phone: '15967675767',
+  email: 'admin@magic-superman.com',
+  password: 'Qf229888777'
 };
 
-let authToken = null;
 let userId = null;
 
 /**
@@ -51,54 +46,17 @@ function sendRequest(url, options, data) {
 }
 
 /**
- * 步骤 1: 注册测试用户
+ * 步骤 1: 登录管理员账户
  */
-async function registerUser() {
+async function loginAdmin() {
   console.log('========================================');
-  console.log('  步骤 1: 注册测试用户');
+  console.log('  步骤 1: 登录管理员账户');
   console.log('========================================\n');
 
-  console.log('用户信息：');
-  console.log(`  姓名: ${testUser.name}`);
-  console.log(`  邮箱: ${testUser.email}`);
-  console.log(`  手机: ${testUser.phone}`);
-  console.log(`  密码: ${testUser.password}`);
+  console.log('登录信息：');
+  console.log(`  手机号: ${adminUser.phone}`);
+  console.log(`  密码: ${adminUser.password}`);
   console.log('');
-
-  try {
-    const response = await sendRequest(
-      `${BASE_URL}/api/auth/register`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      },
-      testUser
-    );
-
-    if (response.body.success) {
-      userId = response.body.user.id;
-      console.log('✅ 用户注册成功！');
-      console.log(`  用户ID: ${userId}`);
-      console.log('');
-      return true;
-    } else {
-      console.log('⚠️ 用户注册失败（可能邮箱/手机已存在），尝试登录...\n');
-      return false;
-    }
-  } catch (error) {
-    console.log('❌ 注册请求失败：', error.message);
-    console.log('');
-    return false;
-  }
-}
-
-/**
- * 步骤 2: 登录获取 Token
- */
-async function loginUser() {
-  console.log('========================================');
-  console.log('  步骤 2: 登录');
-  console.log('========================================\n');
 
   try {
     const response = await sendRequest(
@@ -108,16 +66,16 @@ async function loginUser() {
         headers: { 'Content-Type': 'application/json' }
       },
       {
-        phone: testUser.phone,
-        password: testUser.password
+        phone: adminUser.phone,
+        password: adminUser.password
       }
     );
 
     if (response.body.user || response.body.message === '登录成功') {
       userId = response.body.user.id;
-      authToken = response.headers['set-cookie']?.[0];
       console.log('✅ 登录成功！');
       console.log(`  用户ID: ${userId}`);
+      console.log(`  用户名: ${response.body.user.name}`);
       console.log('');
 
       return true;
@@ -125,7 +83,6 @@ async function loginUser() {
       console.log('❌ 登录失败！');
       console.log(`  HTTP状态码: ${response.status}`);
       console.log(`  错误: ${response.body.error || response.body.message || '未知错误'}`);
-      console.log(`  完整响应:`, JSON.stringify(response.body, null, 2));
       console.log('');
       return false;
     }
@@ -137,11 +94,11 @@ async function loginUser() {
 }
 
 /**
- * 步骤 3: 测试支付接口
+ * 步骤 2: 测试支付接口
  */
 async function testPayment() {
   console.log('========================================');
-  console.log('  步骤 3: 测试支付接口');
+  console.log('  步骤 2: 测试支付接口');
   console.log('========================================\n');
 
   console.log('测试配置：');
@@ -195,6 +152,7 @@ async function testPayment() {
     if (response.body.success) {
       console.log('✅ 支付接口调用成功！\n');
       console.log('订单号:', response.body.orderNo);
+      console.log('订单ID:', response.body.orderId);
       console.log('交易ID:', response.body.transactionId);
       console.log('金额:', '¥' + response.body.amount);
       console.log('');
@@ -202,6 +160,7 @@ async function testPayment() {
       if (response.body.qrCodeImage) {
         console.log('✅ 二维码图片生成成功！');
         console.log('二维码图片长度:', response.body.qrCodeImage.length, '字节');
+        console.log('二维码图片前缀:', response.body.qrCodeImage.substring(0, 50) + '...');
       } else {
         console.log('⚠️ 二维码图片未生成');
       }
@@ -226,6 +185,8 @@ async function testPayment() {
         console.log('  - 可能原因：微信商户账号权限问题');
       } else if (response.body.details?.includes('Failed query')) {
         console.log('  - 可能原因：数据库插入失败（外键约束等）');
+      } else if (response.body.details?.includes('PARAM_ERROR')) {
+        console.log('  - 可能原因：请求参数错误（如订单号超长）');
       }
 
       return false;
@@ -247,21 +208,18 @@ async function testPayment() {
 async function main() {
   console.log('\n');
   console.log('========================================');
-  console.log('  微信支付接口测试 V2');
+  console.log('  微信支付接口测试 V3');
   console.log('========================================\n');
 
-  // 步骤 1: 注册用户
-  const registered = await registerUser();
-
-  // 步骤 2: 登录（无论注册是否成功，都尝试登录）
-  const loggedIn = await loginUser();
+  // 步骤 1: 登录管理员账户
+  const loggedIn = await loginAdmin();
 
   if (!loggedIn) {
     console.log('❌ 无法登录，测试终止。\n');
     process.exit(1);
   }
 
-  // 步骤 3: 测试支付
+  // 步骤 2: 测试支付
   const paymentSuccess = await testPayment();
 
   console.log('\n========================================\n');
