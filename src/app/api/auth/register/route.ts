@@ -45,9 +45,11 @@ export async function POST(request: NextRequest) {
 			avatar,
 		});
 
+		console.log('Register: 用户创建成功，userId:', user.id);
+
 		// 自动创建会员账户，使用用户注册时间作为成为会员的时间
 		try {
-			await memberManager.createMember({
+			const member = await memberManager.createMember({
 				userId: user.id,
 				memberLevel: 'basic',
 				balance: 0,
@@ -56,15 +58,30 @@ export async function POST(request: NextRequest) {
 				totalConsumption: 0,
 				memberStatus: 'active',
 			});
+			console.log('Register: 会员创建成功，memberId:', member.id);
 		} catch (memberError) {
-			console.error('Error creating member:', memberError);
+			console.error('Register: 会员创建失败:', memberError);
 			// 会员创建失败不影响用户注册，只记录错误
 		}
 
-		return NextResponse.json({
+		// 创建响应并设置 Cookie
+		const response = NextResponse.json({
 			message: '注册成功',
 			user,
 		});
+
+		// 设置用户 ID 到 Cookie（简单实现，生产环境应使用 JWT）
+		response.cookies.set('userId', user.id, {
+			httpOnly: false, // 开发环境设为 false，方便调试
+			secure: false, // 开发环境不使用 secure
+			sameSite: 'lax',
+			path: '/',
+			maxAge: 60 * 60 * 24 * 7, // 7 天
+		});
+
+		console.log('Register: Cookie已设置，userId:', user.id);
+
+		return response;
 	} catch (error: any) {
 		console.error('Registration error:', error);
 		return NextResponse.json(

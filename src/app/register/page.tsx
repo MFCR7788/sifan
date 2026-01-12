@@ -52,6 +52,11 @@ export default function RegisterPage() {
 				email: formData.email || undefined,
 				password: formData.password,
 			});
+
+			// 注册成功后检查 Cookie
+			console.log('=== 注册成功，检查 Cookie ===');
+			console.log('浏览器 Cookie:', document.cookie);
+
 			router.push('/');
 		} catch (err: any) {
 			// 如果手机号已注册，显示提示后跳转到登录页面

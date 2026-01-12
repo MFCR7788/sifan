@@ -40,15 +40,25 @@ export default function ProfilePage() {
 
 	const fetchMemberInfo = async () => {
 		try {
+			console.log('=== 个人中心：获取会员信息 ===');
+			console.log('当前用户:', user);
+			console.log('浏览器Cookie:', document.cookie);
+
 			const response = await fetch('/api/user/me/member', {
 				credentials: 'include',
 			});
 
+			console.log('会员API响应状态:', response.status);
+
 			if (response.ok) {
 				const data = await response.json();
+				console.log('会员数据:', data);
 				if (data.member) {
 					setMember(data.member);
 				}
+			} else {
+				const errorData = await response.json();
+				console.log('会员API错误:', errorData);
 			}
 		} catch (error) {
 			console.error('Failed to fetch member:', error);
