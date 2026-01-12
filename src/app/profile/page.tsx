@@ -40,21 +40,34 @@ export default function ProfilePage() {
 
 	const fetchMemberInfo = async () => {
 		try {
+			console.log('开始获取会员信息...');
 			const response = await fetch('/api/user/me/member', {
 				credentials: 'include',
 			});
 
+			console.log('会员API响应状态:', response.status, response.statusText);
+
 			if (response.ok) {
 				const data = await response.json();
 				console.log('会员API返回数据:', data);
+				console.log('data.member 存在:', !!data.member);
+
 				if (data.member) {
 					console.log('会员详细信息:', data.member);
 					console.log('会员等级:', data.member.memberLevel);
 					setMember(data.member);
+				} else {
+					console.error('API返回成功但没有 member 字段');
 				}
 			} else {
-				const errorData = await response.json();
-				console.error('会员API错误:', errorData);
+				const errorText = await response.text();
+				console.error('会员API错误:', response.status, errorText);
+				try {
+					const errorData = JSON.parse(errorText);
+					console.error('错误详情:', errorData);
+				} catch (e) {
+					console.error('无法解析错误响应');
+				}
 			}
 		} catch (error) {
 			console.error('Failed to fetch member:', error);
