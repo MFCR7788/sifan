@@ -207,7 +207,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
               paymentMethod: 'wechat', // 固定使用微信支付
               amount,
               description,
-              type: activeTab,
+              type: activeTab === 'balance' ? 'recharge' : activeTab === 'member' ? 'membership' : activeTab,
               metadata,
             }),
           });
@@ -713,6 +713,35 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                           <div className="text-xs text-gray-400 mt-3">
                             正在查询支付状态...
                           </div>
+                        )}
+
+                        {/* 开发环境：模拟支付完成按钮 */}
+                        {process.env.NODE_ENV === 'development' && (
+                          <button
+                            onClick={async () => {
+                              try {
+                                const response = await fetch('/api/payment/mock-complete', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  credentials: 'include',
+                                  body: JSON.stringify({ orderNo }),
+                                });
+
+                                const data = await response.json();
+
+                                if (data.success) {
+                                  setPaymentStatus('success');
+                                } else {
+                                  console.error('模拟支付失败:', data.error);
+                                }
+                              } catch (error) {
+                                console.error('模拟支付错误:', error);
+                              }
+                            }}
+                            className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded-lg text-xs font-medium hover:bg-yellow-600 transition-colors"
+                          >
+                            ⚡ 模拟支付完成（开发环境）
+                          </button>
                         )}
                       </div>
                     )}
