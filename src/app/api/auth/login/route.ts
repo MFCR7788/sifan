@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
 		if (!user) {
 			return NextResponse.json(
-				{ error: '手机号或密码错误' },
+				{ error: '手机号或密码错误，请联系管理员！' },
 				{ status: 401 }
 			);
 		}
