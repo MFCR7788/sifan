@@ -133,7 +133,10 @@ export default function LoginPage() {
 					</div>
 				</div>
 
-				<div className="mt-6 text-center">
+				<div className="mt-6 text-center space-y-3">
+					<p className="text-gray-500 text-sm">
+						忘记密码？请联系管理员
+					</p>
 					<Link href="/" className="text-gray-500 hover:text-gray-700 text-sm">
 						← 返回首页
 					</Link>

@@ -54,6 +54,12 @@ export default function RegisterPage() {
 			});
 			router.push('/');
 		} catch (err: any) {
+			// 如果手机号已注册，直接跳转到登录页面
+			if (err.message && err.message.includes('该手机号已被注册')) {
+				setIsLoading(false);
+				router.push('/login');
+				return;
+			}
 			setError(err.message || '注册失败');
 		} finally {
 			setIsLoading(false);
@@ -213,7 +219,10 @@ export default function RegisterPage() {
 					</div>
 				</div>
 
-				<div className="mt-6 text-center">
+				<div className="mt-6 text-center space-y-3">
+					<p className="text-gray-500 text-sm">
+						忘记密码？请联系管理员
+					</p>
 					<Link href="/" className="text-gray-500 hover:text-gray-700 text-sm">
 						← 返回首页
 					</Link>
