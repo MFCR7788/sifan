@@ -57,11 +57,15 @@ cp -r node_modules "$LOCAL_BUILD_DIR/"
 echo "复制 public 目录..."
 cp -r public "$LOCAL_BUILD_DIR/"
 
+echo "复制证书目录..."
+cp -r certs "$LOCAL_BUILD_DIR/"
+
 echo "复制其他必要文件..."
 cp package.json "$LOCAL_BUILD_DIR/"
 cp pnpm-lock.yaml "$LOCAL_BUILD_DIR/"
 cp next.config.ts "$LOCAL_BUILD_DIR/"
 cp tsconfig.json "$LOCAL_BUILD_DIR/"
+cp .env.production "$LOCAL_BUILD_DIR/"
 
 # 创建 PM2 配置
 echo "创建 PM2 配置..."
@@ -79,11 +83,18 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: 5000,
+      NEXT_PUBLIC_BASE_URL: 'http://www.zjsifan.com',
+      WECHAT_PAY_APPID: 'wx314d6d3cfbd33e79',
+      WECHAT_PAY_MCHID: '1624143377',
+      WECHAT_PAY_SERIAL_NO: '531F07BDA98C557D7D718285B3DDDB35DE8CEA32',
+      WECHAT_PAY_API_V3_KEY: 'SmallFish7788Admin03072298887777',
+      WECHAT_PAY_PRIVATE_KEY_PATH: './certs/apiclient_key.pem',
+      WECHAT_PAY_CERT_PATH: './certs/apiclient_cert.pem',
       PGDATABASE_URL: 'postgresql://user_7591422450290704422:aef1a966-5890-4e13-a499-e5a8b0e8b0b4@cp-cute-mist-247e1363.pg2.aidap-global.cn-beijing.volces.com:5432/Database_1767516520571?sslmode=require&channel_binding=require',
       PGDATABASE: 'Database_1767516520571'
     },
-    error_file: './logs/pm2-error.log',
-    out_file: './logs/pm2-out.log'
+    error_file: './logs/pm2-out.log',
+    merge_logs: true
   }]
 };
 EOF
