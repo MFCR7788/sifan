@@ -33,6 +33,10 @@ export default function LoginPage() {
 		try {
 			await login(phone, password);
 
+			// 登录后检查 Cookie
+			console.log('=== 登录成功，检查 Cookie ===');
+			console.log('浏览器 Cookie:', document.cookie);
+
 			// 如果勾选了记住我，保存手机号和密码
 			if (rememberMe) {
 				localStorage.setItem('savedLoginPhone', phone);

@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
 
 		// 设置用户 ID 到 Cookie（简单实现，生产环境应使用 JWT）
 		response.cookies.set('userId', user.id, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
+			httpOnly: false, // 开发环境设为 false，方便调试
+			secure: false, // 开发环境不使用 secure
 			sameSite: 'lax',
 			path: '/',
 			maxAge: 60 * 60 * 24 * 7, // 7 天
@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
 
 		console.log('Login: Cookie已设置，userId:', user.id);
 		console.log('Login: Cookie配置:', {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
+			httpOnly: false,
+			secure: false,
 			sameSite: 'lax',
 			path: '/',
 		});

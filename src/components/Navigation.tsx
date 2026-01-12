@@ -54,25 +54,33 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      console.log('开始获取会员信息...');
+      console.log('=== 开始获取会员信息 ===');
+      console.log('当前URL:', window.location.href);
+      console.log('浏览器Cookie:', document.cookie);
+
       const response = await fetch('/api/user/me/member', {
         credentials: 'include',
       });
-      console.log('Member API response:', response.status);
+
+      console.log('Member API response status:', response.status);
+      console.log('Member API response headers:', response.headers);
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Member data:', data);
+        console.log('✅ Member data 成功:', data);
         setMember(data.member);
       } else if (response.status === 401) {
-        console.log('用户未登录或Cookie丢失');
+        console.log('❌ 用户未登录或Cookie丢失');
+        const errorText = await response.text();
+        console.log('401错误详情:', errorText);
         setErrorMessage('请先登录');
       } else {
         const errorData = await response.json();
+        console.log('❌ 其他错误:', errorData);
         setErrorMessage(errorData.error || '加载失败');
       }
     } catch (error) {
-      console.error('Failed to fetch member:', error);
+      console.error('❌ Failed to fetch member:', error);
       setErrorMessage('网络错误');
     } finally {
       setIsLoading(false);
