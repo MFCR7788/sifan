@@ -83,7 +83,7 @@ const POINTS_PACKAGES = [
 ];
 
 export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps) {
-  const { user, isAuthenticated, login } = useAuth();
+  const { user, isAuthenticated, login, refreshUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'member' | 'balance' | 'points'>('member');
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState('');
@@ -98,9 +98,17 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   const [paymentAmount, setPaymentAmount] = useState<number>(0); // 存储当前支付金额
   const [paymentDescription, setPaymentDescription] = useState<string>(''); // 存储支付描述
 
-  // 重置状态
+  // 重置状态并刷新用户信息
   useEffect(() => {
     if (isOpen) {
+      console.log('RechargeDialog: 对话框打开，刷新用户状态...');
+      // 刷新用户状态，确保认证状态是最新的
+      refreshUser().then(() => {
+        console.log('RechargeDialog: 用户状态刷新完成');
+      }).catch((error) => {
+        console.error('RechargeDialog: 刷新用户状态失败:', error);
+      });
+
       setActiveTab('member');
       setSelectedAmount(0);
       setCustomAmount('');
@@ -114,13 +122,18 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setPaymentAmount(0);
       setPaymentDescription('');
     }
-  }, [isOpen]);
+  }, [isOpen, refreshUser]);
 
   // 生成支付二维码
   useEffect(() => {
     const generatePaymentQr = async () => {
       // 检查是否登录
+      console.log('RechargeDialog: 检查登录状态...');
+      console.log('- isAuthenticated:', isAuthenticated);
+      console.log('- user:', user);
+
       if (!isAuthenticated) {
+        console.log('RechargeDialog: 用户未登录，显示登录提示');
         setShowLoginPrompt(true);
         setQrCodeImage('');
         setOrderNo('');
@@ -159,6 +172,12 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
         setPaymentStatus('pending');
 
         try {
+          console.log('RechargeDialog: 准备调用支付接口...');
+          console.log('- 用户登录状态:', isAuthenticated);
+          console.log('- 用户ID:', user?.id);
+          console.log('- 支付金额:', amount);
+          console.log('- 支付描述:', description);
+
           const response = await fetch('/api/payment/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -172,12 +191,20 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
             }),
           });
 
+          console.log('RechargeDialog: 支付接口响应状态:', response.status);
+
           const data = await response.json();
+          console.log('RechargeDialog: 支付接口响应数据:', data);
+
           if (data.success) {
             setQrCodeImage(data.qrCodeImage);
             setOrderNo(data.orderNo);
           } else {
             console.error('生成支付二维码失败:', data.error);
+            // 如果是未登录错误，显示登录提示
+            if (response.status === 401 || data.error?.includes('未登录')) {
+              setShowLoginPrompt(true);
+            }
           }
         } catch (error) {
           console.error('生成支付二维码错误:', error);
