@@ -661,6 +661,9 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                               {paymentDescription}
                             </div>
                           )}
+                          <div className="text-xs text-gray-400">
+                            虚拟商品出售后不能退款，请按需购买！
+                          </div>
                         </div>
                         {isPolling && (
                           <div className="text-xs text-gray-400 mt-3">
