@@ -10,14 +10,7 @@ export async function POST(request: NextRequest) {
     // 获取用户身份
     const userId = request.cookies.get('userId')?.value;
 
-    // 详细日志：调试 cookie 读取问题
-    console.log('Payment Create: 读取 Cookie...');
-    console.log('- Cookie userId:', userId);
-    console.log('- 所有 Cookie:', request.cookies.getAll());
-    console.log('- Cookie 长度:', request.cookies.getAll().length);
-
     if (!userId) {
-      console.warn('⚠️ Payment Create: 未登录 - Cookie 中不存在 userId');
       return NextResponse.json(
         { success: false, error: '用户未登录，请刷新页面重试或重新登录' },
         { status: 401 }

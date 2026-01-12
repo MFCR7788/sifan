@@ -28,14 +28,14 @@ const MEMBER_LEVEL_MAP: Record<string, string> = {
 interface UserHoverCardProps {
   user: any;
   onLogout: () => void;
+  onOpenRecharge: () => void;
 }
 
-function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
+function UserHoverCard({ user, onLogout, onOpenRecharge }: UserHoverCardProps) {
   const [member, setMember] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showRechargeDialog, setShowRechargeDialog] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -190,7 +190,7 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation(); // 阻止事件冒泡
-                  setShowRechargeDialog(true);
+                  onOpenRecharge();
                   setShowCard(false);
                 }}
                 className="flex-1 text-center text-xs bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
@@ -218,12 +218,6 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
           </div>
         </div>
       )}
-
-      {/* 充值对话框 */}
-      <RechargeDialog
-        isOpen={showRechargeDialog}
-        onClose={() => setShowRechargeDialog(false)}
-      />
     </div>
   );
 }
@@ -235,6 +229,7 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showRechargeDialog, setShowRechargeDialog] = useState(false); // 将充值对话框状态移到 Navigation 组件层级
 
   useEffect(() => {
     const handleScroll = () => {
@@ -320,6 +315,7 @@ export default function Navigation() {
                         console.error('Logout error:', error);
                       }
                     }}
+                    onOpenRecharge={() => setShowRechargeDialog(true)}
                   />
                 ) : (
                   <>
@@ -448,6 +444,12 @@ export default function Navigation() {
           </div>
         </div>
       )}
+
+      {/* 充值对话框 - 移到 Navigation 组件层级，避免条件渲染导致的状态丢失 */}
+      <RechargeDialog
+        isOpen={showRechargeDialog}
+        onClose={() => setShowRechargeDialog(false)}
+      />
     </nav>
   );
 }

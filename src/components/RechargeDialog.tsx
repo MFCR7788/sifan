@@ -97,21 +97,10 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState<number>(0); // 存储当前支付金额
   const [paymentDescription, setPaymentDescription] = useState<string>(''); // 存储支付描述
-  const [hasRefreshed, setHasRefreshed] = useState(false); // 防止重复刷新
 
-  // 重置状态并刷新用户信息
+  // 重置状态
   useEffect(() => {
-    if (isOpen && !hasRefreshed) {
-      console.log('RechargeDialog: 对话框打开，刷新用户状态...');
-      // 刷新用户状态，确保认证状态是最新的
-      refreshUser().then(() => {
-        console.log('RechargeDialog: 用户状态刷新完成');
-        setHasRefreshed(true);
-      }).catch((error) => {
-        console.error('RechargeDialog: 刷新用户状态失败:', error);
-        setHasRefreshed(true);
-      });
-
+    if (isOpen) {
       setActiveTab('member');
       setSelectedAmount(0);
       setCustomAmount('');
@@ -124,22 +113,14 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setShowLoginPrompt(false);
       setPaymentAmount(0);
       setPaymentDescription('');
-    } else if (!isOpen) {
-      // 对话框关闭时，重置刷新标志，以便下次打开时可以刷新
-      setHasRefreshed(false);
     }
-  }, [isOpen, refreshUser, hasRefreshed]);
+  }, [isOpen]);
 
   // 生成支付二维码
   useEffect(() => {
     const generatePaymentQr = async () => {
       // 检查是否登录
-      console.log('RechargeDialog: 检查登录状态...');
-      console.log('- isAuthenticated:', isAuthenticated);
-      console.log('- user:', user);
-
       if (!isAuthenticated) {
-        console.log('RechargeDialog: 用户未登录，显示登录提示');
         setShowLoginPrompt(true);
         setQrCodeImage('');
         setOrderNo('');
@@ -178,12 +159,6 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
         setPaymentStatus('pending');
 
         try {
-          console.log('RechargeDialog: 准备调用支付接口...');
-          console.log('- 用户登录状态:', isAuthenticated);
-          console.log('- 用户ID:', user?.id);
-          console.log('- 支付金额:', amount);
-          console.log('- 支付描述:', description);
-
           const response = await fetch('/api/payment/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -197,10 +172,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
             }),
           });
 
-          console.log('RechargeDialog: 支付接口响应状态:', response.status);
-
           const data = await response.json();
-          console.log('RechargeDialog: 支付接口响应数据:', data);
 
           if (data.success) {
             setQrCodeImage(data.qrCodeImage);
@@ -298,11 +270,17 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-      onClick={onClose}
+      onClick={(e) => {
+        console.log('RechargeDialog: 点击背景，调用 onClose');
+        onClose();
+      }}
     >
       <div
         className="bg-white rounded-2xl shadow-2xl w-[1200px] h-[800px] overflow-hidden flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          console.log('RechargeDialog: 点击对话框内容，阻止冒泡');
+          e.stopPropagation();
+        }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100">

@@ -32,28 +32,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	// 获取当前用户信息
 	const refreshUser = useCallback(async () => {
 		try {
-			console.log('AuthContext: 开始刷新用户信息...');
 			const response = await fetch('/api/user/me', {
 				credentials: 'include',
 			});
-			console.log('AuthContext: 用户API响应状态:', response.status);
 
 			if (response.ok) {
 				const data = await response.json();
-				console.log('AuthContext: 用户信息:', data.user);
 				setUser(data.user);
 			} else {
 				// 401表示未登录，这是正常状态，不需要打印错误日志
 				if (response.status === 401) {
-					console.log('AuthContext: 用户未登录');
+					console.log('用户未登录');
 				} else {
 					const errorText = await response.text();
-					console.error('AuthContext: 用户API错误:', response.status, errorText);
+					console.error('用户API错误:', response.status, errorText);
 				}
 				setUser(null);
 			}
 		} catch (error) {
-			console.error('AuthContext: Failed to fetch user:', error);
+			console.error('Failed to fetch user:', error);
 			// 数据库连接失败时，设置为未登录状态，不影响应用运行
 			setUser(null);
 		} finally {
