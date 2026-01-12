@@ -98,14 +98,29 @@ export async function createWechatNativePay(
     console.log('code_url:', result?.code_url);
     console.log('prepay_id:', result?.prepay_id);
 
-    if (!result?.code_url) {
+    // 打印完整的返回数据结构，方便调试
+    console.log('完整返回数据 JSON:', JSON.stringify(result, null, 2));
+    console.log('返回数据所有字段:', Object.keys(result));
+
+    // 尝试从不同的字段中获取 code_url
+    let codeUrl = result?.code_url;
+    if (!codeUrl && result?.data?.code_url) {
+      codeUrl = result.data.code_url;
+      console.log('从 result.data.code_url 获取到:', codeUrl);
+    }
+    if (!codeUrl && result?.code_url) {
+      codeUrl = result.code_url;
+      console.log('从 result.code_url 获取到:', codeUrl);
+    }
+
+    if (!codeUrl) {
       console.error('❌ 微信支付 API 返回的 code_url 为空');
       throw new Error('微信支付接口返回数据异常：缺少 code_url');
     }
 
     return {
-      code_url: result.code_url,
-      prepay_id: result.prepay_id || '',
+      code_url: codeUrl,
+      prepay_id: result?.prepay_id || '',
     };
   } catch (error: any) {
     console.error('❌ WeChat Pay Create Error:', error.message);
