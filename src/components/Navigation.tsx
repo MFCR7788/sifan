@@ -15,10 +15,124 @@ const navItems = [
   { name: '联系', href: '/contact' },
 ];
 
+// 会员等级映射
+const MEMBER_LEVEL_MAP: Record<string, string> = {
+  basic: '基础会员',
+  silver: '银牌会员',
+  gold: '金牌会员',
+  platinum: '白金会员',
+  diamond: '钻石会员',
+};
+
+interface UserHoverCardProps {
+  user: any;
+  onLogout: () => void;
+}
+
+function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
+  const [member, setMember] = useState<any>(null);
+  const [showCard, setShowCard] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (showCard && !member) {
+      fetchMemberInfo();
+    }
+  }, [showCard]);
+
+  const fetchMemberInfo = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/user/me/member', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMember(data.member);
+      }
+    } catch (error) {
+      console.error('Failed to fetch member:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setShowCard(true)}
+      onMouseLeave={() => setShowCard(false)}
+    >
+      {/* 触发按钮 */}
+      <button className="text-xs text-gray-600 transition-colors hover:opacity-60 focus:outline-none">
+        {user?.name || '个人中心'}
+      </button>
+
+      {/* 悬浮卡片 */}
+      {showCard && (
+        <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+          {/* 用户信息头部 */}
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 px-6 py-4 text-white">
+            <div className="text-sm font-semibold">{user?.name}</div>
+            <div className="text-xs opacity-70 mt-1">{user?.email || '未设置邮箱'}</div>
+            <div className="text-xs opacity-70">{user?.phone}</div>
+          </div>
+
+          {/* 会员信息 */}
+          <div className="px-6 py-4 border-b border-gray-100">
+            {isLoading ? (
+              <div className="text-xs text-gray-500">加载会员信息...</div>
+            ) : member ? (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-600">会员等级</span>
+                  <span className="text-xs font-semibold text-gray-900">
+                    {MEMBER_LEVEL_MAP[member.memberLevel] || '未知等级'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-600">余额</span>
+                  <span className="text-xs font-semibold text-gray-900">
+                    ¥{(member.balance / 100).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-600">积分</span>
+                  <span className="text-xs font-semibold text-gray-900">
+                    {member.points.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="text-xs text-gray-500">会员信息加载失败</div>
+            )}
+          </div>
+
+          {/* 操作按钮 */}
+          <div className="px-6 py-3 space-y-2">
+            <Link
+              href="/profile"
+              className="block w-full text-center text-xs bg-gray-100 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              个人中心
+            </Link>
+            <button
+              onClick={onLogout}
+              className="w-full text-xs text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors"
+            >
+              退出登录
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { isAuthenticated, user, isLoading, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -97,12 +211,17 @@ export default function Navigation() {
             {!isLoading && (
               <div className="flex items-center space-x-6 pl-6 border-l border-gray-200">
                 {isAuthenticated ? (
-                  <Link
-                    href="/profile"
-                    className="text-xs text-gray-600 transition-colors hover:opacity-60"
-                  >
-                    {user?.name || '个人中心'}
-                  </Link>
+                  <UserHoverCard
+                    user={user}
+                    onLogout={async () => {
+                      try {
+                        await logout();
+                        router.push('/');
+                      } catch (error) {
+                        console.error('Logout error:', error);
+                      }
+                    }}
+                  />
                 ) : (
                   <>
                     <Link
