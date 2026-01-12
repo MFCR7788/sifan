@@ -51,7 +51,7 @@ const MEMBERSHIP_PLANS = [
       { icon: '✓', text: '快速绿色通道' },
       { icon: '✓', text: '月度运营报告' },
     ],
-    color: 'from-gray-600 to-gray-700',
+    color: 'from-yellow-400 to-yellow-500',
   },
   {
     id: 'platinum',
