@@ -132,7 +132,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-[1200px] h-[700px] overflow-hidden flex flex-col"
+        className="bg-white rounded-2xl shadow-2xl w-[1200px] h-[800px] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
