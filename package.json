@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 5000 -H 0.0.0.0",
+    "dev": "next dev -p 5000 -H 0.0.0.0 --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -16,9 +16,11 @@
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "coze-coding-dev-sdk": "0.5.0",
+    "dotenv": "^17.2.3",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
+    "formidable": "^3.5.4",
     "lucide-react": "^0.562.0",
     "next": "16.0.10",
     "pg": "^8.16.3",

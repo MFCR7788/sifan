@@ -1,15 +1,23 @@
 import { AlipaySdk } from 'alipay-sdk';
 
-// 初始化支付宝 SDK 实例
-const alipay = new AlipaySdk({
-  appId: process.env.ALIPAY_APPID || '',
-  privateKey: process.env.ALIPAY_PRIVATE_KEY || '',
-  alipayPublicKey: process.env.ALIPAY_PUBLIC_KEY || '',
-  gateway: process.env.ALIPAY_GATEWAY || 'https://openapi.alipay.com/gateway.do',
-  charset: 'utf-8',
-  version: '1.0',
-  signType: 'RSA2',
-});
+/**
+ * 获取支付宝 SDK 实例（延迟初始化）
+ */
+function getAlipaySdk(): AlipaySdk {
+  if (!process.env.ALIPAY_APPID || !process.env.ALIPAY_PRIVATE_KEY || !process.env.ALIPAY_PUBLIC_KEY) {
+    throw new Error('支付宝配置不完整，请检查 .env.local 文件中的 ALIPAY_APPID、ALIPAY_PRIVATE_KEY 和 ALIPAY_PUBLIC_KEY');
+  }
+
+  return new AlipaySdk({
+    appId: process.env.ALIPAY_APPID,
+    privateKey: process.env.ALIPAY_PRIVATE_KEY,
+    alipayPublicKey: process.env.ALIPAY_PUBLIC_KEY,
+    gateway: process.env.ALIPAY_GATEWAY || 'https://openapi.alipay.com/gateway.do',
+    charset: 'utf-8',
+    version: '1.0',
+    signType: 'RSA2',
+  });
+}
 
 export interface CreateAlipayQrParams {
   outTradeNo: string;
@@ -30,6 +38,7 @@ export async function createAlipayQrPay(
   params: CreateAlipayQrParams
 ): Promise<CreateAlipayQrResult> {
   try {
+    const alipay = getAlipaySdk();
     const result = await alipay.exec('alipay.trade.precreate', {
       notify_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/alipay/notify`,
       bizContent: {
@@ -55,6 +64,7 @@ export async function createAlipayQrPay(
  */
 export async function queryAlipayOrder(orderNo: string) {
   try {
+    const alipay = getAlipaySdk();
     const result = await alipay.exec('alipay.trade.query', {
       bizContent: {
         out_trade_no: orderNo,
@@ -72,6 +82,7 @@ export async function queryAlipayOrder(orderNo: string) {
  */
 export async function closeAlipayOrder(orderNo: string) {
   try {
+    const alipay = getAlipaySdk();
     const result = await alipay.exec('alipay.trade.close', {
       bizContent: {
         out_trade_no: orderNo,
@@ -94,6 +105,7 @@ export async function refundAlipayOrder(
   totalAmount: number
 ) {
   try {
+    const alipay = getAlipaySdk();
     const result = await alipay.exec('alipay.trade.refund', {
       bizContent: {
         out_trade_no: outTradeNo,
