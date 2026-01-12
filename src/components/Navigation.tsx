@@ -31,6 +31,90 @@ interface UserHoverCardProps {
   onOpenRecharge: () => void;
 }
 
+function LogoDropdown() {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const aiItems = [
+    { name: 'AI文本生成', href: '/magic-ai' },
+    { name: 'AI图像生成', href: '/image-gen' },
+    { name: 'AI视频生成', href: '/video-gen' },
+  ];
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowDropdown(false);
+    }, 150);
+  };
+
+  const handleDropdownMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setShowDropdown(true);
+      }}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 触发区域 - Logo */}
+      <div className="hover:opacity-75 transition-opacity cursor-pointer">
+        <div className="flex items-center gap-2">
+          <div className="relative w-7 h-7">
+            <Image
+              src="/小超人.png"
+              alt="魔法超人AI"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          <span className="text-lg font-semibold text-gray-900">
+            魔法超人AI
+          </span>
+        </div>
+      </div>
+
+      {/* 下拉菜单 */}
+      {showDropdown && (
+        <div
+          className="absolute left-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+          onMouseEnter={handleDropdownMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {aiItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="block px-4 py-3 text-sm text-gray-900 hover:bg-gray-50 transition-colors first:rounded-t-xl last:rounded-b-xl"
+              onClick={() => setShowDropdown(false)}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UserHoverCard({ user, onLogout, onOpenRecharge }: UserHoverCardProps) {
   const [member, setMember] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
@@ -242,7 +326,7 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [showRechargeDialog, setShowRechargeDialog] = useState(false); // 将充值对话框状态移到 Navigation 组件层级
+  const [showRechargeDialog, setShowRechargeDialog] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -251,14 +335,6 @@ export default function Navigation() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleLogoClick = () => {
-    if (isAuthenticated) {
-      router.push('/magic-ai');
-    } else {
-      setShowLoginPrompt(true);
-    }
-  };
 
   return (
     <nav className={`sticky top-0 z-50 transition-all duration-500 ${
@@ -270,25 +346,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <button
-              onClick={handleLogoClick}
-              className="flex items-center gap-2 hover:opacity-75 transition-opacity"
-            >
-              <div className="relative w-7 h-7">
-                <Image
-                  src="/小超人.png"
-                  alt="魔法超人AI"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
-              <span className={`text-lg font-semibold transition-colors ${
-                isScrolled ? 'text-gray-900' : 'text-gray-900'
-              }`}>
-                魔法超人AI
-              </span>
-            </button>
+            <LogoDropdown />
           </div>
 
           {/* Desktop Navigation */}
