@@ -1,4 +1,4 @@
-import { db } from './db';
+import { getDb } from 'coze-coding-dev-sdk';
 import { members, memberTransactions, users } from './shared/schema';
 import { eq, and, desc } from 'drizzle-orm';
 
@@ -10,6 +10,7 @@ export class MemberManager {
    * 根据用户ID获取会员信息
    */
   async getMemberByUserId(userId: string) {
+    const db = await getDb();
     const [member] = await db
       .select()
       .from(members)
@@ -23,6 +24,7 @@ export class MemberManager {
    * 获取所有会员
    */
   async getMembers(limit = 50, offset = 0) {
+    const db = await getDb();
     const allMembers = await db
       .select()
       .from(members)
@@ -37,6 +39,7 @@ export class MemberManager {
    * 更新会员信息
    */
   async updateMember(memberId: string, updateData: Partial<typeof members.$inferInsert>) {
+    const db = await getDb();
     const [updatedMember] = await db
       .update(members)
       .set({
@@ -53,6 +56,7 @@ export class MemberManager {
    * 创建会员信息
    */
   async createMember(data: { userId: string; memberLevel?: string; balance?: number; points?: number; totalRecharge?: number; totalConsumption?: number; memberStatus?: string }) {
+    const db = await getDb();
     const [member] = await db
       .insert(members)
       .values({
@@ -90,6 +94,7 @@ export class MemberManager {
     paymentTransactionId: string,
     description: string
   ) {
+    const db = await getDb();
     const member = await this.ensureMemberExists(userId);
 
     // 更新会员余额和总充值金额
@@ -140,6 +145,7 @@ export class MemberManager {
     paymentTransactionId: string,
     description: string
   ) {
+    const db = await getDb();
     const member = await this.ensureMemberExists(userId);
 
     // 更新会员积分
@@ -190,6 +196,7 @@ export class MemberManager {
     paymentTransactionId: string,
     description: string
   ) {
+    const db = await getDb();
     const member = await this.ensureMemberExists(userId);
 
     // 根据套餐ID确定会员等级和有效期
@@ -265,6 +272,7 @@ export class MemberManager {
    * 获取会员交易记录
    */
   async getMemberTransactions(memberId: string, limit = 20, offset = 0) {
+    const db = await getDb();
     const transactions = await db
       .select()
       .from(memberTransactions)
@@ -287,6 +295,7 @@ export class MemberManager {
       filters?: { transactionType?: string };
     }
   ) {
+    const db = await getDb();
     const skip = options?.skip || 0;
     const limit = options?.limit || 20;
 

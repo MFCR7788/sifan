@@ -1,4 +1,4 @@
-import { db } from './db';
+import { getDb } from 'coze-coding-dev-sdk';
 import { paymentOrders } from './shared/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { memberManager } from './memberManager';
@@ -25,6 +25,7 @@ export interface UpdatePaymentOrderParams {
  * 创建支付订单
  */
 export async function createPaymentOrder(params: CreatePaymentOrderParams) {
+  const db = await getDb();
   const orderNo = `${params.orderType}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
   const [order] = await db
@@ -48,6 +49,7 @@ export async function createPaymentOrder(params: CreatePaymentOrderParams) {
  * 根据订单号获取支付订单
  */
 export async function getPaymentOrderByOrderNo(orderNo: string) {
+  const db = await getDb();
   const [order] = await db
     .select()
     .from(paymentOrders)
@@ -61,6 +63,7 @@ export async function getPaymentOrderByOrderNo(orderNo: string) {
  * 根据ID获取支付订单
  */
 export async function getPaymentOrderById(id: string) {
+  const db = await getDb();
   const [order] = await db
     .select()
     .from(paymentOrders)
@@ -77,6 +80,7 @@ export async function updatePaymentOrder(
   orderNo: string,
   params: UpdatePaymentOrderParams
 ) {
+  const db = await getDb();
   const [order] = await db
     .update(paymentOrders)
     .set({
@@ -97,6 +101,7 @@ export async function getUserPaymentOrders(
   limit: number = 20,
   offset: number = 0
 ) {
+  const db = await getDb();
   const orders = await db
     .select()
     .from(paymentOrders)
