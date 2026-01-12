@@ -15,13 +15,6 @@ const PRESET_AMOUNTS = [
 	{ amount: 10000, bonus: 800, label: '¥10000' },
 ];
 
-// 充值方式
-const PAYMENT_METHODS = [
-	{ id: 'alipay', name: '支付宝', icon: '💳' },
-	{ id: 'wechat', name: '微信支付', icon: '💚' },
-	{ id: 'bank', name: '银行卡', icon: '🏦' },
-];
-
 export default function RechargePage() {
 	const { user, refreshUser } = useAuth();
 	const router = useRouter();
@@ -29,10 +22,19 @@ export default function RechargePage() {
 	const [isLoadingMember, setIsLoadingMember] = useState(true);
 	const [selectedAmount, setSelectedAmount] = useState<number>(0);
 	const [customAmount, setCustomAmount] = useState('');
-	const [selectedPayment, setSelectedPayment] = useState<string>('alipay');
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [paymentMethod, setPaymentMethod] = useState<string>('wechat');
+
+	// 支付相关状态
+	const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+	const [isPaying, setIsPaying] = useState(false);
+	const [orderNo, setOrderNo] = useState<string>('');
+	const [qrCodeImage, setQrCodeImage] = useState<string>('');
+	const [isPolling, setIsPolling] = useState(false);
+	const [paymentSuccess, setPaymentSuccess] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
-	const [successMessage, setSuccessMessage] = useState('');
+
+	// 倒计时（15分钟）
+	const [countdown, setCountdown] = useState(900);
 
 	// 获取会员信息
 	useEffect(() => {
@@ -40,6 +42,56 @@ export default function RechargePage() {
 			fetchMemberInfo();
 		}
 	}, [user]);
+
+	// 倒计时逻辑
+	useEffect(() => {
+		if (countdown > 0 && isPaying) {
+			const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+			return () => clearTimeout(timer);
+		} else if (countdown === 0) {
+			setIsPaying(false);
+			setErrorMessage('支付超时，请重新发起充值');
+		}
+	}, [countdown, isPaying]);
+
+	// 轮询支付状态
+	useEffect(() => {
+		let pollingInterval: NodeJS.Timeout | null = null;
+
+		if (isPolling && orderNo) {
+			pollingInterval = setInterval(async () => {
+				try {
+					const response = await fetch(`/api/payment/query?orderNo=${orderNo}`);
+					const data = await response.json();
+
+					if (data.success && data.isPaid) {
+						// 支付成功
+						setIsPolling(false);
+						setPaymentSuccess(true);
+
+						// 刷新用户信息和会员信息
+						await Promise.all([
+							refreshUser(),
+							fetchMemberInfo(),
+						]);
+
+						// 3秒后跳转到个人中心
+						setTimeout(() => {
+							router.push('/profile');
+						}, 3000);
+					}
+				} catch (error) {
+					console.error('查询支付状态失败:', error);
+				}
+			}, 2000); // 每2秒查询一次
+		}
+
+		return () => {
+			if (pollingInterval) {
+				clearInterval(pollingInterval);
+			}
+		};
+	}, [isPolling, orderNo, refreshUser, router]);
 
 	const fetchMemberInfo = async () => {
 		try {
@@ -63,7 +115,6 @@ export default function RechargePage() {
 		setSelectedAmount(amount);
 		setCustomAmount('');
 		setErrorMessage('');
-		setSuccessMessage('');
 	};
 
 	// 处理自定义金额
@@ -74,7 +125,6 @@ export default function RechargePage() {
 			setSelectedAmount(parseInt(value));
 		}
 		setErrorMessage('');
-		setSuccessMessage('');
 	};
 
 	// 计算赠送金额
@@ -88,54 +138,71 @@ export default function RechargePage() {
 		return selectedAmount + calculateBonus(selectedAmount);
 	};
 
-	// 处理充值提交
-	const handleRecharge = async (e: React.FormEvent) => {
-		e.preventDefault();
+	// 格式化倒计时
+	const formatCountdown = (seconds: number) => {
+		const minutes = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+	};
 
+	// 创建支付订单
+	const handleCreateOrder = async () => {
 		if (selectedAmount < 1) {
 			setErrorMessage('请输入或选择充值金额');
 			return;
 		}
 
-		setIsSubmitting(true);
+		setIsCreatingOrder(true);
 		setErrorMessage('');
-		setSuccessMessage('');
 
 		try {
-			const response = await fetch('/api/user/me/member/recharge', {
+			const response = await fetch('/api/payment/create', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				credentials: 'include',
 				body: JSON.stringify({
-					amount: selectedAmount * 100, // 转换为分
-					paymentMethod: selectedPayment,
-					description: `充值 ¥${selectedAmount}`,
+					paymentMethod,
+					amount: getActualAmount(),
+					description: `充值 ¥${getActualAmount()}`,
+					type: 'recharge',
+					metadata: {
+						originalAmount: selectedAmount,
+						bonusAmount: calculateBonus(selectedAmount),
+					},
 				}),
 			});
 
-			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || '充值失败');
+			const data = await response.json();
+
+			if (!response.ok || !data.success) {
+				throw new Error(data.error || '创建支付订单失败');
 			}
 
-			const data = await response.json();
-			setSuccessMessage('充值成功！');
+			// 保存订单号和二维码
+			setOrderNo(data.orderNo);
+			setQrCodeImage(data.qrCodeImage);
 
-			// 刷新会员信息
-			await fetchMemberInfo();
-			await refreshUser();
-
-			// 3秒后跳转到个人中心
-			setTimeout(() => {
-				router.push('/profile');
-			}, 3000);
+			// 进入支付状态，开始轮询
+			setIsPaying(true);
+			setIsPolling(true);
+			setCountdown(900); // 重置倒计时
 		} catch (err: any) {
 			setErrorMessage(err.message);
 		} finally {
-			setIsSubmitting(false);
+			setIsCreatingOrder(false);
 		}
+	};
+
+	// 重新发起支付
+	const handleRetryPayment = () => {
+		setIsPaying(false);
+		setPaymentSuccess(false);
+		setOrderNo('');
+		setQrCodeImage('');
+		setIsPolling(false);
+		setCountdown(900);
 	};
 
 	if (!user) {
@@ -154,6 +221,204 @@ export default function RechargePage() {
 		);
 	}
 
+	// 支付成功状态
+	if (paymentSuccess) {
+		return (
+			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
+				<div className="text-center max-w-md mx-auto px-4">
+					{/* Success Icon */}
+					<div className="mb-8">
+						<div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+							<svg
+								className="w-12 h-12 text-green-600"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M5 13l4 4L19 7"
+								/>
+							</svg>
+						</div>
+					</div>
+
+					{/* Success Message */}
+					<h1 className="text-4xl font-semibold text-gray-900 mb-4">支付成功</h1>
+					<p className="text-xl text-gray-600 mb-8">
+						充值金额：¥{getActualAmount()}
+					</p>
+
+					{/* Order Info */}
+					<div className="bg-white rounded-2xl p-6 mb-8 text-left">
+						<div className="space-y-3">
+							<div className="flex justify-between">
+								<span className="text-gray-600">充值金额</span>
+								<span className="font-medium text-gray-900">¥{getActualAmount()}</span>
+							</div>
+							{calculateBonus(selectedAmount) > 0 && (
+								<div className="flex justify-between">
+									<span className="text-gray-600">赠送金额</span>
+									<span className="font-medium text-green-600">
+										+¥{calculateBonus(selectedAmount)}
+									</span>
+								</div>
+							)}
+							<div className="border-t border-gray-200" />
+							<div className="flex justify-between">
+								<span className="text-gray-600">当前余额</span>
+								<span className="font-medium text-gray-900">
+									¥{member ? (member.balance / 100).toFixed(2) : '-'}
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<p className="text-sm text-gray-500">3秒后自动跳转到个人中心...</p>
+				</div>
+			</div>
+		);
+	}
+
+	// 支付状态
+	if (isPaying && !paymentSuccess) {
+		return (
+			<div className="min-h-screen bg-gray-50">
+				<div className="max-w-[980px] mx-auto px-4 py-16">
+					{/* Back Link */}
+					<div className="mb-12">
+						<button
+							onClick={handleRetryPayment}
+							className="text-xs text-gray-600 hover:text-gray-900 inline-flex items-center gap-1 transition-colors"
+						>
+							← 返回重新充值
+						</button>
+					</div>
+
+					{/* Header */}
+					<div className="mb-12">
+						<h1 className="text-5xl md:text-6xl font-semibold text-gray-900 tracking-tight mb-4">
+							账户充值
+						</h1>
+						<p className="text-xl text-gray-600">
+							扫码完成支付
+						</p>
+					</div>
+
+					{/* Payment Status */}
+					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+						{/* Left Column - QR Code */}
+						<div className="lg:col-span-2">
+							<div className="bg-white rounded-2xl p-8">
+								<div className="flex flex-col items-center">
+									{/* QR Code */}
+									<div className="w-80 h-80 bg-white rounded-2xl flex items-center justify-center mb-6 border-2 border-gray-200">
+										{qrCodeImage ? (
+											<img
+												src={qrCodeImage}
+												alt="支付二维码"
+												className="w-full h-full p-4"
+											/>
+										) : (
+											<div className="text-center">
+												<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+												<p className="mt-4 text-gray-600">生成二维码中...</p>
+											</div>
+										)}
+									</div>
+
+									{/* Amount Info */}
+									<div className="text-center mb-6">
+										<div className="text-4xl font-bold text-gray-900 mb-2">
+											¥{getActualAmount()}
+										</div>
+										{calculateBonus(selectedAmount) > 0 && (
+											<div className="text-green-600 text-lg mb-4">
+												包含赠送 ¥{calculateBonus(selectedAmount)}
+											</div>
+										)}
+										<p className="text-sm text-gray-600 mb-4">
+											请使用微信扫描二维码完成支付
+										</p>
+										<div className="text-sm text-gray-500 mb-4">
+											支付剩余时间：<span className="font-mono text-red-600">
+												{formatCountdown(countdown)}
+											</span>
+										</div>
+										{/* Polling Status */}
+										{isPolling && (
+											<div className="flex items-center justify-center gap-2 text-sm text-blue-600">
+												<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+												<span>正在等待支付结果...</span>
+											</div>
+										)}
+									</div>
+
+									{/* Retry Button */}
+									<button
+										onClick={handleRetryPayment}
+										className="w-full max-w-xs py-3 px-6 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200"
+									>
+										重新发起充值
+									</button>
+								</div>
+							</div>
+						</div>
+
+						{/* Right Column - Order Summary */}
+						<div className="lg:col-span-1">
+							<div className="bg-white rounded-2xl p-6 sticky top-24">
+								<h2 className="text-xl font-semibold text-gray-900 mb-4">充值详情</h2>
+								<div className="space-y-4">
+									<div>
+										<div className="text-gray-600 mb-1">充值金额</div>
+										<div className="text-2xl font-bold text-gray-900">
+											¥{selectedAmount}
+										</div>
+									</div>
+									{calculateBonus(selectedAmount) > 0 && (
+										<div>
+											<div className="text-gray-600 mb-1">赠送金额</div>
+											<div className="text-2xl font-bold text-green-600">
+												+¥{calculateBonus(selectedAmount)}
+											</div>
+										</div>
+									)}
+									<div className="border-t border-gray-200" />
+									<div>
+										<div className="text-gray-600 mb-1">实际支付</div>
+										<div className="text-3xl font-bold text-gray-900">
+											¥{getActualAmount()}
+										</div>
+									</div>
+									<div className="border-t border-gray-200" />
+									<div>
+										<div className="text-gray-600 mb-1">当前余额</div>
+										{!isLoadingMember && member && (
+											<div className="text-xl font-semibold text-gray-900">
+												¥{(member.balance / 100).toFixed(2)}
+											</div>
+										)}
+									</div>
+									<div className="border-t border-gray-200" />
+									<div>
+										<div className="text-gray-600 mb-1">订单号</div>
+										<div className="text-sm font-mono text-gray-900 break-all">
+											{orderNo}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	// 初始状态 - 选择充值金额
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<div className="max-w-[980px] mx-auto px-4 py-16">
@@ -177,13 +442,7 @@ export default function RechargePage() {
 					</p>
 				</div>
 
-				{/* Messages */}
-				{successMessage && (
-					<div className="bg-green-50 text-green-700 px-6 py-4 rounded-lg mb-6">
-						{successMessage}
-					</div>
-				)}
-
+				{/* Error Message */}
 				{errorMessage && (
 					<div className="bg-red-50 text-red-700 px-6 py-4 rounded-lg mb-6">
 						{errorMessage}
@@ -202,134 +461,155 @@ export default function RechargePage() {
 
 				{/* Recharge Form */}
 				<div className="bg-white rounded-2xl p-8">
-					<form onSubmit={handleRecharge}>
-						{/* Amount Selection */}
-						<div className="mb-8">
-							<label className="block text-sm font-medium text-gray-900 mb-4">
-								选择充值金额
-							</label>
-							<div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-								{PRESET_AMOUNTS.map((preset) => (
-									<button
-										key={preset.amount}
-										type="button"
-										onClick={() => handleAmountSelect(preset.amount)}
-										className={`p-6 rounded-xl border-2 transition-all ${
+					{/* Amount Selection */}
+					<div className="mb-8">
+						<h2 className="text-xl font-semibold text-gray-900 mb-4">选择充值金额</h2>
+						<div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+							{PRESET_AMOUNTS.map((preset) => (
+								<button
+									key={preset.amount}
+									onClick={() => handleAmountSelect(preset.amount)}
+									className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+										selectedAmount === preset.amount
+											? 'border-gray-900 bg-gray-900 text-white'
+											: 'border-gray-200 hover:border-gray-300'
+									}`}
+								>
+									<div className="text-2xl font-bold mb-1">
+										{preset.label}
+									</div>
+									{preset.bonus > 0 && (
+										<div className={`text-sm ${
 											selectedAmount === preset.amount
-												? 'border-gray-900 bg-gray-50'
-												: 'border-gray-200 hover:border-gray-300'
-										}`}
-									>
-										<div className="text-2xl font-semibold text-gray-900 mb-2">
-											{preset.label}
+												? 'text-gray-300'
+												: 'text-green-600'
+										}`}>
+											赠送 ¥{preset.bonus}
 										</div>
-										{preset.bonus > 0 && (
-											<div className="text-xs text-red-600 font-medium">
-												赠送 ¥{preset.bonus}
-											</div>
-										)}
-									</button>
-								))}
-							</div>
-
-							{/* Custom Amount */}
-							<div>
-								<label className="block text-sm font-medium text-gray-900 mb-2">
-									或输入自定义金额
-								</label>
-								<div className="relative">
-									<span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-900 text-lg">
-										¥
-									</span>
-									<input
-										type="text"
-										inputMode="numeric"
-										value={customAmount}
-										onChange={handleCustomAmountChange}
-										placeholder="请输入金额"
-										className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
-									/>
-								</div>
-							</div>
+									)}
+								</button>
+							))}
 						</div>
 
-						{/* Payment Method */}
-						<div className="mb-8">
-							<label className="block text-sm font-medium text-gray-900 mb-4">
-								选择支付方式
+						<div className="mb-4">
+							<label className="block text-sm font-medium text-gray-700 mb-2">
+								或输入自定义金额
 							</label>
-							<div className="grid grid-cols-3 gap-4">
-								{PAYMENT_METHODS.map((method) => (
-									<button
-										key={method.id}
-										type="button"
-										onClick={() => setSelectedPayment(method.id)}
-										className={`p-4 rounded-xl border-2 transition-all ${
-											selectedPayment === method.id
-												? 'border-gray-900 bg-gray-50'
-												: 'border-gray-200 hover:border-gray-300'
-										}`}
-									>
-										<div className="text-2xl mb-1">{method.icon}</div>
-										<div className="text-sm font-medium text-gray-900">
-											{method.name}
-										</div>
-									</button>
-								))}
-							</div>
+							<input
+								type="text"
+								inputMode="numeric"
+								value={customAmount}
+								onChange={handleCustomAmountChange}
+								placeholder="请输入充值金额"
+								className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+							/>
 						</div>
+					</div>
 
-						{/* Summary */}
-						{selectedAmount > 0 && (
-							<div className="bg-gray-50 rounded-xl p-6 mb-8">
-								<div className="flex justify-between items-center mb-2">
-									<span className="text-sm text-gray-600">充值金额</span>
-									<span className="text-lg font-semibold text-gray-900">
+					{/* Payment Method */}
+					<div className="mb-8">
+						<h2 className="text-xl font-semibold text-gray-900 mb-4">选择支付方式</h2>
+						<div className="space-y-3">
+							<button
+								onClick={() => setPaymentMethod('wechat')}
+								className={`w-full p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 ${
+									paymentMethod === 'wechat'
+										? 'border-green-600 bg-green-50'
+										: 'border-gray-200 hover:border-gray-300'
+								}`}
+							>
+								<div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+									<span className="text-white text-xl">💬</span>
+								</div>
+								<div className="text-left">
+									<div className="font-medium text-gray-900">微信支付</div>
+									<div className="text-sm text-gray-600">推荐使用微信支付</div>
+								</div>
+								{paymentMethod === 'wechat' && (
+									<div className="ml-auto">
+										<div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+											<svg
+												className="w-4 h-4 text-white"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M5 13l4 4L19 7"
+												/>
+											</svg>
+										</div>
+									</div>
+								)}
+							</button>
+						</div>
+					</div>
+
+					{/* Summary */}
+					{selectedAmount > 0 && (
+						<div className="bg-gray-50 rounded-xl p-6 mb-8">
+							<div className="space-y-3">
+								<div className="flex justify-between">
+									<span className="text-gray-600">充值金额</span>
+									<span className="font-medium text-gray-900">
 										¥{selectedAmount}
 									</span>
 								</div>
 								{calculateBonus(selectedAmount) > 0 && (
-									<div className="flex justify-between items-center mb-2">
-										<span className="text-sm text-gray-600">赠送金额</span>
-										<span className="text-lg font-semibold text-red-600">
+									<div className="flex justify-between">
+										<span className="text-gray-600">赠送金额</span>
+										<span className="font-medium text-green-600">
 											+¥{calculateBonus(selectedAmount)}
 										</span>
 									</div>
 								)}
-								<div className="border-t border-gray-200 pt-2 mt-2">
-									<div className="flex justify-between items-center">
-										<span className="text-base font-medium text-gray-900">
-											实际到账
+								<div className="border-t border-gray-200 pt-3">
+									<div className="flex justify-between">
+										<span className="text-lg font-semibold text-gray-900">
+											实际支付
 										</span>
-										<span className="text-xl font-semibold text-gray-900">
+										<span className="text-2xl font-bold text-gray-900">
 											¥{getActualAmount()}
 										</span>
 									</div>
 								</div>
 							</div>
-						)}
-
-						{/* Submit Button */}
-						<button
-							type="submit"
-							disabled={isSubmitting || selectedAmount < 1}
-							className="w-full bg-gray-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-						>
-							{isSubmitting ? '处理中...' : '立即充值'}
-						</button>
-
-						{/* Notice */}
-						<div className="mt-6 text-xs text-gray-600">
-							<p className="mb-2">
-								<strong>温馨提示：</strong>
-							</p>
-							<ul className="list-disc list-inside space-y-1">
-								<li>充值金额将实时到账</li>
-								<li>充值成功后可立即使用余额消费</li>
-								<li>如有疑问，请联系客服</li>
-							</ul>
 						</div>
-					</form>
+					)}
+
+					{/* Submit Button */}
+					<button
+						onClick={handleCreateOrder}
+						disabled={selectedAmount < 1 || isCreatingOrder}
+						className={`w-full py-4 px-8 rounded-xl font-medium text-lg transition-all duration-200 ${
+							selectedAmount < 1 || isCreatingOrder
+								? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+								: 'bg-gray-900 text-white hover:bg-gray-800'
+						}`}
+					>
+						{isCreatingOrder ? (
+							<span className="flex items-center justify-center gap-2">
+								<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+								创建订单中...
+							</span>
+						) : (
+							`立即充值 ¥${getActualAmount()}`
+						)}
+					</button>
+				</div>
+
+				{/* Tips */}
+				<div className="mt-8 bg-blue-50 rounded-xl p-6">
+					<h3 className="font-semibold text-gray-900 mb-2">充值说明</h3>
+					<ul className="space-y-2 text-sm text-gray-600">
+						<li>• 充值金额实时到账，可立即使用</li>
+						<li>• 预设充值金额可享受赠送优惠</li>
+						<li>• 支付过程中请勿关闭浏览器窗口</li>
+						<li>• 如遇支付问题，请联系客服</li>
+					</ul>
 				</div>
 			</div>
 		</div>
