@@ -30,6 +30,7 @@ export default function ProfilePage() {
 	});
 	const [member, setMember] = useState<Member | null>(null);
 	const [isLoadingMember, setIsLoadingMember] = useState(true);
+	const [debugInfo, setDebugInfo] = useState<any>(null);
 
 	// 获取会员信息
 	useEffect(() => {
@@ -37,6 +38,17 @@ export default function ProfilePage() {
 			fetchMemberInfo();
 		}
 	}, [isAuthenticated, user]);
+
+	// 调试功能
+	const fetchDebugInfo = async () => {
+		try {
+			const response = await fetch('/api/debug/check-user');
+			const data = await response.json();
+			setDebugInfo(data);
+		} catch (error) {
+			console.error('Debug error:', error);
+		}
+	};
 
 	const fetchMemberInfo = async () => {
 		try {
@@ -355,9 +367,27 @@ export default function ProfilePage() {
 
 				{activeTab === 'member' && (
 					<div className="space-y-8">
-						{/* 调试信息 */}
+						{/* 调试工具 */}
+						<div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+							<div className="flex items-center justify-between mb-3">
+								<strong className="text-blue-900 text-sm">调试工具</strong>
+								<button
+									onClick={fetchDebugInfo}
+									className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition"
+								>
+								 检查登录状态
+								</button>
+							</div>
+							{debugInfo && (
+								<pre className="mt-2 text-xs text-blue-900 bg-white p-3 rounded overflow-x-auto">
+{JSON.stringify(debugInfo, null, 2)}
+								</pre>
+							)}
+						</div>
+
+						{/* 会员信息调试 */}
 						<div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs">
-							<strong className="text-gray-700">调试信息:</strong>
+							<strong className="text-gray-700">会员信息:</strong>
 							<pre className="mt-2 text-gray-600 overflow-x-auto">
 member: {JSON.stringify(member, null, 2)}
 memberLevel: {member?.memberLevel || 'null'}
