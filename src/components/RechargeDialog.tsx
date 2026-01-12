@@ -69,7 +69,7 @@ const MEMBERSHIP_PLANS = [
       { icon: '✓', text: '专属活动邀请' },
       { icon: '✓', text: '专属顾问团队' },
     ],
-    color: 'from-gray-700 to-gray-800',
+    color: 'from-purple-500 to-purple-600',
   },
 ];
 
