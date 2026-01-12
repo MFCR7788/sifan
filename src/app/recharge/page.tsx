@@ -32,6 +32,9 @@ export default function RechargePage() {
 	const [isPolling, setIsPolling] = useState(false);
 	const [paymentSuccess, setPaymentSuccess] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
+	const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+	const [paymentCheckMessage, setPaymentCheckMessage] = useState('');
+	const [paymentCheckSuccess, setPaymentCheckSuccess] = useState(false);
 
 	// 倒计时（15分钟）
 	const [countdown, setCountdown] = useState(900);
@@ -203,6 +206,56 @@ export default function RechargePage() {
 		setQrCodeImage('');
 		setIsPolling(false);
 		setCountdown(900);
+		setPaymentCheckMessage('');
+		setPaymentCheckSuccess(false);
+	};
+
+	// 检查支付状态
+	const handleCheckPayment = async () => {
+		if (!orderNo) {
+			setErrorMessage('订单号不存在');
+			return;
+		}
+
+		setIsCheckingPayment(true);
+		setPaymentCheckMessage('');
+
+		try {
+			const response = await fetch(`/api/payment/query?orderNo=${orderNo}`);
+			const data = await response.json();
+
+			if (data.success && data.isPaid) {
+				// 支付成功
+				setPaymentCheckSuccess(true);
+				setPaymentCheckMessage('支付成功！');
+
+				// 停止轮询
+				setIsPolling(false);
+
+				// 刷新用户信息和会员信息
+				await Promise.all([
+					refreshUser(),
+					fetchMemberInfo(),
+				]);
+
+				// 设置支付成功状态
+				setPaymentSuccess(true);
+
+				// 3秒后跳转到个人中心
+				setTimeout(() => {
+					router.push('/profile');
+				}, 3000);
+			} else {
+				// 支付未成功
+				setPaymentCheckSuccess(false);
+				setPaymentCheckMessage('充值失败，请确认支付状态后重试');
+			}
+		} catch (err: any) {
+			setPaymentCheckSuccess(false);
+			setPaymentCheckMessage('查询支付状态失败：' + (err.message || '未知错误'));
+		} finally {
+			setIsCheckingPayment(false);
+		}
 	};
 
 	if (!user) {
@@ -354,15 +407,46 @@ export default function RechargePage() {
 												<span>正在等待支付结果...</span>
 											</div>
 										)}
-									</div>
 
-									{/* Retry Button */}
-									<button
-										onClick={handleRetryPayment}
-										className="w-full max-w-xs py-3 px-6 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200"
-									>
-										重新发起充值
-									</button>
+									{/* Payment Check Message */}
+									{paymentCheckMessage && (
+										<div className={`mt-4 mb-4 p-4 rounded-lg text-center ${
+											paymentCheckSuccess
+												? 'bg-green-50 text-green-700'
+												: 'bg-red-50 text-red-700'
+										}`}>
+											{paymentCheckMessage}
+										</div>
+									)}
+
+									{/* Action Buttons */}
+									<div className="flex flex-col gap-3 w-full max-w-xs">
+										<button
+											onClick={handleCheckPayment}
+											disabled={isCheckingPayment || paymentCheckSuccess}
+											className={`py-3 px-6 rounded-xl font-medium transition-all duration-200 ${
+												isCheckingPayment || paymentCheckSuccess
+													? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+													: 'bg-gray-900 text-white hover:bg-gray-800'
+											}`}
+										>
+											{isCheckingPayment ? (
+												<span className="flex items-center justify-center gap-2">
+													<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+													检查中...
+												</span>
+											) : (
+												'我已支付'
+											)}
+										</button>
+
+										<button
+											onClick={handleRetryPayment}
+											className="py-3 px-6 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200"
+										>
+											重新发起充值
+										</button>
+									</div>
 								</div>
 							</div>
 						</div>
