@@ -212,11 +212,27 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
             }),
           });
 
-          const data = await response.json();
-
           console.log('=== 支付接口响应 ===');
           console.log('Response status:', response.status);
-          console.log('Response data:', data);
+          console.log('Response Content-Type:', response.headers.get('content-type'));
+
+          let data;
+          try {
+            data = await response.json();
+            console.log('Response data:', data);
+          } catch (parseError) {
+            // 如果解析 JSON 失败，获取原始文本
+            console.error('❌ JSON 解析失败:', parseError);
+            const text = await response.text();
+            console.error('原始响应内容 (前 500 字符):', text.substring(0, 500));
+
+            // 设置错误信息
+            setPaymentError(
+              `服务器返回错误 (${response.status}): ${text.substring(0, 200)}...`
+            );
+            setIsGeneratingQr(false);
+            return;
+          }
           console.log('====================');
 
           if (data.success) {
@@ -238,6 +254,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
           }
         } catch (error: any) {
           console.error('生成支付二维码错误:', error);
+          console.error('错误堆栈:', error.stack);
           setPaymentError(error.message || '网络错误，请稍后重试');
         } finally {
           setIsGeneratingQr(false);
