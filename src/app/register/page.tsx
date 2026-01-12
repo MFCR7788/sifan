@@ -54,10 +54,14 @@ export default function RegisterPage() {
 			});
 			router.push('/');
 		} catch (err: any) {
-			// 如果手机号已注册，直接跳转到登录页面
+			// 如果手机号已注册，显示提示后跳转到登录页面
 			if (err.message && err.message.includes('该手机号已被注册')) {
+				setError('该手机号已注册，请直接登录');
 				setIsLoading(false);
-				router.push('/login');
+				// 延迟2秒后跳转，让用户看到提示信息
+				setTimeout(() => {
+					router.push('/login');
+				}, 2000);
 				return;
 			}
 			setError(err.message || '注册失败');
