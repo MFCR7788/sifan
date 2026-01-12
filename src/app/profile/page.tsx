@@ -15,6 +15,16 @@ const MEMBER_LEVEL_MAP: Record<string, string> = {
 	diamond: '钻石会员',
 };
 
+// 交易类型映射
+const TRANSACTION_TYPE_MAP: Record<string, string> = {
+	recharge: '余额充值',
+	points_recharge: '积分充值',
+	membership_purchase: '购买会员',
+	consumption: '余额消费',
+	membership_consumption: '会员消费',
+	points_consumption: '积分消费',
+};
+
 export default function ProfilePage() {
 	const { user, logout, refreshUser, isAuthenticated, isLoading } = useAuth();
 	const router = useRouter();
@@ -598,6 +608,12 @@ export default function ProfilePage() {
 													<div className="text-sm font-semibold text-gray-900">
 														¥{(transaction.amount / 100).toFixed(2)}
 													</div>
+												</div>
+												<div className="mb-2">
+													<span className="text-xs text-gray-500 mr-2">类型：</span>
+													<span className="text-xs font-medium text-gray-700">
+														{TRANSACTION_TYPE_MAP[transaction.transactionType] || transaction.transactionType}
+													</span>
 												</div>
 												<div className="flex items-center justify-between text-xs text-gray-600">
 													<div>

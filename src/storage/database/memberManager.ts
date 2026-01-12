@@ -290,7 +290,7 @@ export class MemberManager {
     options?: {
       skip?: number;
       limit?: number;
-      filters?: { transactionType?: string };
+      filters?: { transactionType?: string | string[] };
     }
   ) {
     const db = await getDb();
@@ -302,7 +302,7 @@ export class MemberManager {
 
     // 添加过滤条件
     if (options?.filters?.transactionType) {
-      // 这里需要添加额外的条件，但目前 Drizzle ORM 的 eq 不支持直接链式调用
+      // 如果是数组，需要支持 IN 查询
       // 简化实现：先查询所有记录，然后在内存中过滤
     }
 
@@ -311,15 +311,22 @@ export class MemberManager {
       .from(memberTransactions)
       .where(eq(memberTransactions.memberId, memberId))
       .orderBy(desc(memberTransactions.createdAt))
-      .limit(limit)
-      .offset(skip);
+      .limit(limit + skip) // 多查询一些，以便过滤
+      .offset(0);
 
     // 在内存中应用过滤
     let filteredTransactions = transactions;
     if (options?.filters?.transactionType) {
-      filteredTransactions = transactions.filter(
-        (t) => t.transactionType === options.filters?.transactionType
+      const types = Array.isArray(options.filters.transactionType)
+        ? options.filters.transactionType
+        : [options.filters.transactionType];
+
+      filteredTransactions = transactions.filter((t) =>
+        types.includes(t.transactionType)
       );
+
+      // 应用分页
+      filteredTransactions = filteredTransactions.slice(skip, skip + limit);
     }
 
     return filteredTransactions;

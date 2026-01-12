@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
 		// 获取查询参数
 		const searchParams = request.nextUrl.searchParams;
-		const type = searchParams.get('type'); // recharge 或 consumption
+		const type = searchParams.get('type'); // recharge, consumption, 或 recharge_types
 		const page = parseInt(searchParams.get('page') || '1');
 		const limit = parseInt(searchParams.get('limit') || '10');
 
@@ -39,19 +39,32 @@ export async function GET(request: NextRequest) {
 
 		console.log('Transactions API: 查询会员ID:', member.id);
 
+		// 根据类型确定要查询的交易类型
+		let transactionTypes: string[] | undefined;
+		if (type === 'recharge') {
+			// 充值记录：包含余额充值、积分充值、购买会员
+			transactionTypes = ['recharge', 'points_recharge', 'membership_purchase'];
+		} else if (type === 'consumption') {
+			// 消费记录
+			transactionTypes = ['consumption', 'membership_consumption', 'points_consumption'];
+		} else if (type === 'recharge_types') {
+			// 所有充值相关的类型
+			transactionTypes = ['recharge', 'points_recharge', 'membership_purchase'];
+		}
+
 		// 获取交易记录
 		const skip = (page - 1) * limit;
 		const transactions = await memberManager.getTransactions(member.id, {
 			skip,
 			limit,
-			filters: type ? { transactionType: type as any } : undefined,
+			filters: transactionTypes ? { transactionType: transactionTypes } : undefined,
 		});
 
 		// 获取总数
 		const allTransactions = await memberManager.getTransactions(member.id, {
 			skip: 0,
 			limit: 10000,
-			filters: type ? { transactionType: type as any } : undefined,
+			filters: transactionTypes ? { transactionType: transactionTypes } : undefined,
 		});
 		const total = allTransactions.length;
 
