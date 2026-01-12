@@ -83,9 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 		const data = await response.json();
 		setUser(data.user);
-
-		// 刷新用户状态以确保 Cookie 正确保存
-		await refreshUser();
+		setIsLoading(false);
 	};
 
 	// 注册
@@ -112,9 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 		const result = await response.json();
 		setUser(result.user);
-
-		// 刷新用户状态以确保 Cookie 正确保存
-		await refreshUser();
+		setIsLoading(false);
 	};
 
 	// 登出
