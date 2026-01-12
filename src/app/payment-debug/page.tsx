@@ -17,8 +17,7 @@ export default function PaymentDebugPage() {
     // 测试 1: 检查用户认证状态
     addResult('用户认证状态', isAuthenticated, isAuthenticated ? '已登录' : '未登录', {
       userId: user?.id,
-      email: user?.email,
-      membershipLevel: user?.membershipLevel
+      email: user?.email
     });
 
     // 测试 2: 检查 Cookie
@@ -142,7 +141,7 @@ export default function PaymentDebugPage() {
                   <>
                     <p>用户 ID: {user.id}</p>
                     <p>邮箱: {user.email}</p>
-                    <p>会员等级: {user.membershipLevel || '普通会员'}</p>
+                    <p>是否管理员: {user.isAdmin ? '是' : '否'}</p>
                   </>
                 )}
               </div>
