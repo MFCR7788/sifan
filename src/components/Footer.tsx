@@ -8,7 +8,7 @@ const footerSections = [
     links: [
       { name: '产品方案', href: '/pricing' },
       { name: '定制方案', href: '/configurator' },
-      { name: '功能介绍', href: '#features' },
+      { name: '功能介绍', href: 'https://www.yuque.com/qingfeng-kbbz1/xvvm82', external: true },
     ],
   },
   {
@@ -50,15 +50,20 @@ export default function Footer() {
                 {section.title}
               </h3>
               <div className="flex flex-col space-y-4">
-                {section.links.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+                {section.links.map((link) => {
+                  const isExternal = 'external' in link && link.external;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      target={isExternal ? '_blank' : undefined}
+                      rel={isExternal ? 'noopener noreferrer' : undefined}
+                      className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           ))}
