@@ -407,6 +407,7 @@ export default function RechargePage() {
 												<span>正在等待支付结果...</span>
 											</div>
 										)}
+									</div>
 
 									{/* Payment Check Message */}
 									{paymentCheckMessage && (
