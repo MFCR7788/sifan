@@ -23,9 +23,9 @@ const MEMBERSHIP_PLANS = [
   {
     id: 'silver',
     name: '银牌会员',
-    price: 30,
-    originalPrice: 50,
-    period: '月',
+    price: 299,
+    originalPrice: 600,
+    period: '年',
     badge: '超值',
     features: [
       { icon: '✓', text: '基础会员全部权益' },
