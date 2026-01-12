@@ -67,19 +67,32 @@ function UserHoverCard({ user, onLogout, onOpenRecharge }: UserHoverCardProps) {
       console.log('Member API response status:', response.status);
       console.log('Member API response headers:', response.headers);
 
+      // 先读取响应文本，避免重复读取
+      const rawText = await response.text();
+      console.log('原始响应内容 (前 500 字符):', rawText.substring(0, 500));
+
       if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Member data 成功:', data);
-        setMember(data.member);
+        try {
+          const data = JSON.parse(rawText);
+          console.log('✅ Member data 成功:', data);
+          setMember(data.member);
+        } catch (parseError) {
+          console.error('❌ JSON 解析失败:', parseError);
+          setErrorMessage('数据格式错误');
+        }
       } else if (response.status === 401) {
         console.log('❌ 用户未登录或Cookie丢失');
-        const errorText = await response.text();
-        console.log('401错误详情:', errorText);
+        console.log('401错误详情:', rawText);
         setErrorMessage('请先登录');
       } else {
-        const errorData = await response.json();
-        console.log('❌ 其他错误:', errorData);
-        setErrorMessage(errorData.error || '加载失败');
+        try {
+          const errorData = JSON.parse(rawText);
+          console.log('❌ 其他错误:', errorData);
+          setErrorMessage(errorData.error || '加载失败');
+        } catch (parseError) {
+          console.error('❌ JSON 解析失败:', parseError);
+          setErrorMessage('服务器返回错误');
+        }
       }
     } catch (error) {
       console.error('❌ Failed to fetch member:', error);

@@ -217,18 +217,22 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
           console.log('Response Content-Type:', response.headers.get('content-type'));
 
           let data;
+          let rawData: string | null = null;
           try {
-            data = await response.json();
-            console.log('Response data:', data);
+            // 先读取原始文本，避免重复读取导致的错误
+            rawData = await response.text();
+            console.log('原始响应内容 (前 500 字符):', rawData.substring(0, 500));
+            
+            // 尝试解析为 JSON
+            data = JSON.parse(rawData);
+            console.log('解析后的数据:', data);
           } catch (parseError) {
-            // 如果解析 JSON 失败，获取原始文本
+            // 如果解析 JSON 失败，使用原始文本作为错误信息
             console.error('❌ JSON 解析失败:', parseError);
-            const text = await response.text();
-            console.error('原始响应内容 (前 500 字符):', text.substring(0, 500));
 
             // 设置错误信息
             setPaymentError(
-              `服务器返回错误 (${response.status}): ${text.substring(0, 200)}...`
+              `服务器返回错误 (${response.status}): ${rawData?.substring(0, 200) || '未知错误'}...`
             );
             setIsGeneratingQr(false);
             return;
