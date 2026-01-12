@@ -142,7 +142,7 @@ export async function markOrderAsPaid(
     );
   } else if (order.orderType === 'points') {
     // 积分充值
-    const points = order.metadata?.points || 0;
+    const points = (order.metadata as any)?.points || 0;
     await memberManager.rechargePoints(
       order.userId,
       points,
@@ -153,7 +153,7 @@ export async function markOrderAsPaid(
     );
   } else if (order.orderType === 'membership') {
     // 购买会员
-    const planId = order.metadata?.planId;
+    const planId = (order.metadata as any)?.planId;
     if (planId) {
       await memberManager.purchaseMembership(
         order.userId,

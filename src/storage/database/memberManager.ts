@@ -20,19 +20,49 @@ export class MemberManager {
   }
 
   /**
+   * 获取所有会员
+   */
+  async getMembers(limit = 50, offset = 0) {
+    const allMembers = await db
+      .select()
+      .from(members)
+      .orderBy(desc(members.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return allMembers;
+  }
+
+  /**
+   * 更新会员信息
+   */
+  async updateMember(memberId: string, updateData: Partial<typeof members.$inferInsert>) {
+    const [updatedMember] = await db
+      .update(members)
+      .set({
+        ...updateData,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(members.id, memberId))
+      .returning();
+
+    return updatedMember;
+  }
+
+  /**
    * 创建会员信息
    */
-  async createMember(userId: string) {
+  async createMember(data: { userId: string; memberLevel?: string; balance?: number; points?: number; totalRecharge?: number; totalConsumption?: number; memberStatus?: string }) {
     const [member] = await db
       .insert(members)
       .values({
-        userId,
-        memberLevel: 'basic',
-        balance: 0,
-        points: 0,
-        totalRecharge: 0,
-        totalConsumption: 0,
-        memberStatus: 'active',
+        userId: data.userId,
+        memberLevel: data.memberLevel || 'basic',
+        balance: data.balance || 0,
+        points: data.points || 0,
+        totalRecharge: data.totalRecharge || 0,
+        totalConsumption: data.totalConsumption || 0,
+        memberStatus: data.memberStatus || 'active',
       })
       .returning();
 
@@ -45,7 +75,7 @@ export class MemberManager {
   async ensureMemberExists(userId: string) {
     let member = await this.getMemberByUserId(userId);
     if (!member) {
-      member = await this.createMember(userId);
+      member = await this.createMember({ userId });
     }
     return member;
   }
@@ -244,6 +274,48 @@ export class MemberManager {
       .offset(offset);
 
     return transactions;
+  }
+
+  /**
+   * 获取交易记录（支持过滤和分页）
+   */
+  async getTransactions(
+    memberId: string,
+    options?: {
+      skip?: number;
+      limit?: number;
+      filters?: { transactionType?: string };
+    }
+  ) {
+    const skip = options?.skip || 0;
+    const limit = options?.limit || 20;
+
+    // 构建查询条件
+    const conditions = [eq(memberTransactions.memberId, memberId)];
+
+    // 添加过滤条件
+    if (options?.filters?.transactionType) {
+      // 这里需要添加额外的条件，但目前 Drizzle ORM 的 eq 不支持直接链式调用
+      // 简化实现：先查询所有记录，然后在内存中过滤
+    }
+
+    const transactions = await db
+      .select()
+      .from(memberTransactions)
+      .where(eq(memberTransactions.memberId, memberId))
+      .orderBy(desc(memberTransactions.createdAt))
+      .limit(limit)
+      .offset(skip);
+
+    // 在内存中应用过滤
+    let filteredTransactions = transactions;
+    if (options?.filters?.transactionType) {
+      filteredTransactions = transactions.filter(
+        (t) => t.transactionType === options.filters?.transactionType
+      );
+    }
+
+    return filteredTransactions;
   }
 
   /**

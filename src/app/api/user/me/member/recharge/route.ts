@@ -50,12 +50,12 @@ export async function POST(request: NextRequest) {
 		}
 
 		// 执行充值
-		const updatedMember = await memberManager.recharge(
-			member.id,
+		const { member: updatedMember } = await memberManager.rechargeBalance(
+			userId,
 			amount,
-			description || `充值 ¥${amount / 100}`,
 			paymentMethod,
-			undefined, // paymentTransactionId - 实际场景中应由支付平台返回
+			'', // paymentTransactionId - 实际场景中应由支付平台返回
+			description || `充值 ¥${amount / 100}`,
 		);
 
 		console.log('Recharge API: 充值成功', {

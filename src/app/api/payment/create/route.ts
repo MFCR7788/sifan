@@ -9,11 +9,11 @@ export async function POST(request: NextRequest) {
   try {
     // 获取用户身份 - 支持从 Cookie 和 Header 两种方式读取
     const allCookies = request.cookies.getAll();
-    let userId = request.cookies.get('userId')?.value;
+    let userId: string | undefined = request.cookies.get('userId')?.value;
 
     // 备选方案：从自定义 header 中读取（解决 localhost cookie 不发送的问题）
     if (!userId) {
-      userId = request.headers.get('x-user-id');
+      userId = request.headers.get('x-user-id') || undefined;
       console.log('Cookie 中无 userId，尝试从 Header 读取:', userId);
     }
 

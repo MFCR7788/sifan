@@ -6,6 +6,7 @@ export default function CookieDebugPage() {
   const [cookieData, setCookieData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [browserCookie, setBrowserCookie] = useState('');
 
   const testCookie = async () => {
     setLoading(true);
@@ -13,7 +14,7 @@ export default function CookieDebugPage() {
 
     try {
       console.log('=== 测试 Cookie 读写 ===');
-      console.log('当前浏览器 Cookie:', document.cookie);
+      console.log('当前浏览器 Cookie:', browserCookie);
       console.log('当前 sessionStorage userId:', sessionStorage.getItem('userId'));
 
       // 1. 测试读取 cookie/header
@@ -49,6 +50,7 @@ export default function CookieDebugPage() {
     try {
       // 尝试通过前端设置 cookie
       document.cookie = 'test-cookie=123456; path=/; SameSite=Lax';
+      setBrowserCookie(document.cookie);
       console.log('前端设置 cookie:', document.cookie);
       await testCookie();
     } catch (err: any) {
@@ -57,6 +59,8 @@ export default function CookieDebugPage() {
   };
 
   useEffect(() => {
+    // 只在客户端执行
+    setBrowserCookie(document.cookie || '(无 Cookie)');
     testCookie();
   }, []);
 
@@ -68,7 +72,7 @@ export default function CookieDebugPage() {
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">浏览器 Cookie</h2>
           <div className="bg-gray-100 p-4 rounded font-mono text-sm break-all">
-            {document.cookie || '(无 Cookie)'}
+            {browserCookie}
           </div>
         </div>
 
