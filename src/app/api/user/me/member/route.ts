@@ -4,9 +4,18 @@ import { userManager } from '@/storage/database/userManager';
 
 export async function GET(request: NextRequest) {
 	try {
-		const userId = request.cookies.get('userId')?.value;
-		console.log('Member API: Cookie中的userId:', userId);
+		// 双重认证：优先从 Cookie 读取，失败则从 Header 读取
+		let userId = request.cookies.get('userId')?.value;
+
+		// 如果 Cookie 中没有 userId，尝试从 Header 读取（备选方案）
+		if (!userId) {
+			userId = request.headers.get('x-user-id');
+			console.log('Member API: Cookie中无userId，尝试从Header读取');
+		}
+
+		console.log('Member API: 最终userId:', userId);
 		console.log('Member API: 所有Cookie:', request.cookies.getAll());
+		console.log('Member API: Headers x-user-id:', request.headers.get('x-user-id'));
 
 		if (!userId) {
 			console.log('Member API: userId不存在，返回401');

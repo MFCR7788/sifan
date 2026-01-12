@@ -85,14 +85,26 @@ export async function POST(request: NextRequest) {
 		console.log('用户ID:', user.id);
 		console.log('NODE_ENV:', process.env.NODE_ENV);
 
+		// 根据环境动态设置 Cookie 配置
+		const isProduction = process.env.NODE_ENV === 'production';
+		const cookieSecure = isProduction && process.env.COOKIE_SECURE !== 'false';
+		const cookieDomain = process.env.COOKIE_DOMAIN || (isProduction ? '.zjsifan.com' : undefined);
+
+		console.log('Cookie配置:', {
+			httpOnly: isProduction, // 生产环境 true，开发环境 false
+			secure: cookieSecure,
+			sameSite: 'lax',
+			domain: cookieDomain,
+		});
+
 		// 设置用户 ID 到 Cookie（简单实现，生产环境应使用 JWT）
 		response.cookies.set('userId', user.id, {
-			httpOnly: false, // 开发环境设为 false，方便调试
-			secure: false, // 开发环境不使用 secure
+			httpOnly: isProduction, // 生产环境设为 true，开发环境设为 false 方便调试
+			secure: cookieSecure, // 生产环境使用 secure，开发环境不使用
 			sameSite: 'lax',
 			path: '/',
 			maxAge: 60 * 60 * 24 * 7, // 7 天
-			domain: undefined, // undefined 表示使用当前域
+			domain: cookieDomain,
 		});
 
 		console.log('✅ Cookie已设置，userId:', user.id);
