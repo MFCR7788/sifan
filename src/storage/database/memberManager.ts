@@ -420,6 +420,26 @@ export class MemberManager {
 			refundCount,
 		};
 	}
+
+	/**
+	 * 获取会员交易记录
+	 * @param memberId 会员ID
+	 * @param options 查询选项
+	 */
+	async getTransactions(
+		memberId: string,
+		options: {
+			skip?: number;
+			limit?: number;
+			filters?: {
+				transactionType?: "recharge" | "consumption" | "refund" | "points_adjust";
+				status?: string;
+				paymentMethod?: string;
+			};
+		} = {},
+	) {
+		return memberTransactionManager.getTransactionsByMemberId(memberId, options);
+	}
 }
 
 export const memberManager = new MemberManager();

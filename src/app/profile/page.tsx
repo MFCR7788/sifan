@@ -31,6 +31,14 @@ export default function ProfilePage() {
 	const [member, setMember] = useState<Member | null>(null);
 	const [isLoadingMember, setIsLoadingMember] = useState(true);
 
+	// 交易记录弹窗状态
+	const [showTransactionsModal, setShowTransactionsModal] = useState(false);
+	const [transactionType, setTransactionType] = useState<'recharge' | 'consumption'>('recharge');
+	const [transactions, setTransactions] = useState<any[]>([]);
+	const [transactionsPage, setTransactionsPage] = useState(1);
+	const [transactionsTotal, setTransactionsTotal] = useState(0);
+	const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+
 	// 获取会员信息
 	useEffect(() => {
 		if (isAuthenticated && user) {
@@ -65,6 +73,51 @@ export default function ProfilePage() {
 		} finally {
 			setIsLoadingMember(false);
 		}
+	};
+
+	// 获取交易记录
+	const fetchTransactions = async (type: 'recharge' | 'consumption', page: number = 1) => {
+		setIsLoadingTransactions(true);
+		setTransactionType(type);
+		setTransactionsPage(page);
+
+		try {
+			console.log('=== 获取交易记录 ===');
+			console.log('交易类型:', type);
+			console.log('页码:', page);
+
+			const response = await fetch(
+				`/api/user/me/member/transactions?type=${type}&page=${page}&limit=10`,
+				{
+					credentials: 'include',
+				}
+			);
+
+			if (response.ok) {
+				const data = await response.json();
+				console.log('交易记录数据:', data);
+				setTransactions(data.transactions);
+				setTransactionsTotal(data.pagination?.total || 0);
+			} else {
+				console.error('获取交易记录失败:', response.status);
+			}
+		} catch (error) {
+			console.error('Failed to fetch transactions:', error);
+		} finally {
+			setIsLoadingTransactions(false);
+		}
+	};
+
+	// 处理点击累计充值
+	const handleRechargeClick = () => {
+		setShowTransactionsModal(true);
+		fetchTransactions('recharge');
+	};
+
+	// 处理点击累计消费
+	const handleConsumptionClick = () => {
+		setShowTransactionsModal(true);
+		fetchTransactions('consumption');
 	};
 
 	useEffect(() => {
@@ -375,29 +428,47 @@ export default function ProfilePage() {
 									{member?.points.toLocaleString() || '0'}
 								</div>
 							</div>
-							<div className="p-6 bg-gray-50 rounded-xl">
+							<button
+								onClick={handleRechargeClick}
+								className="p-6 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors text-left"
+							>
 								<div className="text-xs text-gray-600 mb-2">累计充值</div>
-								<div className="text-2xl font-semibold text-gray-900">
+								<div className="text-2xl font-semibold text-gray-900 flex items-center gap-2">
 									¥{member ? (member.totalRecharge / 100).toFixed(2) : '0.00'}
+									<span className="text-xs text-gray-500">点击查看</span>
 								</div>
-							</div>
-							<div className="p-6 bg-gray-50 rounded-xl">
+							</button>
+							<button
+								onClick={handleConsumptionClick}
+								className="p-6 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors text-left"
+							>
 								<div className="text-xs text-gray-600 mb-2">累计消费</div>
-								<div className="text-2xl font-semibold text-gray-900">
+								<div className="text-2xl font-semibold text-gray-900 flex items-center gap-2">
 									¥{member ? (member.totalConsumption / 100).toFixed(2) : '0.00'}
+									<span className="text-xs text-gray-500">点击查看</span>
 								</div>
-							</div>
+							</button>
 						</div>
 
-						{/* 会员过期时间 */}
-						{member?.expiresAt && (
+						{/* 会员时间信息 */}
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
+								<div className="text-xs text-gray-600 mb-1">会员创建时间</div>
+								<div className="text-xl font-semibold text-gray-900">
+									{member?.createdAt
+										? new Date(member.createdAt).toLocaleDateString('zh-CN')
+										: '-'}
+								</div>
+							</div>
 							<div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
 								<div className="text-xs text-gray-600 mb-1">会员过期时间</div>
 								<div className="text-xl font-semibold text-gray-900">
-									{new Date(member.expiresAt).toLocaleDateString('zh-CN')}
+									{member?.expiresAt
+										? new Date(member.expiresAt).toLocaleDateString('zh-CN')
+										: '永久'}
 								</div>
 							</div>
-						)}
+						</div>
 					</div>
 				)}
 
@@ -465,6 +536,118 @@ export default function ProfilePage() {
 						退出登录
 					</button>
 				</div>
+
+				{/* 交易记录弹窗 */}
+				{showTransactionsModal && (
+					<div
+						className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+						onClick={() => setShowTransactionsModal(false)}
+					>
+						<div
+							className="bg-white rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col"
+							onClick={(e) => e.stopPropagation()}
+						>
+							{/* 弹窗标题 */}
+							<div className="p-6 border-b border-gray-200">
+								<div className="flex items-center justify-between">
+									<h2 className="text-2xl font-semibold text-gray-900">
+										{transactionType === 'recharge' ? '充值记录' : '消费记录'}
+									</h2>
+									<button
+										onClick={() => setShowTransactionsModal(false)}
+										className="text-gray-400 hover:text-gray-600 transition-colors"
+									>
+										<svg
+											className="w-6 h-6"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M6 18L18 6M6 6l12 12"
+											/>
+										</svg>
+									</button>
+								</div>
+							</div>
+
+							{/* 交易记录列表 */}
+							<div className="flex-1 overflow-y-auto p-6">
+								{isLoadingTransactions ? (
+									<div className="flex items-center justify-center h-64">
+										<div className="text-gray-600">加载中...</div>
+									</div>
+								) : transactions.length === 0 ? (
+									<div className="flex items-center justify-center h-64">
+										<div className="text-gray-600">暂无记录</div>
+									</div>
+								) : (
+									<div className="space-y-4">
+										{transactions.map((transaction) => (
+											<div
+												key={transaction.id}
+												className="p-4 bg-gray-50 rounded-xl border border-gray-200"
+											>
+												<div className="flex items-center justify-between mb-2">
+													<div className="text-sm font-medium text-gray-900">
+														{transaction.description || '无描述'}
+													</div>
+													<div className="text-sm font-semibold text-gray-900">
+														¥{(transaction.amount / 100).toFixed(2)}
+													</div>
+												</div>
+												<div className="flex items-center justify-between text-xs text-gray-600">
+													<div>
+														交易时间：{' '}
+														{new Date(transaction.createdAt).toLocaleString('zh-CN')}
+													</div>
+													<div>
+														余额：¥{(transaction.balanceAfter / 100).toFixed(2)}
+													</div>
+												</div>
+												{transaction.status === 'completed' && (
+													<div className="mt-2 text-xs text-green-600">
+														交易成功
+													</div>
+												)}
+											</div>
+										))}
+									</div>
+								)}
+							</div>
+
+							{/* 分页 */}
+							{transactionsTotal > 0 && (
+								<div className="p-4 border-t border-gray-200 flex items-center justify-center gap-2">
+									<button
+										onClick={() =>
+											fetchTransactions(transactionType, transactionsPage - 1)
+										}
+										disabled={transactionsPage === 1}
+										className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+									>
+										上一页
+									</button>
+									<span className="text-sm text-gray-600">
+										第 {transactionsPage} 页
+									</span>
+									<button
+										onClick={() =>
+											fetchTransactions(transactionType, transactionsPage + 1)
+										}
+										disabled={transactionsPage * 10 >= transactionsTotal}
+										className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+									>
+										下一页
+									</button>
+								</div>
+							)}
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);
