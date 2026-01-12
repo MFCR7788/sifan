@@ -97,6 +97,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState<number>(0); // 存储当前支付金额
   const [paymentDescription, setPaymentDescription] = useState<string>(''); // 存储支付描述
+  const [paymentError, setPaymentError] = useState<string>(''); // 存储支付错误信息
 
   // 重置状态
   useEffect(() => {
@@ -142,6 +143,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setShowLoginPrompt(false);
       setPaymentAmount(0);
       setPaymentDescription('');
+      setPaymentError(''); // 清空错误信息
     }
   }, [isOpen, isAuthenticated, user]);
 
@@ -186,6 +188,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
         setIsGeneratingQr(true);
         setQrCodeImage('');
         setPaymentStatus('pending');
+        setPaymentError(''); // 清空之前的错误
 
         try {
           // 构建请求头（包含自定义 userId header 作为备选方案）
@@ -211,18 +214,31 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
 
           const data = await response.json();
 
+          console.log('=== 支付接口响应 ===');
+          console.log('Response status:', response.status);
+          console.log('Response data:', data);
+          console.log('====================');
+
           if (data.success) {
             setQrCodeImage(data.qrCodeImage);
             setOrderNo(data.orderNo);
           } else {
-            console.error('生成支付二维码失败:', data.error);
+            console.error('❌ 生成支付二维码失败');
+            console.error('错误信息:', data.error);
+            console.error('HTTP 状态码:', response.status);
+
+            // 设置错误信息供显示
+            setPaymentError(data.error || '未知错误');
+
             // 如果是未登录错误，显示登录提示
             if (response.status === 401 || data.error?.includes('未登录')) {
+              console.error('检测到未登录错误，显示登录提示');
               setShowLoginPrompt(true);
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('生成支付二维码错误:', error);
+          setPaymentError(error.message || '网络错误，请稍后重试');
         } finally {
           setIsGeneratingQr(false);
         }
@@ -232,6 +248,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
         setPaymentStatus('pending');
         setPaymentAmount(0);
         setPaymentDescription('');
+        setPaymentError(''); // 清空错误信息
       }
     };
 
@@ -601,6 +618,33 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
                 {isGeneratingQr ? (
                   <div className="text-center text-gray-400 text-sm">
                     生成中...
+                  </div>
+                ) : paymentError ? (
+                  <div className="text-center w-full space-y-4">
+                    <div className="w-48 h-48 bg-red-50 rounded-xl flex items-center justify-center mx-auto border-2 border-red-200">
+                      <div className="text-red-500">
+                        <svg className="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-lg font-semibold text-red-600">
+                        生成二维码失败
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {paymentError}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setPaymentError('');
+                        setShowLoginPrompt(true);
+                      }}
+                      className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+                    >
+                      查看调试信息
+                    </button>
                   </div>
                 ) : qrCodeImage ? (
                   <div className="text-center w-full">
