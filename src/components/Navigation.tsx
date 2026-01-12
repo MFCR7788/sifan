@@ -186,14 +186,14 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
             <div className="flex gap-2">
               <Link
                 href="/recharge"
-                className="flex-1 text-center text-xs bg-transparent text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex-1 text-center text-xs bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                 onClick={() => setShowCard(false)}
               >
                 充值
               </Link>
               <Link
                 href="/profile"
-                className="flex-1 text-center text-xs bg-transparent text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex-1 text-center text-xs bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                 onClick={() => setShowCard(false)}
               >
                 个人中心
