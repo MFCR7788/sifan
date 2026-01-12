@@ -97,16 +97,19 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState<number>(0); // 存储当前支付金额
   const [paymentDescription, setPaymentDescription] = useState<string>(''); // 存储支付描述
+  const [hasRefreshed, setHasRefreshed] = useState(false); // 防止重复刷新
 
   // 重置状态并刷新用户信息
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !hasRefreshed) {
       console.log('RechargeDialog: 对话框打开，刷新用户状态...');
       // 刷新用户状态，确保认证状态是最新的
       refreshUser().then(() => {
         console.log('RechargeDialog: 用户状态刷新完成');
+        setHasRefreshed(true);
       }).catch((error) => {
         console.error('RechargeDialog: 刷新用户状态失败:', error);
+        setHasRefreshed(true);
       });
 
       setActiveTab('member');
@@ -121,8 +124,11 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setShowLoginPrompt(false);
       setPaymentAmount(0);
       setPaymentDescription('');
+    } else if (!isOpen) {
+      // 对话框关闭时，重置刷新标志，以便下次打开时可以刷新
+      setHasRefreshed(false);
     }
-  }, [isOpen, refreshUser]);
+  }, [isOpen, refreshUser, hasRefreshed]);
 
   // 生成支付二维码
   useEffect(() => {

@@ -189,6 +189,7 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
               <button
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation(); // 阻止事件冒泡
                   setShowRechargeDialog(true);
                   setShowCard(false);
                 }}

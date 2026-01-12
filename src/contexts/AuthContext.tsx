@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import type { User } from '@/storage/database/shared/schema';
 
 interface AuthContextType {
@@ -30,14 +30,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	const isAdmin = user?.isAdmin || false;
 
 	// 获取当前用户信息
-	const refreshUser = async () => {
+	const refreshUser = useCallback(async () => {
 		try {
 			console.log('AuthContext: 开始刷新用户信息...');
 			const response = await fetch('/api/user/me', {
 				credentials: 'include',
 			});
 			console.log('AuthContext: 用户API响应状态:', response.status);
-			
+
 			if (response.ok) {
 				const data = await response.json();
 				console.log('AuthContext: 用户信息:', data.user);
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		refreshUser();
