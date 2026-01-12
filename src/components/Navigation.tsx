@@ -33,6 +33,7 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
   const [member, setMember] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (showCard && !member) {
@@ -42,26 +43,45 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
 
   const fetchMemberInfo = async () => {
     setIsLoading(true);
+    setErrorMessage(null);
     try {
       const response = await fetch('/api/user/me/member', {
         credentials: 'include',
       });
+      console.log('Member API response:', response.status);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('Member data:', data);
         setMember(data.member);
+      } else if (response.status === 401) {
+        setErrorMessage('请先登录');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || '加载失败');
       }
     } catch (error) {
       console.error('Failed to fetch member:', error);
+      setErrorMessage('网络错误');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    // 检查鼠标是否移动到了悬浮卡片内
+    const card = e.currentTarget.querySelector('.user-hover-card');
+    if (card && card.contains(e.relatedTarget as Node)) {
+      return;
+    }
+    setShowCard(false);
   };
 
   return (
     <div
       className="relative"
       onMouseEnter={() => setShowCard(true)}
-      onMouseLeave={() => setShowCard(false)}
+      onMouseLeave={handleMouseLeave}
     >
       {/* 触发按钮 */}
       <button className="text-xs text-gray-600 transition-colors hover:opacity-60 focus:outline-none">
@@ -70,7 +90,11 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
 
       {/* 悬浮卡片 */}
       {showCard && (
-        <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+        <div
+          className="user-hover-card absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+          onMouseEnter={() => setShowCard(true)}
+          onMouseLeave={() => setShowCard(false)}
+        >
           {/* 用户信息头部 */}
           <div className="bg-gradient-to-br from-gray-900 to-gray-800 px-6 py-4 text-white">
             <div className="text-sm font-semibold">{user?.name}</div>
@@ -103,6 +127,8 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
                   </span>
                 </div>
               </div>
+            ) : errorMessage ? (
+              <div className="text-xs text-red-500">{errorMessage}</div>
             ) : (
               <div className="text-xs text-gray-500">会员信息加载失败</div>
             )}
@@ -113,11 +139,15 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
             <Link
               href="/profile"
               className="block w-full text-center text-xs bg-gray-100 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+              onClick={() => setShowCard(false)}
             >
               个人中心
             </Link>
             <button
-              onClick={onLogout}
+              onClick={() => {
+                onLogout();
+                setShowCard(false);
+              }}
               className="w-full text-xs text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors"
             >
               退出登录
