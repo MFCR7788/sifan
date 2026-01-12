@@ -8,17 +8,15 @@ import { useAuth } from '@/contexts/AuthContext';
 export async function POST(request: NextRequest) {
   try {
     // 获取用户身份
-    const cookie = request.headers.get('cookie') || '';
-    const userIdMatch = cookie.match(/userId=([^;]+)/);
+    const userId = request.cookies.get('userId')?.value;
 
-    if (!userIdMatch) {
+    if (!userId) {
+      console.log('Payment Create: 未登录，Cookie信息:', request.cookies.getAll());
       return NextResponse.json(
         { success: false, error: '用户未登录' },
         { status: 401 }
       );
     }
-
-    const userId = userIdMatch[1];
 
     const body = await request.json();
     const { paymentMethod, amount, description, type, metadata = {} } = body;

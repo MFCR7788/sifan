@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface RechargeDialogProps {
   isOpen: boolean;
@@ -82,6 +83,7 @@ const POINTS_PACKAGES = [
 ];
 
 export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps) {
+  const { user, isAuthenticated, login } = useAuth();
   const [activeTab, setActiveTab] = useState<'member' | 'balance' | 'points'>('member');
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState('');
@@ -93,6 +95,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
   const [isPolling, setIsPolling] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed'>('pending');
   const [isGeneratingQr, setIsGeneratingQr] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   // 重置状态
   useEffect(() => {
@@ -107,12 +110,21 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
       setOrderNo('');
       setPaymentStatus('pending');
       setIsPolling(false);
+      setShowLoginPrompt(false);
     }
   }, [isOpen]);
 
   // 生成支付二维码
   useEffect(() => {
     const generatePaymentQr = async () => {
+      // 检查是否登录
+      if (!isAuthenticated) {
+        setShowLoginPrompt(true);
+        setQrCodeImage('');
+        setOrderNo('');
+        return;
+      }
+
       if ((activeTab === 'balance' && selectedAmount > 0) ||
           (activeTab === 'member' && selectedPlan) ||
           (activeTab === 'points' && selectedPoints > 0)) {
@@ -308,8 +320,34 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
 
             {/* 选项卡内容区域 */}
             <div className="flex-1 overflow-y-auto p-8">
+              {/* 登录提示 */}
+              {showLoginPrompt && (
+                <div className="flex flex-col items-center justify-center h-full py-20">
+                  <div className="text-center space-y-6">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">请先登录</h3>
+                      <p className="text-gray-500">登录后即可享受充值和会员服务</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowLoginPrompt(false);
+                        onClose();
+                      }}
+                      className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      前往登录
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* 购买会员 */}
-              {activeTab === 'member' && (
+              {!showLoginPrompt && activeTab === 'member' && (
                 <div className="grid grid-cols-3 gap-6">
                   {MEMBERSHIP_PLANS.map((plan) => (
                     <div
@@ -369,7 +407,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
               )}
 
               {/* 会员充值 */}
-              {activeTab === 'balance' && (
+              {!showLoginPrompt && activeTab === 'balance' && (
                 <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-4">
@@ -449,7 +487,7 @@ export default function RechargeDialog({ isOpen, onClose }: RechargeDialogProps)
               )}
 
               {/* 积分充值 */}
-              {activeTab === 'points' && (
+              {!showLoginPrompt && activeTab === 'points' && (
                 <div className="space-y-4">
                   {POINTS_PACKAGES.map((pkg) => (
                     <div
