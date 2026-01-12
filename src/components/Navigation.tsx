@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import RechargeDialog from './RechargeDialog';
 
 const navItems = [
   { name: '首页', href: '/' },
@@ -34,6 +35,7 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
   const [showCard, setShowCard] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showRechargeDialog, setShowRechargeDialog] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -184,13 +186,16 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
           <div className="px-6 py-3 space-y-2">
             {/* 第一行：充值和个人中心 */}
             <div className="flex gap-2">
-              <Link
-                href="/recharge"
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowRechargeDialog(true);
+                  setShowCard(false);
+                }}
                 className="flex-1 text-center text-xs bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
-                onClick={() => setShowCard(false)}
               >
                 充值
-              </Link>
+              </button>
               <Link
                 href="/profile"
                 className="flex-1 text-center text-xs bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
@@ -212,6 +217,12 @@ function UserHoverCard({ user, onLogout }: UserHoverCardProps) {
           </div>
         </div>
       )}
+
+      {/* 充值对话框 */}
+      <RechargeDialog
+        isOpen={showRechargeDialog}
+        onClose={() => setShowRechargeDialog(false)}
+      />
     </div>
   );
 }
