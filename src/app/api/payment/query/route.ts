@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { queryWechatOrder } from '@/services/wechatPay';
 import { queryAlipayOrder } from '@/services/alipay';
-import { getPaymentOrderByOrderNo } from '@/storage/database/paymentOrderManager';
+import { getPaymentOrderByOrderNo, markOrderAsPaid } from '@/storage/database/paymentOrderManager';
 
 export async function GET(request: NextRequest) {
   try {
@@ -72,10 +72,54 @@ export async function GET(request: NextRequest) {
       resultAny?.trade_state === 'SUCCESS' ||
       resultAny?.tradeStatus === 'TRADE_SUCCESS';
 
+    // 如果支付成功，调用 markOrderAsPaid 更新订单状态并执行业务逻辑
+    if (isPaid) {
+      try {
+        // 获取交易号
+        const tradeNo = resultAny?.transaction_id || '';
+        const transactionId = resultAny?.transaction_id || '';
+
+        // 标记订单为已支付（这会触发余额增加等业务逻辑）
+        await markOrderAsPaid(order.orderNo, tradeNo, transactionId);
+
+        console.log('✅ 支付订单已标记为已支付，业务逻辑已执行:', order.orderNo);
+
+        // 重新获取更新后的订单信息
+        const updatedOrder = await getPaymentOrderByOrderNo(order.orderNo);
+
+        return NextResponse.json({
+          success: true,
+          isPaid: true,
+          status: 'paid',
+          paymentStatus: resultAny?.trade_state || resultAny?.tradeStatus,
+          order: {
+            orderNo: updatedOrder?.orderNo || order.orderNo,
+            amount: updatedOrder?.amount || order.amount,
+            paidAt: updatedOrder?.paidAt,
+          },
+        });
+      } catch (markError: any) {
+        console.error('❌ 标记订单为已支付失败:', markError);
+        // 即使标记失败，也返回支付成功状态，让前端显示成功
+        return NextResponse.json({
+          success: true,
+          isPaid: true,
+          status: 'paid',
+          paymentStatus: resultAny?.trade_state || resultAny?.tradeStatus,
+          order: {
+            orderNo: order.orderNo,
+            amount: order.amount,
+          },
+          warning: '订单状态更新失败，但支付已完成',
+        });
+      }
+    }
+
+    // 支付未完成，返回待支付状态
     return NextResponse.json({
       success: true,
-      isPaid,
-      status: isPaid ? 'paid' : 'pending',
+      isPaid: false,
+      status: 'pending',
       paymentStatus: resultAny?.trade_state || resultAny?.tradeStatus,
       order: {
         orderNo: order.orderNo,
