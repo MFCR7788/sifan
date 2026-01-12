@@ -1,244 +1,361 @@
-# 🔧 支付功能 500 错误 - 快速修复
+# 快速修复支付功能指南
 
-## 立即执行的诊断步骤
+## 当前问题
 
-### 步骤 1: 运行实时诊断（最重要）
+生产环境生成支付二维码失败，返回 500 错误。
+
+## 立即诊断步骤
+
+### 1. 在服务器上运行诊断脚本
 
 ```bash
-ssh root@42.121.218.14
-cd /root/sifan
-
-# 下载并运行诊断脚本
-curl -o scripts/realtime-diagnose.sh https://raw.githubusercontent.com/MFCR7788/sifan/main/scripts/realtime-diagnose.sh
-chmod +x scripts/realtime-diagnose.sh
-./scripts/realtime-diagnose.sh
+cd /path/to/enterprise-website
+bash scripts/realtime-diagnose.sh
 ```
 
----
-
-### 步骤 2: 查看实时日志
+### 2. 查看关键日志
 
 ```bash
-ssh root@42.121.218.14
-cd /root/sifan
+# 查看 SDK 初始化日志
+pm2 logs enterprise-website --lines 200 --nostream | grep "微信支付"
 
-# 实时监控日志
-pm2 logs enterprise-website --lines 0
-
-# 然后在浏览器中触发支付操作，观察日志
-# 按 Ctrl+C 退出
+# 查看支付接口错误
+pm2 logs enterprise-website --err --lines 50 --nostream
 ```
 
----
+### 3. 检查关键配置
 
-### 步骤 3: 检查最近的错误
+#### 环境变量检查
 
 ```bash
-ssh root@42.121.218.14
+# 切换到项目目录
+cd /path/to/enterprise-website
 
-# 查看最近的 100 行日志
-pm2 logs enterprise-website --lines 100
+# 查看 PM2 环境变量
+pm2 show enterprise-website | grep -A 100 "env:"
 
-# 只查看错误日志
-pm2 logs enterprise-website --err --lines 50
+# 应该看到以下环境变量：
+# - WECHAT_PAY_APPID
+# - WECHAT_PAY_MCHID
+# - WECHAT_PAY_API_V3_KEY
+# - WECHAT_PAY_SERIAL_NO
+# - WECHAT_PAY_PRIVATE_KEY_PATH
+# - WECHAT_PAY_CERT_PATH
+# - PGDATABASE_URL
+# - NEXT_PUBLIC_BASE_URL
+# - COOKIE_DOMAIN
 ```
 
----
-
-## 快速修复命令
-
-### 如果 SDK 未初始化
+#### 证书文件检查
 
 ```bash
-ssh root@42.121.218.14 << 'ENDSSH'
-cd /root/sifan
+# 检查证书文件是否存在
+ls -la certs/
 
-# 运行快速修复脚本
-curl -o scripts/quick-fix-payment.sh https://raw.githubusercontent.com/MFCR7788/sifan/main/scripts/quick-fix-payment.sh
-chmod +x scripts/quick-fix-payment.sh
-./scripts/quick-fix-payment.sh
+# 应该看到：
+# apiclient_cert.pem
+# apiclient_key.pem
 
-# 查看初始化日志
-sleep 5
-pm2 logs enterprise-website --lines 30 | grep -E "微信支付|SDK|初始化"
-ENDSSH
+# 检查文件大小（应该 > 1000 字节）
+wc -c certs/apiclient_key.pem
+wc -c certs/apiclient_cert.pem
+
+# 查看证书内容（验证是否正确）
+head -n 1 certs/apiclient_key.pem
+# 应该看到：-----BEGIN PRIVATE KEY-----
 ```
 
----
+## 常见问题修复
 
-### 如果证书文件缺失
+### 问题 1：PM2 未加载环境变量
 
-```bash
-# 在本地执行
-scp certs/apiclient_key.pem root@42.121.218.14:/root/sifan/certs/
-scp certs/apiclient_cert.pem root@42.121.218.14:/root/sifan/certs/
+**症状**：
+- SDK 初始化日志显示环境变量为空
+- 支付接口返回"微信支付未初始化"
 
-# 重启服务
-ssh root@42.121.218.14 "pm2 restart enterprise-website"
-```
-
----
-
-### 如果配置文件缺失
+**解决方案**：
 
 ```bash
-ssh root@42.121.218.14 << 'ENDSSH'
-cd /root/sifan
-
-# 更新 .env.production
-cat > .env.production << 'EOF'
-NODE_ENV="production"
-PORT="5000"
-NEXT_PUBLIC_BASE_URL=http://www.zjsifan.com
-
-# 微信支付配置
-WECHAT_PAY_APPID=wx314d6d3cfbd33e79
-WECHAT_PAY_MCHID=1624143377
-WECHAT_PAY_SERIAL_NO=531F07BDA98C557D7D718285B3DDDB35DE8CEA32
-WECHAT_PAY_API_V3_KEY=SmallFish7788Admin03072298887777
-WECHAT_PAY_PRIVATE_KEY_PATH=./certs/apiclient_key.pem
-WECHAT_PAY_CERT_PATH=./certs/apiclient_cert.pem
-
-# 数据库配置
-PGDATABASE_URL="postgresql://user_7591422450290704422:aef1a966-5890-4e13-a499-e5a8b0e8b0b4@cp-cute-mist-247e1363.pg2.aidap-global.cn-beijing.volces.com:5432/Database_1767516520571?sslmode=require&channel_binding=require"
-PGDATABASE="Database_1767516520571"
-EOF
-
-# 重启服务
+# 方法 1：重启 PM2（推荐）
 pm2 restart enterprise-website
 
-# 等待 5 秒
-sleep 5
+# 方法 2：完全重启 PM2
+pm2 delete enterprise-website
+pm2 start npm --name enterprise-website -- start
 
-# 查看日志
-pm2 logs enterprise-website --lines 30
-ENDSSH
+# 方法 3：更新 PM2 配置
+pm2 delete enterprise-website
+pm2 start ecosystem.config.js
 ```
 
----
-
-## 测试支付接口
-
-### 方法 1: 使用诊断脚本
-
+**验证**：
 ```bash
-ssh root@42.121.218.14
-cd /root/sifan
-./scripts/realtime-diagnose.sh
+# 重启后查看日志
+pm2 logs enterprise-website --lines 50 --nostream
 
-# 按照提示输入你的 userId
+# 应该看到：
+# ✅ 微信支付 SDK 初始化成功
 ```
 
-### 方法 2: 手动测试
+### 问题 2：证书文件不存在或路径错误
+
+**症状**：
+- 日志显示"私钥文件存在: false"
+- 日志显示"证书文件存在: false"
+
+**解决方案**：
 
 ```bash
-# 先获取有效的 userId
-# 打开浏览器 -> http://www.zjsifan.com/login
-# 登录后打开浏览器控制台 (F12)
-# Application -> Cookies -> userId
+# 1. 从开发环境获取证书文件
+# 在开发环境：
+scp certs/apiclient_key.pem user@42.121.218.14:/path/to/enterprise-website/certs/
+scp certs/apiclient_cert.pem user@42.121.218.14:/path/to/enterprise-website/certs/
 
-# 替换 <你的userId> 后执行
-curl -X POST \
+# 2. 设置正确的权限
+chmod 600 certs/apiclient_key.pem
+chmod 644 certs/apiclient_cert.pem
+
+# 3. 验证文件存在
+ls -la certs/
+
+# 4. 重启 PM2
+pm2 restart enterprise-website
+```
+
+### 问题 3：环境变量文件未加载
+
+**症状**：
+- PM2 日志显示环境变量为空
+- 但 .env.production 文件存在且内容正确
+
+**解决方案**：
+
+```bash
+# 1. 检查 .env.production 文件
+cat .env.production | grep WECHAT
+
+# 2. 确保 PM2 启动脚本加载了环境变量
+# 查看 ecosystem.config.js 或启动命令
+pm2 show enterprise-website
+
+# 3. 如果未加载，手动设置环境变量
+pm2 restart enterprise-website --update-env
+
+# 4. 或者修改启动脚本，在 package.json 中添加：
+# "start:prod": "NODE_ENV=production node .next/standalone/server.js"
+
+# 5. 使用 env-cmd 加载环境变量（推荐）
+# 安装 env-cmd
+npm install -g env-cmd
+
+# 使用 env-cmd 启动
+pm2 delete enterprise-website
+pm2 start env-cmd --name enterprise-website -- .next/standalone/server.js
+```
+
+### 问题 4：Cookie 配置问题
+
+**症状**：
+- 前端显示"用户未登录"
+- 但浏览器中 Cookie 存在
+
+**解决方案**：
+
+**检查配置**：
+```bash
+# 查看 .env.production
+cat .env.production | grep COOKIE
+
+# 应该看到：
+# COOKIE_DOMAIN=".zjsifan.com"
+# COOKIE_SECURE="true"
+# COOKIE_SAME_SITE="lax"
+```
+
+**验证 HTTPS**：
+```bash
+# 确认 Nginx 配置了 HTTPS
+curl -I https://www.zjsifan.com
+
+# 应该看到：
+# HTTP/1.1 200 OK
+# 或 301/302 重定向到 HTTPS
+```
+
+**检查 Nginx 配置**：
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name www.zjsifan.com;
+
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+### 问题 5：数据库连接失败
+
+**症状**：
+- 日志显示"数据库连接失败"
+- 无法创建支付订单
+
+**解决方案**：
+
+```bash
+# 1. 测试数据库连接
+psql "$PGDATABASE_URL" -c "SELECT 1;"
+
+# 2. 如果连接失败，检查连接字符串
+# 在 .env.production 中查看：
+cat .env.production | grep PGDATABASE
+
+# 3. 检查数据库表
+psql "$PGDATABASE_URL" -c "\d payment_orders"
+
+# 4. 如果表不存在，运行迁移
+npm run db:migrate
+
+# 5. 重启 PM2
+pm2 restart enterprise-website
+```
+
+## 完整修复流程
+
+```bash
+# 1. 切换到项目目录
+cd /path/to/enterprise-website
+
+# 2. 拉取最新代码
+git pull origin main
+
+# 3. 检查环境变量
+cat .env.production
+
+# 4. 检查证书文件
+ls -la certs/
+
+# 5. 安装依赖（如果需要）
+npm install --production=false
+
+# 6. 构建项目
+npm run build
+
+# 7. 重启 PM2
+pm2 restart enterprise-website
+
+# 8. 查看日志
+pm2 logs enterprise-website --lines 100 --nostream
+
+# 9. 运行诊断脚本
+bash scripts/realtime-diagnose.sh
+
+# 10. 测试支付功能
+# 在浏览器中访问 https://www.zjsifan.com
+# 登录 -> 点击充值 -> 选择金额 -> 生成二维码
+```
+
+## 验证修复成功
+
+### 1. 检查 PM2 日志
+
+```bash
+pm2 logs enterprise-website --lines 50 --nostream
+```
+
+应该看到：
+```
+=== 微信支付 SDK 初始化 ===
+私钥路径: ./certs/apiclient_key.pem
+证书路径: ./certs/apiclient_cert.pem
+私钥文件存在: true
+证书文件存在: true
+...
+✅ 微信支付 SDK 初始化成功
+========================
+```
+
+### 2. 测试支付接口
+
+```bash
+# 使用 curl 测试
+curl -X POST https://www.zjsifan.com/api/payment/create \
   -H "Content-Type: application/json" \
-  -H "Cookie: userId=<你的userId>" \
+  -H "Cookie: userId=YOUR_USER_ID" \
   -d '{
     "paymentMethod":"wechat",
-    "amount":0.01,
-    "description":"测试订单",
+    "amount":1,
+    "description":"测试",
     "type":"recharge"
-  }' \
-  http://www.zjsifan.com/api/payment/create
+  }'
 ```
 
----
+应该返回：
+```json
+{
+  "success": true,
+  "orderNo": "...",
+  "qrCodeImage": "data:image/png;base64,..."
+}
+```
 
-## 浏览器检查
+### 3. 浏览器测试
 
-### 检查 Cookie
+1. 访问 https://www.zjsifan.com
+2. 登录账户
+3. 点击"充值"按钮
+4. 选择充值金额
+5. 确认生成二维码
 
-1. 打开浏览器控制台 (F12)
-2. Application -> Cookies -> `www.zjsifan.com`
-3. 确认 `userId` Cookie 存在且不为空
+**预期结果**：
+- 二维码成功显示
+- 显示金额和支付描述
+- 开始轮询支付状态
 
-### 检查网络请求
+## 紧急回滚
 
-1. 打开浏览器控制台 (F12)
-2. Network 标签页
-3. 触发支付操作
-4. 找到 `/api/payment/create` 请求
-5. 查看响应内容
-
----
-
-## 一键诊断（推荐）
+如果修复后问题更严重，可以回滚到之前的版本：
 
 ```bash
-ssh root@42.121.218.14 << 'ENDSSH'
-cd /root/sifan
+# 1. 查看历史版本
+git log --oneline -10
 
-echo "=== 1. PM2 状态 ==="
-pm2 status
+# 2. 回滚到指定版本
+git checkout <commit-hash>
 
-echo ""
-echo "=== 2. SDK 初始化日志 ==="
-pm2 logs enterprise-website --lines 100 | grep -E "微信支付|SDK|初始化" | tail -20
+# 3. 重新构建
+npm run build
 
-echo ""
-echo "=== 3. 配置文件检查 ==="
-cat .env.production | grep -E "WECHAT|NEXT_PUBLIC_BASE_URL"
-
-echo ""
-echo "=== 4. 证书文件检查 ==="
-ls -lh certs/
-
-echo ""
-echo "=== 5. 最近错误日志 ==="
-pm2 logs enterprise-website --err --lines 20
-
-echo ""
-echo "=== 6. 端口监听 ==="
-ss -tuln | grep :5000
-ENDSSH
+# 4. 重启 PM2
+pm2 restart enterprise-website
 ```
 
----
+## 联系支持
 
-## 常见问题速查
+如果以上方法都无法解决问题，请提供以下信息：
 
-| 问题 | 快速解决 |
-|-----|---------|
-| SDK 未初始化 | 运行 `scripts/quick-fix-payment.sh` |
-| 证书文件缺失 | 从本地上传证书文件 |
-| userId 无效 | 重新登录获取有效 userId |
-| 数据库连接失败 | 检查数据库连接字符串 |
-| 端口未监听 | `pm2 restart enterprise-website` |
+1. PM2 日志（最近 100 行）
+   ```bash
+   pm2 logs enterprise-website --lines 100 --nostream > logs.txt
+   ```
 
----
+2. 环境变量配置（隐藏敏感信息）
+   ```bash
+   cat .env.production | sed 's/=.*/=***/' > env.txt
+   ```
 
-## 详细文档
+3. 诊断脚本输出
+   ```bash
+   bash scripts/realtime-diagnose.sh > diagnose.txt
+   ```
 
-- `docs/PAYMENT_500_ERROR_TROUBLESHOOTING.md` - 完整排查指南
-- `docs/PAYMENT_FIX_SUMMARY.md` - 修复说明
-- `scripts/realtime-diagnose.sh` - 实时诊断脚本
+4. 浏览器控制台截图（F12 -> Console）
 
----
-
-## 需要帮助？
-
-如果以上步骤都无法解决问题，请提供：
-
-1. 诊断脚本输出
-2. PM2 日志：
-```bash
-pm2 logs enterprise-website --lines 200
-```
-3. 浏览器控制台错误
-4. Network 请求详情
-
----
-
-**立即执行诊断:**
-
-```bash
-ssh root@42.121.218.14 "cd /root/sifan && bash scripts/realtime-diagnose.sh"
-```
+5. 错误复现步骤

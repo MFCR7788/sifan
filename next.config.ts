@@ -26,16 +26,6 @@ const nextConfig: NextConfig = {
     // 启用缓存
     minimumCacheTTL: 60,
   },
-  // 解决 formidable 动态导入问题
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        'formidable': 'commonjs formidable'
-      });
-    }
-    return config;
-  },
 };
 
 export default nextConfig;
