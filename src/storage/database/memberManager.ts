@@ -149,15 +149,14 @@ export class MemberManager {
     const member = await this.ensureMemberExists(userId);
 
     // 更新会员积分
+    // 注意：积分充值不累加到 totalRecharge，只有余额充值才累加
     const pointsBefore = member.points;
     const pointsAfter = pointsBefore + points;
-    const totalRechargeAfter = member.totalRecharge + amount;
 
     const [updatedMember] = await db
       .update(members)
       .set({
         points: pointsAfter,
-        totalRecharge: totalRechargeAfter,
         updatedAt: new Date().toISOString(),
       })
       .where(eq(members.userId, userId))
@@ -222,7 +221,7 @@ export class MemberManager {
         break;
     }
 
-    const totalRechargeAfter = member.totalRecharge + amount;
+    // 注意：购买会员不累加到 totalRecharge，只有余额充值才累加
 
     // 如果当前会员未过期，延长有效期
     if (member.expiresAt && new Date(member.expiresAt) > new Date()) {
@@ -238,7 +237,6 @@ export class MemberManager {
       .set({
         memberLevel,
         expiresAt: expiresAt ? expiresAt.toISOString() : null,
-        totalRecharge: totalRechargeAfter,
         memberStatus: 'active',
         updatedAt: new Date().toISOString(),
       })
