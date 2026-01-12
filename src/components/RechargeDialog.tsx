@@ -23,8 +23,8 @@ const MEMBERSHIP_PLANS = [
   {
     id: 'silver',
     name: '银牌会员',
-    price: 500,
-    originalPrice: 800,
+    price: 30,
+    originalPrice: 50,
     period: '月',
     badge: '超值',
     features: [
@@ -39,8 +39,8 @@ const MEMBERSHIP_PLANS = [
   {
     id: 'gold',
     name: '金牌会员',
-    price: 2000,
-    originalPrice: 3000,
+    price: 50,
+    originalPrice: 100,
     period: '月',
     badge: '热门',
     features: [
@@ -51,13 +51,13 @@ const MEMBERSHIP_PLANS = [
       { icon: '✓', text: '快速绿色通道' },
       { icon: '✓', text: '月度运营报告' },
     ],
-    color: 'from-yellow-400 to-yellow-500',
+    color: 'from-gray-600 to-gray-700',
   },
   {
     id: 'platinum',
     name: '白金会员',
-    price: 5000,
-    originalPrice: 8000,
+    price: 499,
+    originalPrice: 1000,
     period: '年',
     badge: '尊享',
     features: [
@@ -69,7 +69,7 @@ const MEMBERSHIP_PLANS = [
       { icon: '✓', text: '专属活动邀请' },
       { icon: '✓', text: '专属顾问团队' },
     ],
-    color: 'from-purple-500 to-purple-600',
+    color: 'from-gray-700 to-gray-800',
   },
 ];
 
