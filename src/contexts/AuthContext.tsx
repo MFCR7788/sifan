@@ -72,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			headers: {
 				'Content-Type': 'application/json',
 			},
+			credentials: 'include',
 			body: JSON.stringify({ phone, password }),
 		});
 
@@ -97,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			headers: {
 				'Content-Type': 'application/json',
 			},
+			credentials: 'include',
 			body: JSON.stringify(data),
 		});
 
