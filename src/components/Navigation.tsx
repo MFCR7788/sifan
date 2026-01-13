@@ -121,6 +121,7 @@ function ProductDropdown() {
     { name: '产品介绍', href: 'https://www.yuque.com/qingfeng-kbbz1/mfcr', external: true },
     { name: '产品报价', href: '/pricing' },
     { name: '定制方案', href: '/configurator' },
+    { name: '数字转型', href: '/general-web' },
     { name: '系统登录', href: 'https://mfcr.zjsifan.com/index.php/Retail/Login/index.html', external: true },
   ];
 
@@ -725,6 +726,13 @@ export default function Navigation() {
                       className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
                     >
                       定制方案
+                    </Link>
+                    <Link
+                      href="/general-web"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      数字转型
                     </Link>
                     <a
                       href="https://mfcr.zjsifan.com/index.php/Retail/Login/index.html"
