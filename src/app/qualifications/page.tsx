@@ -38,8 +38,12 @@ export default function QualificationsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* 资质卡片 1 */}
             <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-gray-200 flex items-center justify-center">
-                <div className="text-gray-400 text-sm">营业执照</div>
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+                <img
+                  src="/images/business-license.jpg"
+                  alt="营业执照"
+                  className="w-full h-full object-contain rounded-lg"
+                />
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">营业执照</h3>
