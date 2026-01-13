@@ -9,7 +9,6 @@ interface StoreImage {
 }
 
 const storeImages: StoreImage[] = [
-  { id: '1', src: '/images/stores/1.JPG', alt: '合作门店1' },
   { id: '2', src: '/images/stores/IMG_0110.jpg', alt: '合作门店2' },
   { id: '3', src: '/images/stores/8a3dfcae464961c046ad89f0dfd3949f.JPG', alt: '合作门店3' },
   { id: '4', src: '/images/stores/IMG_9428.jpg', alt: '合作门店4' },
