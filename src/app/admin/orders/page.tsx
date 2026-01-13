@@ -1,13 +1,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminOrdersPage() {
+	const { user } = useAuth();
 	const [orders, setOrders] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [filter, setFilter] = useState<'all' | 'pending' | 'processing' | 'completed' | 'cancelled'>('all');
 	const [selectedOrder, setSelectedOrder] = useState<any>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	// 获取认证头
+	const getAuthHeaders = () => {
+		const headers: Record<string, string> = {};
+		if (user?.id) {
+			headers['x-user-id'] = user.id;
+		}
+		return headers;
+	};
 
 	useEffect(() => {
 		fetchOrders();
@@ -18,6 +29,7 @@ export default function AdminOrdersPage() {
 		try {
 			const response = await fetch(`/api/admin/orders?status=${filter}`, {
 				credentials: 'include',
+				headers: getAuthHeaders(),
 			});
 			if (response.ok) {
 				const data = await response.json();
@@ -39,7 +51,10 @@ export default function AdminOrdersPage() {
 		try {
 			const response = await fetch(`/api/admin/orders/${orderId}`, {
 				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					...getAuthHeaders(),
+				},
 				credentials: 'include',
 				body: JSON.stringify({ status: newStatus }),
 			});
@@ -48,11 +63,12 @@ export default function AdminOrdersPage() {
 				setIsModalOpen(false);
 				fetchOrders();
 			} else {
-				alert('更新订单状态失败');
+				const data = await response.json();
+				alert(`更新订单状态失败: ${data.error || data.message || '未知错误'}`);
 			}
 		} catch (error) {
 			console.error('Failed to update order:', error);
-			alert('更新订单状态失败');
+			alert(`更新订单状态失败: ${error instanceof Error ? error.message : '未知错误'}`);
 		}
 	};
 

@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminMembersPage() {
+	const { user } = useAuth();
 	const [members, setMembers] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -17,6 +19,15 @@ export default function AdminMembersPage() {
 		expiresAt: '',
 	});
 
+	// 获取认证头（用于解决嵌入式页面 Cookie 不传递的问题）
+	const getAuthHeaders = () => {
+		const headers: Record<string, string> = {};
+		if (user?.id) {
+			headers['x-user-id'] = user.id;
+		}
+		return headers;
+	};
+
 	useEffect(() => {
 		fetchMembers();
 	}, []);
@@ -26,6 +37,7 @@ export default function AdminMembersPage() {
 		try {
 			const response = await fetch('/api/admin/members', {
 				credentials: 'include',
+				headers: getAuthHeaders(),
 			});
 			if (response.ok) {
 				const data = await response.json();
@@ -59,7 +71,10 @@ export default function AdminMembersPage() {
 		try {
 			const response = await fetch(`/api/admin/members/${selectedMember.id}`, {
 				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					...getAuthHeaders(),
+				},
 				credentials: 'include',
 				body: JSON.stringify({
 					...editForm,
@@ -72,11 +87,12 @@ export default function AdminMembersPage() {
 				setIsEditModalOpen(false);
 				fetchMembers();
 			} else {
-				alert('更新会员信息失败');
+				const data = await response.json();
+				alert(`更新会员信息失败: ${data.error || data.message || '未知错误'}`);
 			}
 		} catch (error) {
 			console.error('Failed to update member:', error);
-			alert('更新会员信息失败');
+			alert(`更新会员信息失败: ${error instanceof Error ? error.message : '未知错误'}`);
 		}
 	};
 
