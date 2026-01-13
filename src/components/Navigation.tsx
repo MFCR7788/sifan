@@ -193,6 +193,80 @@ function ProductDropdown() {
   );
 }
 
+function AboutDropdown() {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const aboutItems = [
+    { name: '关于我们', href: '/about' },
+    { name: '公司资质', href: '/qualifications' },
+  ];
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowDropdown(false);
+    }, 150);
+  };
+
+  const handleDropdownMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setShowDropdown(true);
+      }}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 触发区域 - 关于链接 */}
+      <Link
+        href="/about"
+        className="text-xs transition-colors hover:opacity-60"
+        onClick={(e) => e.preventDefault()}
+      >
+        关于
+      </Link>
+
+      {/* 下拉菜单 */}
+      {showDropdown && (
+        <div
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-max"
+          onMouseEnter={handleDropdownMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {aboutItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl"
+              onClick={() => setShowDropdown(false)}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ContactHoverCard() {
   const [showCard, setShowCard] = useState(false);
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
@@ -537,6 +611,10 @@ export default function Navigation() {
                 if (item.name === '产品') {
                   return <ProductDropdown key={item.href} />;
                 }
+                // 为"关于"项使用下拉菜单组件
+                if (item.name === '关于') {
+                  return <AboutDropdown key={item.href} />;
+                }
                 return (
                   <Link
                     key={item.href}
@@ -657,6 +735,30 @@ export default function Navigation() {
                     >
                       系统登录
                     </a>
+                  </div>
+                );
+              }
+              // 为"关于"项显示为标题和子菜单
+              if (item.name === '关于') {
+                return (
+                  <div key={item.href}>
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-900 border-b border-gray-100">
+                      关于
+                    </div>
+                    <Link
+                      href="/about"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      关于我们
+                    </Link>
+                    <Link
+                      href="/qualifications"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      公司资质
+                    </Link>
                   </div>
                 );
               }
