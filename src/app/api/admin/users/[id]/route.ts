@@ -19,26 +19,25 @@ export async function PATCH(
 
 		const { id } = await params;
 
+		const body = await request.json();
+
 		// 防止修改自己的管理员权限
-		if (id === adminUser.id) {
-			const body = await request.json();
-			if (body.isAdmin === false) {
-				return NextResponse.json(
-					{ success: false, error: '不能修改自己的管理员权限' },
-					{ status: 400 }
-				);
-			}
+		if (id === adminUser.id && body.isAdmin === false) {
+			return NextResponse.json(
+				{ success: false, error: '不能修改自己的管理员权限' },
+				{ status: 400 }
+			);
 		}
 
-		const body = await request.json();
 		const updateData: any = { updatedAt: new Date().toISOString() };
 
 		if (body.name !== undefined) updateData.name = body.name;
-		if (body.email !== undefined) updateData.email = body.email;
+		// 空字符串转换为null
+		if (body.email !== undefined) updateData.email = body.email.trim() || null;
 		if (body.isAdmin !== undefined) updateData.isAdmin = body.isAdmin;
 		if (body.isActive !== undefined) updateData.isActive = body.isActive;
 
-		await db
+		const result = await db
 			.update(users)
 			.set(updateData)
 			.where(eq(users.id, id));
