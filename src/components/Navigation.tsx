@@ -115,6 +115,102 @@ function LogoDropdown() {
   );
 }
 
+function ContactHoverCard() {
+  const [showCard, setShowCard] = useState(false);
+  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // 加载图片获取尺寸
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.target as HTMLImageElement;
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    
+    // 计算适合显示的尺寸（最大宽度 400px，根据比例计算高度）
+    const maxWidth = 400;
+    const width = Math.min(maxWidth, img.naturalWidth);
+    const height = width / aspectRatio;
+    
+    setImageDimensions({ width, height });
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowCard(false);
+    }, 150);
+  };
+
+  const handleCardMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  const handleCardMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowCard(false);
+    }, 150);
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setShowCard(true);
+      }}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 触发区域 - 联系链接 */}
+      <Link
+        href="/contact"
+        className={`
+          text-xs transition-colors hover:opacity-60
+        `}
+      >
+        联系
+      </Link>
+
+      {/* 悬浮图片对话框 */}
+      {showCard && (
+        <div
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+          style={{
+            width: imageDimensions?.width ? `${imageDimensions.width + 32}px` : 'auto',
+          }}
+          onMouseEnter={handleCardMouseEnter}
+          onMouseLeave={handleCardMouseLeave}
+        >
+          <div className="p-4">
+            <img
+              src="/assets/image.png"
+              alt="联系我们"
+              className="rounded-lg"
+              onLoad={handleImageLoad}
+              style={{
+                width: imageDimensions?.width ? `${imageDimensions.width}px` : 'auto',
+                height: 'auto',
+                display: 'block',
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UserHoverCard({ user, onLogout, onOpenRecharge }: UserHoverCardProps) {
   const [member, setMember] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
@@ -354,6 +450,10 @@ export default function Navigation() {
             <div className="flex items-baseline space-x-8">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
+                // 为"联系"项使用特殊的悬停组件
+                if (item.name === '联系') {
+                  return <ContactHoverCard key={item.href} />;
+                }
                 return (
                   <Link
                     key={item.href}
