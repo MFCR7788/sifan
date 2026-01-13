@@ -10,16 +10,28 @@ export async function verifyAdmin(request: NextRequest) {
 		const sessionUserId = request.headers.get('x-user-id');
 		let userId: string | null = sessionUserId;
 
-		// 从Cookie中获取token
+		// 从Cookie中获取token或userId
 		const cookies = request.cookies;
 		const token = cookies.get('token')?.value;
+		const userIdFromCookie = cookies.get('userId')?.value;
 
 		if (!userId && token) {
 			const decoded = verifyToken(token);
 			userId = decoded?.userId || null;
 		}
 
+		// 如果还是没有userId，尝试从userId cookie获取
+		if (!userId && userIdFromCookie) {
+			userId = userIdFromCookie;
+		}
+
 		if (!userId) {
+			console.log('[verifyAdmin] No userId found');
+			console.log('[verifyAdmin] Headers:', sessionUserId);
+			console.log('[verifyAdmin] Cookies:', {
+				token: !!token,
+				userId: !!userIdFromCookie
+			});
 			return null;
 		}
 

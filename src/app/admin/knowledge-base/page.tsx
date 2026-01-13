@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface KnowledgeItem {
 	id: string;
@@ -16,6 +17,7 @@ interface KnowledgeItem {
 }
 
 export default function KnowledgeBasePage() {
+	const { user } = useAuth();
 	const [items, setItems] = useState<KnowledgeItem[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -50,6 +52,15 @@ export default function KnowledgeBasePage() {
 		'其他',
 	];
 
+	// 获取认证头（用于解决嵌入式页面 Cookie 不传递的问题）
+	const getAuthHeaders = () => {
+		const headers: Record<string, string> = {};
+		if (user?.id) {
+			headers['x-user-id'] = user.id;
+		}
+		return headers;
+	};
+
 	useEffect(() => {
 		fetchItems();
 	}, [selectedCategory]);
@@ -62,6 +73,7 @@ export default function KnowledgeBasePage() {
 				: `/api/admin/knowledge-base?category=${selectedCategory}`;
 			const response = await fetch(url, {
 				credentials: 'include',
+				headers: getAuthHeaders(),
 			});
 			if (response.ok) {
 				const data = await response.json();
@@ -111,7 +123,10 @@ export default function KnowledgeBasePage() {
 
 			const response = await fetch('/api/admin/knowledge-base', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					...getAuthHeaders(),
+				},
 				credentials: 'include',
 				body: JSON.stringify(formData),
 			});
@@ -146,7 +161,10 @@ export default function KnowledgeBasePage() {
 
 			const response = await fetch(`/api/admin/knowledge-base/${selectedItem.id}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					...getAuthHeaders(),
+				},
 				credentials: 'include',
 				body: JSON.stringify(formData),
 			});
@@ -175,6 +193,7 @@ export default function KnowledgeBasePage() {
 			const response = await fetch(`/api/admin/knowledge-base/${id}`, {
 				method: 'DELETE',
 				credentials: 'include',
+				headers: getAuthHeaders(),
 			});
 
 			if (response.ok) {
@@ -196,6 +215,7 @@ export default function KnowledgeBasePage() {
 				: '/api/admin/knowledge-base';
 			const response = await fetch(url, {
 				credentials: 'include',
+				headers: getAuthHeaders(),
 			});
 			if (response.ok) {
 				const data = await response.json();
@@ -240,6 +260,7 @@ export default function KnowledgeBasePage() {
 			const uploadResponse = await fetch('/api/admin/knowledge-base/upload', {
 				method: 'POST',
 				credentials: 'include',
+				headers: getAuthHeaders(),
 				body: formData,
 			});
 
@@ -254,7 +275,10 @@ export default function KnowledgeBasePage() {
 			setParsing(true);
 			const parseResponse = await fetch('/api/admin/knowledge-base/parse', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					...getAuthHeaders(),
+				},
 				credentials: 'include',
 				body: JSON.stringify({
 					fileKey: uploadData.data.fileKey,
