@@ -123,7 +123,7 @@ export default function KnowledgeBasePage() {
 				fetchItems();
 			} else {
 				const errorMessage = data.error || data.message || '保存失败';
-				console.error('Save failed:', data);
+				console.error('Save failed:', JSON.stringify(data));
 				alert(`保存失败: ${errorMessage}`);
 			}
 		} catch (error) {
@@ -159,7 +159,7 @@ export default function KnowledgeBasePage() {
 				fetchItems();
 			} else {
 				const errorMessage = data.error || data.message || '更新失败';
-				console.error('Update failed:', data);
+				console.error('Update failed:', JSON.stringify(data));
 				alert(`更新失败: ${errorMessage}`);
 			}
 		} catch (error) {
