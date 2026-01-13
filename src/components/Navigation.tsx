@@ -167,7 +167,7 @@ function ProductDropdown() {
       {/* 下拉菜单 */}
       {showDropdown && (
         <div
-          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-max"
           onMouseEnter={handleDropdownMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -175,7 +175,7 @@ function ProductDropdown() {
             <Link
               key={item.href}
               href={item.href}
-              className="block px-6 py-4 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl"
+              className="block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl"
               onClick={() => setShowDropdown(false)}
             >
               {item.name}
