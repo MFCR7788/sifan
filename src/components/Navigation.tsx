@@ -654,10 +654,10 @@ export default function Navigation() {
               {/* 管理菜单 - 仅管理员可见 */}
               {isAuthenticated && isAdmin && (
                 <Link
-                  href="/admin/knowledge-base"
+                  href="/admin"
                   className={`
                     text-xs transition-colors hover:opacity-60
-                    ${pathname === '/admin/knowledge-base'
+                    ${pathname === '/admin'
                       ? 'text-gray-900 font-semibold'
                       : 'text-gray-600'
                     }
@@ -876,11 +876,11 @@ export default function Navigation() {
             {/* 管理菜单 - 仅管理员可见 */}
             {isAuthenticated && isAdmin && (
               <Link
-                href="/admin/knowledge-base"
+                href="/admin"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`
                   block px-3 py-3 text-sm transition-colors border-b border-gray-100
-                  ${pathname === '/admin/knowledge-base'
+                  ${pathname === '/admin'
                     ? 'text-gray-900 font-semibold'
                     : 'text-gray-600'
                   }
