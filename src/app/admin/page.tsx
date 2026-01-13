@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminDashboard() {
+	const { user } = useAuth();
 	const [stats, setStats] = useState({
 		totalOrders: 0,
 		totalUsers: 0,
@@ -11,6 +13,15 @@ export default function AdminDashboard() {
 		totalRevenue: 0,
 	});
 	const [loading, setLoading] = useState(true);
+
+	// 获取认证头（用于解决嵌入式页面 Cookie 不传递的问题）
+	const getAuthHeaders = () => {
+		const headers: Record<string, string> = {};
+		if (user?.id) {
+			headers['x-user-id'] = user.id;
+		}
+		return headers;
+	};
 
 	useEffect(() => {
 		fetchDashboardStats();
@@ -20,6 +31,7 @@ export default function AdminDashboard() {
 		try {
 			const response = await fetch('/api/admin/stats', {
 				credentials: 'include',
+				headers: getAuthHeaders(),
 			});
 			if (response.ok) {
 				const data = await response.json();
