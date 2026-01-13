@@ -400,16 +400,32 @@ function UserHoverCard({ user, onLogout, onOpenRecharge }: UserHoverCardProps) {
     }
   }, [showCard]);
 
+  // 获取认证头（双重认证：Cookie + Header）
+  const getAuthHeaders = () => {
+    const headers: Record<string, string> = {};
+    // 备选方案：从 sessionStorage 读取 userId
+    if (typeof window !== 'undefined') {
+      const sessionUserId = sessionStorage.getItem('userId');
+      if (sessionUserId) {
+        headers['x-user-id'] = sessionUserId;
+      }
+    }
+    return headers;
+  };
+
   const fetchMemberInfo = async () => {
     setIsLoading(true);
     setErrorMessage(null);
     try {
+      const headers = getAuthHeaders();
       console.log('=== 开始获取会员信息 ===');
-      console.log('当前URL:', window.location.href);
-      console.log('浏览器Cookie:', document.cookie);
+      console.log('当前URL:', typeof window !== 'undefined' ? window.location.href : 'server-side');
+      console.log('浏览器Cookie:', typeof document !== 'undefined' ? document.cookie : 'N/A');
+      console.log('认证头:', headers);
 
       const response = await fetch('/api/user/me/member', {
         credentials: 'include',
+        headers,
       });
 
       console.log('Member API response status:', response.status);

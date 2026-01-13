@@ -63,12 +63,23 @@ export default function ProfilePage() {
 
 	const fetchMemberInfo = async () => {
 		try {
+			// 获取认证头（双重认证：Cookie + Header）
+			const headers: Record<string, string> = {};
+			if (typeof window !== 'undefined') {
+				const sessionUserId = sessionStorage.getItem('userId');
+				if (sessionUserId) {
+					headers['x-user-id'] = sessionUserId;
+				}
+			}
+
 			console.log('=== 个人中心：获取会员信息 ===');
 			console.log('当前用户:', user);
-			console.log('浏览器Cookie:', document.cookie);
+			console.log('浏览器Cookie:', typeof document !== 'undefined' ? document.cookie : 'N/A');
+			console.log('认证头:', headers);
 
 			const response = await fetch('/api/user/me/member', {
 				credentials: 'include',
+				headers,
 			});
 
 			console.log('会员API响应状态:', response.status);
@@ -97,14 +108,25 @@ export default function ProfilePage() {
 		setTransactionsPage(page);
 
 		try {
+			// 获取认证头（双重认证：Cookie + Header）
+			const headers: Record<string, string> = {};
+			if (typeof window !== 'undefined') {
+				const sessionUserId = sessionStorage.getItem('userId');
+				if (sessionUserId) {
+					headers['x-user-id'] = sessionUserId;
+				}
+			}
+
 			console.log('=== 获取交易记录 ===');
 			console.log('交易类型:', type);
 			console.log('页码:', page);
+			console.log('认证头:', headers);
 
 			const response = await fetch(
 				`/api/user/me/member/transactions?type=${type}&page=${page}&limit=10`,
 				{
 					credentials: 'include',
+					headers,
 				}
 			);
 
@@ -146,9 +168,20 @@ export default function ProfilePage() {
 		setErrorMessage('');
 
 		try {
+			// 获取认证头（双重认证：Cookie + Header）
+			const headers: Record<string, string> = {
+				'Content-Type': 'application/json',
+			};
+			if (typeof window !== 'undefined') {
+				const sessionUserId = sessionStorage.getItem('userId');
+				if (sessionUserId) {
+					headers['x-user-id'] = sessionUserId;
+				}
+			}
+
 			const response = await fetch('/api/user/me/update', {
 				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
+				headers,
 				credentials: 'include',
 				body: JSON.stringify(editForm),
 			});
@@ -182,9 +215,20 @@ export default function ProfilePage() {
 		}
 
 		try {
+			// 获取认证头（双重认证：Cookie + Header）
+			const headers: Record<string, string> = {
+				'Content-Type': 'application/json',
+			};
+			if (typeof window !== 'undefined') {
+				const sessionUserId = sessionStorage.getItem('userId');
+				if (sessionUserId) {
+					headers['x-user-id'] = sessionUserId;
+				}
+			}
+
 			const response = await fetch('/api/user/me/password', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers,
 				credentials: 'include',
 				body: JSON.stringify({
 					oldPassword: passwordForm.oldPassword,
@@ -217,9 +261,20 @@ export default function ProfilePage() {
 		setIsBindingPhone(true);
 
 		try {
+			// 获取认证头（双重认证：Cookie + Header）
+			const headers: Record<string, string> = {
+				'Content-Type': 'application/json',
+			};
+			if (typeof window !== 'undefined') {
+				const sessionUserId = sessionStorage.getItem('userId');
+				if (sessionUserId) {
+					headers['x-user-id'] = sessionUserId;
+				}
+			}
+
 			const response = await fetch('/api/user/me/bind-phone', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers,
 				credentials: 'include',
 				body: JSON.stringify({ phone: bindPhoneForm.phone }),
 			});

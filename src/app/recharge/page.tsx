@@ -98,8 +98,18 @@ export default function RechargePage() {
 
 	const fetchMemberInfo = async () => {
 		try {
+			// 获取认证头（双重认证：Cookie + Header）
+			const headers: Record<string, string> = {};
+			if (typeof window !== 'undefined') {
+				const sessionUserId = sessionStorage.getItem('userId');
+				if (sessionUserId) {
+					headers['x-user-id'] = sessionUserId;
+				}
+			}
+
 			const response = await fetch('/api/user/me/member', {
 				credentials: 'include',
+				headers,
 			});
 
 			if (response.ok) {
@@ -159,11 +169,20 @@ export default function RechargePage() {
 		setErrorMessage('');
 
 		try {
+			// 获取认证头（双重认证：Cookie + Header）
+			const headers: Record<string, string> = {
+				'Content-Type': 'application/json',
+			};
+			if (typeof window !== 'undefined') {
+				const sessionUserId = sessionStorage.getItem('userId');
+				if (sessionUserId) {
+					headers['x-user-id'] = sessionUserId;
+				}
+			}
+
 			const response = await fetch('/api/payment/create', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers,
 				credentials: 'include',
 				body: JSON.stringify({
 					paymentMethod,
