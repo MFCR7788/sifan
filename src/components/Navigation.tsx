@@ -10,8 +10,8 @@ import RechargeDialog from './RechargeDialog';
 const navItems = [
   { name: '首页', href: '/' },
   { name: '产品', href: '/pricing' },
-  { name: '智能体', href: '/magic-ai' },
-  { name: '商学院', href: '/business-school' },
+  { name: '工具', href: '/magic-ai' },
+  { name: '资源', href: '/resources' },
   { name: '关于', href: '/about' },
   { name: '联系', href: '/contact' },
 ];
@@ -207,7 +207,7 @@ function AboutDropdown() {
   );
 }
 
-function IntelligentAgentDropdown() {
+function ToolsDropdown() {
   const [showDropdown, setShowDropdown] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -250,13 +250,13 @@ function IntelligentAgentDropdown() {
       }}
       onMouseLeave={handleMouseLeave}
     >
-      {/* 触发区域 - 智能体链接 */}
+      {/* 触发区域 - 工具链接 */}
       <Link
         href="/magic-ai"
         className="text-xs transition-colors hover:opacity-60"
         onClick={(e) => e.preventDefault()}
       >
-        智能体
+        工具
       </Link>
 
       {/* 下拉菜单 */}
@@ -642,9 +642,9 @@ export default function Navigation() {
                 if (item.name === '产品') {
                   return <ProductDropdown key={item.href} />;
                 }
-                // 为"智能体"项使用下拉菜单组件
-                if (item.name === '智能体') {
-                  return <IntelligentAgentDropdown key={item.href} />;
+                // 为"工具"项使用下拉菜单组件
+                if (item.name === '工具') {
+                  return <ToolsDropdown key={item.href} />;
                 }
                 // 为"关于"项使用下拉菜单组件
                 if (item.name === '关于') {

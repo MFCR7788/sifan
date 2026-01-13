@@ -165,6 +165,58 @@ export const knowledgeBase = pgTable("knowledge_base", {
 	}).onDelete("set null"),
 ]);
 
+// 资源分类表
+export const resourceCategories = pgTable("resource_categories", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	name: varchar({ length: 100 }).notNull(), // 分类名称：前沿资讯、系统文档、魔法学院
+	slug: varchar({ length: 100 }).notNull().unique(), // URL友好名称
+	description: text(), // 分类描述
+	icon: varchar({ length: 50 }), // 图标
+	sortOrder: integer("sort_order").default(0).notNull(), // 排序
+	isActive: boolean("is_active").default(true).notNull(), // 是否启用
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+}, (table) => [
+	index("resource_categories_slug_idx").using("btree", table.slug.asc().nullsLast().op("text_ops")),
+	index("resource_categories_sort_order_idx").using("btree", table.sortOrder.asc().nullsLast().op("text_ops")),
+]);
+
+// 资源内容表
+export const resources = pgTable("resources", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	categoryId: varchar("category_id", { length: 36 }).notNull(), // 分类ID
+	title: varchar({ length: 255 }).notNull(), // 标题
+	slug: varchar({ length: 255 }).notNull(), // URL友好名称
+	content: text(), // 内容（Markdown格式）
+	contentType: varchar("content_type", { length: 50 }).notNull(), // 内容类型：document, video
+	videoUrl: varchar("video_url", { length: 500 }), // 视频URL
+	thumbnail: varchar({ length: 500 }), // 缩略图
+	summary: text(), // 摘要
+	tags: text(), // 标签，逗号分隔
+	viewCount: integer("view_count").default(0).notNull(), // 查看次数
+	sortOrder: integer("sort_order").default(0).notNull(), // 排序
+	isPublished: boolean("is_published").default(false).notNull(), // 是否发布
+	publishedAt: timestamp("published_at", { withTimezone: true, mode: 'string' }), // 发布时间
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+	createdBy: varchar("created_by", { length: 36 }), // 创建人ID
+}, (table) => [
+	index("resources_category_id_idx").using("btree", table.categoryId.asc().nullsLast().op("text_ops")),
+	index("resources_slug_idx").using("btree", table.slug.asc().nullsLast().op("text_ops")),
+	index("resources_is_published_idx").using("btree", table.isPublished.asc().nullsLast().op("text_ops")),
+	index("resources_sort_order_idx").using("btree", table.sortOrder.asc().nullsLast().op("text_ops")),
+	foreignKey({
+		columns: [table.categoryId],
+		foreignColumns: [resourceCategories.id],
+		name: "resources_category_id_resource_categories_id_fk"
+	}).onDelete("cascade"),
+	foreignKey({
+		columns: [table.createdBy],
+		foreignColumns: [users.id],
+		name: "resources_created_by_users_id_fk"
+	}).onDelete("set null"),
+]);
+
 // ==================== Zod Schemas ====================
 
 // Contact Messages
@@ -233,3 +285,17 @@ export const updateKnowledgeBaseSchema = createCoercedInsertSchema(knowledgeBase
 export type InsertKnowledgeBase = z.infer<typeof insertKnowledgeBaseSchema>
 export type UpdateKnowledgeBase = z.infer<typeof updateKnowledgeBaseSchema>
 export type KnowledgeBase = typeof knowledgeBase.$inferSelect
+
+// Resource Categories
+export const insertResourceCategorySchema = createCoercedInsertSchema(resourceCategories)
+export const updateResourceCategorySchema = createCoercedInsertSchema(resourceCategories).partial()
+export type InsertResourceCategory = z.infer<typeof insertResourceCategorySchema>
+export type UpdateResourceCategory = z.infer<typeof updateResourceCategorySchema>
+export type ResourceCategory = typeof resourceCategories.$inferSelect
+
+// Resources
+export const insertResourceSchema = createCoercedInsertSchema(resources)
+export const updateResourceSchema = createCoercedInsertSchema(resources).partial()
+export type InsertResource = z.infer<typeof insertResourceSchema>
+export type UpdateResource = z.infer<typeof updateResourceSchema>
+export type Resource = typeof resources.$inferSelect
