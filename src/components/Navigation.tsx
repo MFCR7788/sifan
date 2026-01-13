@@ -194,7 +194,7 @@ function ContactHoverCard() {
         >
           <div className="p-4">
             <img
-              src="/assets/image.png"
+              src="/assets/KF.png"
               alt="联系我们"
               className="rounded-lg"
               onLoad={handleImageLoad}
