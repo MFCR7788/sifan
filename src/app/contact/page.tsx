@@ -95,6 +95,19 @@ export default function ContactPage() {
                   <h3 className="text-sm font-semibold text-gray-500 mb-1">工作时间</h3>
                   <p className="text-lg">周一至周五 9:00 - 18:00</p>
                 </div>
+
+                {/* 客服微信 */}
+                <div className="pt-6 border-t border-gray-200">
+                  <h3 className="text-sm font-semibold text-gray-500 mb-4">客服微信</h3>
+                  <div className="flex flex-col items-center space-y-3">
+                    <img
+                      src="/assets/KF.png"
+                      alt="客服微信"
+                      className="w-48 h-auto rounded-lg border border-gray-200"
+                    />
+                    <p className="text-sm text-gray-600">扫描二维码添加客服微信</p>
+                  </div>
+                </div>
               </div>
             </div>
 
