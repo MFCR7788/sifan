@@ -10,7 +10,7 @@ import RechargeDialog from './RechargeDialog';
 const navItems = [
   { name: '首页', href: '/' },
   { name: '产品', href: '/pricing' },
-  { name: '魔法AGI', href: '/magic-agi' },
+  { name: '智能体', href: '/magic-ai' },
   { name: '商学院', href: '/business-school' },
   { name: '关于', href: '/about' },
   { name: '联系', href: '/contact' },
@@ -31,87 +31,24 @@ interface UserHoverCardProps {
   onOpenRecharge: () => void;
 }
 
-function LogoDropdown() {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const aiItems = [
-    { name: 'AI文本生成', href: '/magic-ai' },
-    { name: 'AI图像生成', href: '/image-gen' },
-    { name: 'AI视频生成', href: '/video-gen' },
-  ];
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setShowDropdown(false);
-    }, 150);
-  };
-
-  const handleDropdownMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  };
-
+function Logo() {
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-          timeoutRef.current = null;
-        }
-        setShowDropdown(true);
-      }}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* 触发区域 - Logo */}
-      <div className="hover:opacity-75 transition-opacity cursor-pointer">
-        <div className="flex items-center gap-2">
-          <div className="relative w-7 h-7">
-            <Image
-              src="/小超人.png"
-              alt="魔法超人AI"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
-          <span className="text-lg font-semibold text-gray-900">
-            魔法超人AI
-          </span>
+    <Link href="/" className="hover:opacity-75 transition-opacity">
+      <div className="flex items-center gap-2">
+        <div className="relative w-7 h-7">
+          <Image
+            src="/小超人.png"
+            alt="魔法超人AGI"
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
+        <span className="text-lg font-semibold text-gray-900">
+          魔法超人AGI
+        </span>
       </div>
-
-      {/* 下拉菜单 */}
-      {showDropdown && (
-        <div
-          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
-          onMouseEnter={handleDropdownMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          {aiItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="block px-6 py-4 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl"
-              onClick={() => setShowDropdown(false)}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
+    </Link>
   );
 }
 
@@ -256,6 +193,81 @@ function AboutDropdown() {
           onMouseLeave={handleMouseLeave}
         >
           {aboutItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl"
+              onClick={() => setShowDropdown(false)}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IntelligentAgentDropdown() {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const agentItems = [
+    { name: 'AI文本生成', href: '/magic-ai' },
+    { name: 'AI图像生成', href: '/image-gen' },
+    { name: 'AI视频生成', href: '/video-gen' },
+  ];
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowDropdown(false);
+    }, 150);
+  };
+
+  const handleDropdownMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setShowDropdown(true);
+      }}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 触发区域 - 智能体链接 */}
+      <Link
+        href="/magic-ai"
+        className="text-xs transition-colors hover:opacity-60"
+        onClick={(e) => e.preventDefault()}
+      >
+        智能体
+      </Link>
+
+      {/* 下拉菜单 */}
+      {showDropdown && (
+        <div
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-max"
+          onMouseEnter={handleDropdownMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {agentItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -599,7 +611,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <LogoDropdown />
+            <Logo />
           </div>
 
           {/* Desktop Navigation */}
@@ -614,6 +626,10 @@ export default function Navigation() {
                 // 为"产品"项使用下拉菜单组件
                 if (item.name === '产品') {
                   return <ProductDropdown key={item.href} />;
+                }
+                // 为"智能体"项使用下拉菜单组件
+                if (item.name === '智能体') {
+                  return <IntelligentAgentDropdown key={item.href} />;
                 }
                 // 为"关于"项使用下拉菜单组件
                 if (item.name === '关于') {
@@ -752,6 +768,37 @@ export default function Navigation() {
                       className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
                     >
                       手机后台
+                    </Link>
+                  </div>
+                );
+              }
+              // 为"智能体"项显示为标题和子菜单
+              if (item.name === '智能体') {
+                return (
+                  <div key={item.href}>
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-900 border-b border-gray-100">
+                      智能体
+                    </div>
+                    <Link
+                      href="/magic-ai"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      AI文本生成
+                    </Link>
+                    <Link
+                      href="/image-gen"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      AI图像生成
+                    </Link>
+                    <Link
+                      href="/video-gen"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      AI视频生成
                     </Link>
                   </div>
                 );
