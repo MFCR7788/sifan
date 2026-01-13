@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/storage/database';
 import { orders, users, members, memberTransactions } from '@/storage/database/shared/schema';
 import { verifyAdmin } from '@/lib/admin-auth';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
 	try {
@@ -15,19 +15,19 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// 获取统计数据
+		// 获取统计数据 - 使用正确的count聚合函数
 		const [totalOrdersResult, totalUsersResult, totalMembersResult, totalRevenueResult] = await Promise.all([
-			db.select({ count: orders.orderNumber }).from(orders),
-			db.select({ count: users.id }).from(users),
-			db.select({ count: members.id }).from(members),
+			db.select({ count: sql<number>`count(*)` }).from(orders),
+			db.select({ count: sql<number>`count(*)` }).from(users),
+			db.select({ count: sql<number>`count(*)` }).from(members),
 			db.select({ amount: memberTransactions.amount })
 				.from(memberTransactions)
 				.where(eq(memberTransactions.status, 'completed')),
 		]);
 
-		const totalOrders = totalOrdersResult.length;
-		const totalUsers = totalUsersResult.length;
-		const totalMembers = totalMembersResult.length;
+		const totalOrders = totalOrdersResult[0]?.count || 0;
+		const totalUsers = totalUsersResult[0]?.count || 0;
+		const totalMembers = totalMembersResult[0]?.count || 0;
 		const totalRevenue = totalRevenueResult.reduce((sum: number, t: any) => sum + (t.amount || 0), 0) / 100; // 转换为元
 
 		return NextResponse.json({
