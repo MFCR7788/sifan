@@ -85,22 +85,13 @@ export default function AdminLayout({
 							<p className="px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">交易明细</p>
 						</div>
 						<Link
-							href="/admin/transactions/recharge"
+							href="/admin/transactions"
 							className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
 						>
 							<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 3.666v-3m0 0l-3 3m3-3l-3-3M3 21h18a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
 							</svg>
-							<span>充值明细</span>
-						</Link>
-						<Link
-							href="/admin/transactions/consumption"
-							className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-						>
-							<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-							</svg>
-							<span>消费明细</span>
+							<span>交易明细</span>
 						</Link>
 						<div className="pt-4 pb-2">
 							<p className="px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">系统管理</p>

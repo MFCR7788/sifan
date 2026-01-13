@@ -17,16 +17,17 @@ interface Transaction {
 	description: string;
 	status: string;
 	paymentMethod: string;
+	paymentTransactionId: string;
 	createdAt: string;
 	completedAt: string;
 }
 
-export default function ConsumptionTransactionsPage() {
+export default function TransactionsPage() {
 	const { user } = useAuth();
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [filter, setFilter] = useState<'all' | 'pending' | 'completed' | 'failed'>('all');
-	const [typeFilter, setTypeFilter] = useState<'all' | 'membership_purchase' | 'points_purchase' | 'service_use'>('all');
+	const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'failed'>('all');
+	const [typeFilter, setTypeFilter] = useState<'all' | 'recharge' | 'membership_purchase' | 'points_purchase' | 'service_use'>('all');
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,12 +43,16 @@ export default function ConsumptionTransactionsPage() {
 
 	useEffect(() => {
 		fetchTransactions();
-	}, [filter, typeFilter]);
+	}, [statusFilter, typeFilter]);
 
 	const fetchTransactions = async () => {
 		setLoading(true);
 		try {
-			const url = `/api/admin/transactions?type=consumption&status=${filter === 'all' ? '' : filter}&transactionType=${typeFilter === 'all' ? '' : typeFilter}`;
+			const params = new URLSearchParams();
+			if (statusFilter !== 'all') params.append('status', statusFilter);
+			if (typeFilter !== 'all') params.append('transactionType', typeFilter);
+
+			const url = `/api/admin/transactions?${params.toString()}`;
 			const response = await fetch(url, {
 				credentials: 'include',
 				headers: getAuthHeaders(),
@@ -71,6 +76,7 @@ export default function ConsumptionTransactionsPage() {
 	const filteredTransactions = transactions.filter(t =>
 		(t.memberName && t.memberName.toLowerCase().includes(searchTerm.toLowerCase())) ||
 		(t.memberPhone && t.memberPhone.includes(searchTerm)) ||
+		t.paymentTransactionId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
 		t.description?.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
@@ -78,8 +84,11 @@ export default function ConsumptionTransactionsPage() {
 		return (amount / 100).toFixed(2);
 	};
 
+	const isRecharge = (type: string) => type === 'recharge';
+
 	const getTransactionTypeText = (type: string) => {
 		const typeMap: Record<string, string> = {
+			'recharge': '余额充值',
 			'membership_purchase': '购买会员',
 			'points_purchase': '购买积分',
 			'service_use': '服务消费',
@@ -91,20 +100,20 @@ export default function ConsumptionTransactionsPage() {
 		<div>
 			<div className="flex items-center justify-between mb-8">
 				<div>
-					<h1 className="text-3xl font-bold text-gray-900">消费明细</h1>
-					<p className="text-sm text-gray-600 mt-1">查看所有会员消费交易记录</p>
+					<h1 className="text-3xl font-bold text-gray-900">交易明细</h1>
+					<p className="text-sm text-gray-600 mt-1">查看所有会员交易记录（充值与消费）</p>
 				</div>
 			</div>
 
-			{/* Filter Tabs */}
+			{/* Status Filter Tabs */}
 			<div className="bg-white rounded-xl p-2 border border-gray-200 mb-4">
 				<div className="flex gap-2">
 					{(['all', 'pending', 'completed', 'failed'] as const).map((status) => (
 						<button
 							key={status}
-							onClick={() => setFilter(status)}
+							onClick={() => setStatusFilter(status)}
 							className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-								filter === status
+								statusFilter === status
 									? 'bg-gray-900 text-white'
 									: 'text-gray-600 hover:bg-gray-100'
 							}`}
@@ -117,8 +126,8 @@ export default function ConsumptionTransactionsPage() {
 
 			{/* Type Filter Tabs */}
 			<div className="bg-white rounded-xl p-2 border border-gray-200 mb-6">
-				<div className="flex gap-2">
-					{(['all', 'membership_purchase', 'points_purchase', 'service_use'] as const).map((type) => (
+				<div className="flex gap-2 flex-wrap">
+					{(['all', 'recharge', 'membership_purchase', 'points_purchase', 'service_use'] as const).map((type) => (
 						<button
 							key={type}
 							onClick={() => setTypeFilter(type)}
@@ -128,7 +137,7 @@ export default function ConsumptionTransactionsPage() {
 									: 'text-gray-600 hover:bg-gray-100'
 							}`}
 						>
-							{type === 'all' ? '全部类型' : type === 'membership_purchase' ? '购买会员' : type === 'points_purchase' ? '购买积分' : '服务消费'}
+							{type === 'all' ? '全部类型' : type === 'recharge' ? '余额充值' : type === 'membership_purchase' ? '购买会员' : type === 'points_purchase' ? '购买积分' : '服务消费'}
 						</button>
 					))}
 				</div>
@@ -138,7 +147,7 @@ export default function ConsumptionTransactionsPage() {
 			<div className="bg-white rounded-xl p-4 border border-gray-200 mb-6">
 				<input
 					type="text"
-					placeholder="搜索（会员姓名、手机号、交易描述）"
+					placeholder="搜索（会员姓名、手机号、交易ID、描述）"
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
 					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
@@ -152,7 +161,7 @@ export default function ConsumptionTransactionsPage() {
 				</div>
 			) : filteredTransactions.length === 0 ? (
 				<div className="bg-white rounded-xl p-12 border border-gray-200 text-center">
-					<p className="text-gray-500">{searchTerm ? '未找到匹配的交易记录' : '暂无消费记录'}</p>
+					<p className="text-gray-500">{searchTerm ? '未找到匹配的交易记录' : '暂无交易记录'}</p>
 				</div>
 			) : (
 				<div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -164,6 +173,7 @@ export default function ConsumptionTransactionsPage() {
 								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">交易类型</th>
 								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">金额</th>
 								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">余额变动</th>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">支付方式</th>
 								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">状态</th>
 								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">创建时间</th>
 								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">操作</th>
@@ -182,15 +192,26 @@ export default function ConsumptionTransactionsPage() {
 										</div>
 									</td>
 									<td className="px-6 py-4">
-										<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+										<span
+											className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+												isRecharge(transaction.transactionType)
+													? 'bg-green-100 text-green-800'
+													: 'bg-gray-100 text-gray-800'
+											}`}
+										>
 											{getTransactionTypeText(transaction.transactionType)}
 										</span>
 									</td>
-									<td className="px-6 py-4 font-medium text-red-600">
-										-¥{formatAmount(transaction.amount)}
+									<td className="px-6 py-4 font-medium">
+										<span className={isRecharge(transaction.transactionType) ? 'text-green-600' : 'text-red-600'}>
+											{isRecharge(transaction.transactionType) ? '+' : '-'}¥{formatAmount(transaction.amount)}
+										</span>
 									</td>
 									<td className="px-6 py-4 text-sm text-gray-600">
 										¥{formatAmount(transaction.balanceBefore)} → ¥{formatAmount(transaction.balanceAfter)}
+									</td>
+									<td className="px-6 py-4 text-sm text-gray-600">
+										{transaction.paymentMethod || '-'}
 									</td>
 									<td className="px-6 py-4">
 										<span
@@ -229,7 +250,9 @@ export default function ConsumptionTransactionsPage() {
 					<div className="bg-white rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
 						<div className="p-6 border-b border-gray-200">
 							<div className="flex items-center justify-between">
-								<h2 className="text-xl font-semibold text-gray-900">消费详情</h2>
+								<h2 className="text-xl font-semibold text-gray-900">
+									{isRecharge(selectedTransaction.transactionType) ? '充值详情' : '消费详情'}
+								</h2>
 								<button
 									onClick={() => setIsModalOpen(false)}
 									className="text-gray-400 hover:text-gray-600"
@@ -261,15 +284,29 @@ export default function ConsumptionTransactionsPage() {
 
 								<div>
 									<div className="text-sm text-gray-600">交易类型</div>
-									<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+									<span
+										className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+											isRecharge(selectedTransaction.transactionType)
+												? 'bg-green-100 text-green-800'
+												: 'bg-gray-100 text-gray-800'
+										}`}
+									>
 										{getTransactionTypeText(selectedTransaction.transactionType)}
 									</span>
 								</div>
 
 								<div className="grid grid-cols-2 gap-4">
 									<div>
-										<div className="text-sm text-gray-600">消费金额</div>
-										<div className="font-bold text-red-600 text-xl">-¥{formatAmount(selectedTransaction.amount)}</div>
+										<div className="text-sm text-gray-600">交易金额</div>
+										<div
+											className={`font-bold text-xl ${
+												isRecharge(selectedTransaction.transactionType)
+													? 'text-green-600'
+													: 'text-red-600'
+											}`}
+										>
+											{isRecharge(selectedTransaction.transactionType) ? '+' : '-'}¥{formatAmount(selectedTransaction.amount)}
+										</div>
 									</div>
 									<div>
 										<div className="text-sm text-gray-600">交易状态</div>
@@ -308,6 +345,20 @@ export default function ConsumptionTransactionsPage() {
 										<div className="font-medium">{selectedTransaction.pointsAfter}</div>
 									</div>
 								</div>
+
+								{selectedTransaction.paymentMethod && (
+									<div>
+										<div className="text-sm text-gray-600">支付方式</div>
+										<div className="font-medium">{selectedTransaction.paymentMethod}</div>
+									</div>
+								)}
+
+								{selectedTransaction.paymentTransactionId && (
+									<div>
+										<div className="text-sm text-gray-600">支付交易ID</div>
+										<div className="font-mono text-sm">{selectedTransaction.paymentTransactionId}</div>
+									</div>
+								)}
 
 								{selectedTransaction.description && (
 									<div>

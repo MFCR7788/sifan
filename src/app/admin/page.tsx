@@ -108,7 +108,7 @@ export default function AdminDashboard() {
 					</Link>
 
 					{/* Total Recharge */}
-					<Link href="/admin/transactions/recharge" className="block">
+					<Link href="/admin/transactions" className="block">
 						<div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
 							<div className="flex items-center justify-between">
 								<div>
@@ -125,7 +125,7 @@ export default function AdminDashboard() {
 					</Link>
 
 					{/* Total Consumption */}
-					<Link href="/admin/transactions/consumption" className="block">
+					<Link href="/admin/transactions" className="block">
 						<div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
 							<div className="flex items-center justify-between">
 								<div>
