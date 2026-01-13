@@ -179,12 +179,16 @@ export default function QualificationsPage() {
 
             {/* 资质卡片 6 */}
             <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-gray-200 flex items-center justify-center">
-                <div className="text-gray-400 text-sm">商标注册证</div>
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+                <img
+                  src="/images/value-added-telecom-license.jpg"
+                  alt="增值电信业务经营许可证"
+                  className="w-full h-full object-contain rounded-lg"
+                />
               </div>
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900">商标注册证</h3>
-                <p className="text-sm text-gray-600 mt-2">品牌知识产权</p>
+                <h3 className="text-lg font-semibold text-gray-900">增值电信业务经营许可证</h3>
+                <p className="text-sm text-gray-600 mt-2">电信业务经营资质</p>
               </div>
             </div>
           </div>
