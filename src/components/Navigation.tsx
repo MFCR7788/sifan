@@ -10,7 +10,7 @@ import RechargeDialog from './RechargeDialog';
 const navItems = [
   { name: '首页', href: '/' },
   { name: '产品', href: '/pricing' },
-  { name: '关于我们', href: '/about' },
+  { name: '关于', href: '/about' },
   { name: '加盟', href: '/franchise' },
   { name: '联系', href: '/contact' },
 ];
