@@ -37,21 +37,17 @@ export default function MobileAdminPage() {
         <div className="max-w-4xl mx-auto mt-16">
           <div className="bg-white rounded-3xl p-12 shadow-lg">
             <div className="flex flex-col items-center">
-              {/* 二维码占位符 - 请替换为实际的二维码图片 */}
-              <div className="w-64 h-64 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
-                <div className="text-center">
-                  <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v1h-1v-1zm-3 0h1v1h-1v-1zm-1 1h1v1h-1v-1zm2 0h1v1h-1v-1zm1 1h1v1h-1v-1zm-2 0h1v1h-1v-1zm-1 1h1v1h-1v-1zm4 0h1v1h-1v-1zm-2 0h1v1h-1v-1zm-3 1h1v1h-1v-1zm2 0h1v1h-1v-1zm1 1h1v1h-1v-1zm-2 0h1v1h-1v-1zm-2 1h1v1h-1v-1zm2 0h1v1h-1v-1zm-3 1h6v2h-6v-2z"/>
-                  </svg>
-                  <p className="text-sm text-gray-400">登录二维码</p>
-                  <p className="text-xs text-gray-400 mt-1">请替换为实际二维码图片</p>
-                </div>
-              </div>
-              <p className="text-lg text-gray-700">
-                使用手机相机扫描二维码
+              {/* 二维码图片 */}
+              <img
+                src="/images/qr-code-login.png"
+                alt="登录二维码"
+                className="w-64 h-64 rounded-2xl"
+              />
+              <p className="text-lg text-gray-700 mt-6">
+                使用微信扫描二维码
               </p>
               <p className="text-sm text-gray-500 mt-2">
-                或使用微信扫一扫功能
+                快速进入后台管理系统
               </p>
             </div>
           </div>
