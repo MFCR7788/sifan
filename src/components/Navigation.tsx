@@ -133,8 +133,8 @@ function ContactHoverCard() {
     const img = e.target as HTMLImageElement;
     const aspectRatio = img.naturalWidth / img.naturalHeight;
     
-    // 计算适合显示的尺寸（最大宽度 400px，根据比例计算高度）
-    const maxWidth = 400;
+    // 计算适合显示的尺寸（最大宽度 200px，根据比例计算高度）
+    const maxWidth = 200;
     const width = Math.min(maxWidth, img.naturalWidth);
     const height = width / aspectRatio;
     
