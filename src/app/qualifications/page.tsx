@@ -1,9 +1,46 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
+const isoCertificates = [
+  {
+    src: '/images/iso-quality.png',
+    alt: '质量管理体系认证证书',
+    title: '质量管理体系认证证书'
+  },
+  {
+    src: '/images/iso-environment.png',
+    alt: '环境管理体系认证证书',
+    title: '环境管理体系认证证书'
+  },
+  {
+    src: '/images/iso-ohs.png',
+    alt: '职业健康安全管理体系认证证书',
+    title: '职业健康安全管理体系认证证书'
+  },
+];
+
 export default function QualificationsPage() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % isoCertificates.length);
+    }, 3000); // 每3秒切换一次
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % isoCertificates.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + isoCertificates.length) % isoCertificates.length);
+  };
+
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Navigation />
@@ -68,12 +105,45 @@ export default function QualificationsPage() {
 
             {/* 资质卡片 3 */}
             <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-gray-200 flex items-center justify-center">
-                <div className="text-gray-400 text-sm">ISO质量体系认证</div>
+              <div className="relative aspect-[4/3] bg-white">
+                <img
+                  src={isoCertificates[currentSlide].src}
+                  alt={isoCertificates[currentSlide].alt}
+                  className="w-full h-full object-contain p-4 transition-opacity duration-300"
+                />
+                {/* 轮播控制按钮 */}
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                {/* 轮播指示器 */}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
+                  {isoCertificates.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        index === currentSlide ? 'bg-black' : 'bg-black/30'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">ISO质量体系认证</h3>
-                <p className="text-sm text-gray-600 mt-2">国际质量标准</p>
+                <p className="text-sm text-gray-600 mt-2">{isoCertificates[currentSlide].title}</p>
               </div>
             </div>
 
