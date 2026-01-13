@@ -63,8 +63,19 @@ export async function POST(request: NextRequest) {
 				}
 			}
 		} else {
-			// 验证普通用户登录（通过手机号）
-			user = await userManager.login(phone, password);
+			// 先尝试从数据库中查找用户（可能包括管理员账号）
+			let dbUser = await userManager.getUserByPhone(phone);
+
+			if (dbUser) {
+				// 验证密码
+				const isValidPassword = await bcrypt.compare(password, dbUser.password);
+
+				if (isValidPassword) {
+					// 返回用户信息（不包含密码）
+					const { password: _, ...userWithoutPassword } = dbUser;
+					user = userWithoutPassword;
+				}
+			}
 		}
 
 		if (!user) {

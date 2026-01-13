@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 export async function POST(request: NextRequest) {
 	try {
-		const { email, password } = await request.json();
+		const { email, password, phone, name } = await request.json();
 
 		if (!email || !password) {
 			return NextResponse.json(
@@ -14,24 +14,36 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		// 检查用户是否已存在
-		const existingUser = await userManager.getUserByEmail(email);
-		if (existingUser) {
+		const adminPhone = phone || '15967675767'; // 默认管理员的手机号
+		const adminName = name || 'Admin';
+
+		// 检查邮箱是否已存在
+		const existingUserByEmail = await userManager.getUserByEmail(email);
+		if (existingUserByEmail) {
 			return NextResponse.json(
-				{ error: '用户已存在' },
+				{ error: '该邮箱已被注册' },
 				{ status: 400 }
 			);
 		}
 
-		// 加密密码
-		const hashedPassword = await bcrypt.hash(password, 10);
+		// 检查手机号是否已存在
+		const existingUserByPhone = await userManager.getUserByPhone(adminPhone);
+		if (existingUserByPhone) {
+			return NextResponse.json(
+				{ error: '该手机号已被注册' },
+				{ status: 400 }
+			);
+		}
+
+		// 加密密码（userManager.createUser会再次加密，所以这里不需要）
+		// const hashedPassword = await bcrypt.hash(password, 10);
 
 		// 创建admin用户
 		const user = await userManager.createUser({
 			email,
-			phone: '15967675767', // 使用管理员的手机号
-			name: 'Admin',
-			password: hashedPassword,
+			phone: adminPhone,
+			name: adminName,
+			password, // 传递明文密码，userManager.createUser会自动加密
 			isAdmin: true,
 			isActive: true,
 		});
