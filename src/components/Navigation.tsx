@@ -586,7 +586,7 @@ function UserHoverCard({ user, onLogout, onOpenRecharge }: UserHoverCardProps) {
 export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, user, isLoading, logout } = useAuth();
+  const { isAuthenticated, user, isLoading, logout, isAdmin } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -650,6 +650,22 @@ export default function Navigation() {
                   </Link>
                 );
               })}
+
+              {/* 管理菜单 - 仅管理员可见 */}
+              {isAuthenticated && isAdmin && (
+                <Link
+                  href="/admin/knowledge-base"
+                  className={`
+                    text-xs transition-colors hover:opacity-60
+                    ${pathname === '/admin/knowledge-base'
+                      ? 'text-gray-900 font-semibold'
+                      : 'text-gray-600'
+                    }
+                  `}
+                >
+                  管理
+                </Link>
+              )}
             </div>
 
             {/* Auth Links */}
@@ -850,6 +866,24 @@ export default function Navigation() {
                 </Link>
               );
             })}
+
+            {/* 管理菜单 - 仅管理员可见 */}
+            {isAuthenticated && isAdmin && (
+              <Link
+                href="/admin/knowledge-base"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`
+                  block px-3 py-3 text-sm transition-colors border-b border-gray-100
+                  ${pathname === '/admin/knowledge-base'
+                    ? 'text-gray-900 font-semibold'
+                    : 'text-gray-600'
+                  }
+                `}
+              >
+                管理
+              </Link>
+            )}
+
             {/* Mobile Auth Links */}
             {!isLoading && (
               <div className="mt-4 pt-4 border-t border-gray-200">
