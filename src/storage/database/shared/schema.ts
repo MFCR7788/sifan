@@ -142,6 +142,29 @@ export const users = pgTable("users", {
 	unique("users_phone_unique").on(table.phone),
 ]);
 
+// 知识库表
+export const knowledgeBase = pgTable("knowledge_base", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	category: varchar({ length: 100 }).notNull(), // 分类：产品、服务、技术、价格等
+	question: text().notNull(), // 问题
+	answer: text().notNull(), // 答案
+	keywords: text(), // 关键词，用于搜索匹配
+	priority: integer().default(0).notNull(), // 优先级，数字越大越优先匹配
+	isActive: boolean("is_active").default(true).notNull(), // 是否启用
+	viewCount: integer("view_count").default(0).notNull(), // 查看次数
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+	createdBy: varchar("created_by", { length: 36 }), // 创建人ID
+}, (table) => [
+	index("knowledge_base_category_idx").using("btree", table.category.asc().nullsLast().op("text_ops")),
+	index("knowledge_base_is_active_idx").using("btree", table.isActive.asc().nullsLast().op("text_ops")),
+	foreignKey({
+		columns: [table.createdBy],
+		foreignColumns: [users.id],
+		name: "knowledge_base_created_by_users_id_fk"
+	}).onDelete("set null"),
+]);
+
 // ==================== Zod Schemas ====================
 
 // Contact Messages
@@ -203,3 +226,10 @@ export const loginSchema = z.object({
 export type InsertUser = z.infer<typeof insertUserSchema>
 export type UpdateUser = z.infer<typeof updateUserSchema>
 export type User = typeof users.$inferSelect
+
+// Knowledge Base
+export const insertKnowledgeBaseSchema = createCoercedInsertSchema(knowledgeBase)
+export const updateKnowledgeBaseSchema = createCoercedInsertSchema(knowledgeBase).partial()
+export type InsertKnowledgeBase = z.infer<typeof insertKnowledgeBaseSchema>
+export type UpdateKnowledgeBase = z.infer<typeof updateKnowledgeBaseSchema>
+export type KnowledgeBase = typeof knowledgeBase.$inferSelect
