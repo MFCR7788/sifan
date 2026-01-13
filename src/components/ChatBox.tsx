@@ -118,7 +118,7 @@ export default function ChatBox() {
 				className="fixed bottom-6 right-6 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition-transform z-50 border border-gray-200"
 				aria-label="打开客服聊天"
 			>
-				<div className="relative w-8 h-8">
+				<div className="relative w-10 h-10">
 					<Image
 						src="/小超人.png"
 						alt="魔法超人AGI"
