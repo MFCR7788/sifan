@@ -84,8 +84,6 @@ export default function TransactionsPage() {
 		return (amount / 100).toFixed(2);
 	};
 
-	const isRecharge = (type: string) => type === 'recharge';
-
 	const getTransactionTypeText = (type: string) => {
 		const typeMap: Record<string, string> = {
 			'recharge': '余额充值',
@@ -94,6 +92,16 @@ export default function TransactionsPage() {
 			'service_use': '服务消费',
 		};
 		return typeMap[type] || type;
+	};
+
+	const getTransactionTypeColor = (type: string) => {
+		const colorMap: Record<string, string> = {
+			'recharge': 'bg-blue-100 text-blue-800',
+			'membership_purchase': 'bg-purple-100 text-purple-800',
+			'points_purchase': 'bg-green-100 text-green-800',
+			'service_use': 'bg-orange-100 text-orange-800',
+		};
+		return colorMap[type] || 'bg-gray-100 text-gray-800';
 	};
 
 	return (
@@ -193,18 +201,14 @@ export default function TransactionsPage() {
 									</td>
 									<td className="px-6 py-4">
 										<span
-											className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-												isRecharge(transaction.transactionType)
-													? 'bg-green-100 text-green-800'
-													: 'bg-gray-100 text-gray-800'
-											}`}
+											className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTransactionTypeColor(transaction.transactionType)}`}
 										>
 											{getTransactionTypeText(transaction.transactionType)}
 										</span>
 									</td>
 									<td className="px-6 py-4 font-medium">
-										<span className={isRecharge(transaction.transactionType) ? 'text-green-600' : 'text-red-600'}>
-											{isRecharge(transaction.transactionType) ? '+' : '-'}¥{formatAmount(transaction.amount)}
+										<span className="text-green-600">
+											+¥{formatAmount(transaction.amount)}
 										</span>
 									</td>
 									<td className="px-6 py-4 text-sm text-gray-600">
