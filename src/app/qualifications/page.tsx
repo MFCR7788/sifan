@@ -105,6 +105,32 @@ export default function QualificationsPage() {
 
             {/* 资质卡片 3 */}
             <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+                <img
+                  src="/images/national-high-tech-certificate.png"
+                  alt="国家高新企业证书"
+                  className="w-full h-full object-contain rounded-lg"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900">国家高新企业证书</h3>
+                <p className="text-sm text-gray-600 mt-2">国家高新技术企业认证</p>
+              </div>
+            </div>
+
+            {/* 资质卡片 4 */}
+            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
+              <div className="aspect-[4/3] bg-gray-200 flex items-center justify-center">
+                <div className="text-gray-400 text-sm">组织机构代码证</div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900">组织机构代码证</h3>
+                <p className="text-sm text-gray-600 mt-2">机构身份证明</p>
+              </div>
+            </div>
+
+            {/* 资质卡片 5 */}
+            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
               <div className="relative aspect-[4/3] bg-white">
                 <img
                   src={isoCertificates[currentSlide].src}
@@ -144,32 +170,6 @@ export default function QualificationsPage() {
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">ISO质量体系认证</h3>
                 <p className="text-sm text-gray-600 mt-2">{isoCertificates[currentSlide].title}</p>
-              </div>
-            </div>
-
-            {/* 资质卡片 4 */}
-            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-gray-200 flex items-center justify-center">
-                <div className="text-gray-400 text-sm">组织机构代码证</div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900">组织机构代码证</h3>
-                <p className="text-sm text-gray-600 mt-2">机构身份证明</p>
-              </div>
-            </div>
-
-            {/* 资质卡片 5 */}
-            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
-                <img
-                  src="/images/national-high-tech-certificate.png"
-                  alt="国家高新企业证书"
-                  className="w-full h-full object-contain rounded-lg"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900">国家高新企业证书</h3>
-                <p className="text-sm text-gray-600 mt-2">国家高新技术企业认证</p>
               </div>
             </div>
 
