@@ -22,6 +22,7 @@ export default function KnowledgeBasePage() {
 	const [selectedCategory, setSelectedCategory] = useState('all');
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
 	const [formData, setFormData] = useState({
 		category: '',
@@ -31,6 +32,12 @@ export default function KnowledgeBasePage() {
 		priority: 0,
 		isActive: true,
 	});
+
+	// 上传相关状态
+	const [uploadFile, setUploadFile] = useState<File | null>(null);
+	const [uploading, setUploading] = useState(false);
+	const [parsing, setParsing] = useState(false);
+	const [uploadResult, setUploadResult] = useState<{ total: number; items: any[] } | null>(null);
 
 	const categories = [
 		'all',
@@ -188,16 +195,92 @@ export default function KnowledgeBasePage() {
 		}
 	}, [searchTerm]);
 
+	// 处理文件上传
+	const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			setUploadFile(file);
+		}
+	};
+
+	// 上传并解析文档
+	const handleUploadAndParse = async () => {
+		if (!uploadFile) return;
+
+		setUploading(true);
+		try {
+			// 步骤1：上传文件
+			const formData = new FormData();
+			formData.append('file', uploadFile);
+
+			const uploadResponse = await fetch('/api/admin/knowledge-base/upload', {
+				method: 'POST',
+				credentials: 'include',
+				body: formData,
+			});
+
+			if (!uploadResponse.ok) {
+				const error = await uploadResponse.json();
+				throw new Error(error.error || '上传失败');
+			}
+
+			const uploadData = await uploadResponse.json();
+
+			// 步骤2：解析文档并生成问答
+			setParsing(true);
+			const parseResponse = await fetch('/api/admin/knowledge-base/parse', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({
+					fileKey: uploadData.data.fileKey,
+					fileName: uploadData.data.fileName,
+					fileType: uploadData.data.fileType,
+					category: '文档',
+				}),
+			});
+
+			if (!parseResponse.ok) {
+				const error = await parseResponse.json();
+				throw new Error(error.error || '解析失败');
+			}
+
+			const parseData = await parseResponse.json();
+			setUploadResult(parseData.data);
+			fetchItems();
+		} catch (error) {
+			alert(error instanceof Error ? error.message : '处理失败');
+		} finally {
+			setUploading(false);
+			setParsing(false);
+		}
+	};
+
+	// 重置上传状态
+	const handleResetUpload = () => {
+		setUploadFile(null);
+		setUploadResult(null);
+		setIsUploadModalOpen(false);
+	};
+
 	return (
 		<div>
 			<div className="flex items-center justify-between mb-8">
 				<h1 className="text-3xl font-bold text-gray-900">知识库管理</h1>
-				<button
-					onClick={handleAdd}
-					className="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-				>
-					新增条目
-				</button>
+				<div className="flex gap-3">
+					<button
+						onClick={() => setIsUploadModalOpen(true)}
+						className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+					>
+						上传文档
+					</button>
+					<button
+						onClick={handleAdd}
+						className="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+					>
+						新增条目
+					</button>
+				</div>
 			</div>
 
 			{/* Search and Filter */}
@@ -467,6 +550,88 @@ export default function KnowledgeBasePage() {
 								保存
 							</button>
 						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Upload Modal */}
+			{isUploadModalOpen && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+					<div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+						<h2 className="text-xl font-bold text-gray-900 mb-6">上传文档并生成问答</h2>
+
+						{!uploadResult ? (
+							<div className="space-y-4">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-2">选择文件</label>
+									<input
+										type="file"
+										onChange={handleFileSelect}
+										accept=".pdf,.docx,.txt"
+										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+									/>
+									<p className="text-xs text-gray-500 mt-1">支持 PDF、DOCX、TXT 格式，最大 10MB</p>
+								</div>
+
+								{uploadFile && (
+									<div className="bg-gray-50 rounded-lg p-4">
+										<p className="text-sm text-gray-700">
+											<span className="font-medium">已选择：</span>
+											{uploadFile.name}
+										</p>
+										<p className="text-xs text-gray-500 mt-1">
+											大小：{(uploadFile.size / 1024 / 1024).toFixed(2)} MB
+										</p>
+									</div>
+								)}
+
+								<div className="flex justify-end gap-3 mt-6">
+									<button
+										onClick={() => setIsUploadModalOpen(false)}
+										className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+									>
+										取消
+									</button>
+									<button
+										onClick={handleUploadAndParse}
+										disabled={!uploadFile || uploading || parsing}
+										className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+									>
+										{uploading ? '上传中...' : parsing ? '解析中...' : '开始解析'}
+									</button>
+								</div>
+							</div>
+						) : (
+							<div>
+								<div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+									<p className="text-sm text-green-800">
+										✅ 成功生成 {uploadResult.total} 个问答对！
+									</p>
+								</div>
+
+								<div className="space-y-3 max-h-96 overflow-y-auto">
+									{uploadResult.items.map((item, index) => (
+										<div key={index} className="bg-gray-50 rounded-lg p-4">
+											<div className="text-sm font-medium text-gray-900 mb-2">
+												Q{index + 1}: {item.question}
+											</div>
+											<div className="text-sm text-gray-600">
+												A: {item.answer.substring(0, 100)}...
+											</div>
+										</div>
+									))}
+								</div>
+
+								<div className="flex justify-end gap-3 mt-6">
+									<button
+										onClick={handleResetUpload}
+										className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+									>
+										完成
+									</button>
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 			)}
