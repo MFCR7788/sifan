@@ -116,16 +116,15 @@ function ProductDropdown() {
         >
           {productItems.map((item) => {
             const linkProps = {
-              key: item.href,
               href: item.href,
               className: 'block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl',
               onClick: () => setShowDropdown(false),
             };
 
             if (item.external) {
-              return <a {...linkProps} target="_blank" rel="noopener noreferrer">{item.name}</a>;
+              return <a key={item.href} {...linkProps} target="_blank" rel="noopener noreferrer">{item.name}</a>;
             }
-            return <Link {...linkProps}>{item.name}</Link>;
+            return <Link key={item.href} {...linkProps}>{item.name}</Link>;
           })}
         </div>
       )}
