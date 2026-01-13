@@ -9,10 +9,7 @@ import RechargeDialog from './RechargeDialog';
 
 const navItems = [
   { name: '首页', href: '/' },
-  { name: '产品', href: '/pricing' },
-  { name: '定制', href: '/configurator' },
   { name: '加盟', href: '/franchise' },
-  { name: '关于', href: '/about' },
   { name: '联系', href: '/contact' },
 ];
 
@@ -100,6 +97,81 @@ function LogoDropdown() {
           onMouseLeave={handleMouseLeave}
         >
           {aiItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="block px-6 py-4 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl"
+              onClick={() => setShowDropdown(false)}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProductDropdown() {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const productItems = [
+    { name: '产品报价', href: '/pricing' },
+    { name: '定制方案', href: '/configurator' },
+    { name: '关于我们', href: '/about' },
+  ];
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowDropdown(false);
+    }, 150);
+  };
+
+  const handleDropdownMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setShowDropdown(true);
+      }}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 触发区域 - 产品链接 */}
+      <Link
+        href="/pricing"
+        className="text-xs transition-colors hover:opacity-60"
+        onClick={(e) => e.preventDefault()}
+      >
+        产品
+      </Link>
+
+      {/* 下拉菜单 */}
+      {showDropdown && (
+        <div
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+          onMouseEnter={handleDropdownMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {productItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -471,6 +543,8 @@ export default function Navigation() {
                   </Link>
                 );
               })}
+              {/* 产品下拉菜单 */}
+              <ProductDropdown />
             </div>
 
             {/* Auth Links */}
@@ -553,6 +627,28 @@ export default function Navigation() {
                 </Link>
               );
             })}
+            {/* 产品下拉菜单项 */}
+            <Link
+              href="/pricing"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+            >
+              产品报价
+            </Link>
+            <Link
+              href="/configurator"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+            >
+              定制方案
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+            >
+              关于我们
+            </Link>
             {/* Mobile Auth Links */}
             {!isLoading && (
               <div className="mt-4 pt-4 border-t border-gray-200">
