@@ -123,6 +123,7 @@ function ProductDropdown() {
     { name: '定制方案', href: '/configurator' },
     { name: '数字转型', href: '/general-web' },
     { name: '系统登录', href: 'https://mfcr.zjsifan.com/index.php/Retail/Login/index.html', external: true },
+    { name: '手机后台', href: '/mobile-admin' },
   ];
 
   useEffect(() => {
@@ -743,6 +744,13 @@ export default function Navigation() {
                     >
                       系统登录
                     </a>
+                    <Link
+                      href="/mobile-admin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      手机后台
+                    </Link>
                   </div>
                 );
               }
