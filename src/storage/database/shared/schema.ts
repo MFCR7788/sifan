@@ -192,7 +192,8 @@ export const updateUserSchema = createCoercedInsertSchema(users)
 	.pick({
 		email: true,
 		name: true,
-	avatar: true,
+		avatar: true,
+		phone: true,
 	})
 	.partial()
 export const loginSchema = z.object({
@@ -202,4 +203,3 @@ export const loginSchema = z.object({
 export type InsertUser = z.infer<typeof insertUserSchema>
 export type UpdateUser = z.infer<typeof updateUserSchema>
 export type User = typeof users.$inferSelect
-

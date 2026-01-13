@@ -41,6 +41,11 @@ export default function ProfilePage() {
 	const [member, setMember] = useState<Member | null>(null);
 	const [isLoadingMember, setIsLoadingMember] = useState(true);
 
+	// 手机号绑定状态
+	const [showBindPhoneModal, setShowBindPhoneModal] = useState(false);
+	const [bindPhoneForm, setBindPhoneForm] = useState({ phone: '' });
+	const [isBindingPhone, setIsBindingPhone] = useState(false);
+
 	// 交易记录弹窗状态
 	const [showTransactionsModal, setShowTransactionsModal] = useState(false);
 	const [transactionType, setTransactionType] = useState<'recharge' | 'consumption'>('recharge');
@@ -196,6 +201,42 @@ export default function ProfilePage() {
 			setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
 		} catch (err: any) {
 			setErrorMessage(err.message);
+		}
+	};
+
+	// 处理手机号绑定
+	const handleBindPhone = async () => {
+		setSuccessMessage('');
+		setErrorMessage('');
+
+		if (!bindPhoneForm.phone || !/^1[3-9]\d{9}$/.test(bindPhoneForm.phone)) {
+			setErrorMessage('请输入正确的手机号格式');
+			return;
+		}
+
+		setIsBindingPhone(true);
+
+		try {
+			const response = await fetch('/api/user/me/bind-phone', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ phone: bindPhoneForm.phone }),
+			});
+
+			if (!response.ok) {
+				const data = await response.json();
+				throw new Error(data.error || '绑定失败');
+			}
+
+			await refreshUser();
+			setSuccessMessage('手机号绑定成功');
+			setShowBindPhoneModal(false);
+			setBindPhoneForm({ phone: '' });
+		} catch (err: any) {
+			setErrorMessage(err.message);
+		} finally {
+			setIsBindingPhone(false);
 		}
 	};
 
@@ -368,6 +409,25 @@ export default function ProfilePage() {
 							</div>
 						) : (
 							<div className="space-y-6">
+								{/* 头像显示（如果有微信头像） */}
+								{user?.avatar && (
+									<div className="flex items-center gap-6 p-6 bg-gray-50 rounded-xl">
+										<div>
+											<img
+												src={user.avatar}
+												alt="头像"
+												className="w-24 h-24 rounded-full object-cover"
+											/>
+										</div>
+										<div>
+											<div className="text-xs text-gray-600 mb-1">微信头像</div>
+											<div className="text-lg font-semibold text-gray-900">
+												{user.name}
+											</div>
+										</div>
+									</div>
+								)}
+
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div className="p-6 bg-gray-50 rounded-xl">
 										<div className="text-xs text-gray-600 mb-2">姓名</div>
@@ -378,13 +438,25 @@ export default function ProfilePage() {
 									<div className="p-6 bg-gray-50 rounded-xl">
 										<div className="text-xs text-gray-600 mb-2">邮箱</div>
 										<div className="text-2xl font-semibold text-gray-900">
-											{user?.email}
+											{user?.email || '未设置'}
 										</div>
 									</div>
 									<div className="p-6 bg-gray-50 rounded-xl">
-										<div className="text-xs text-gray-600 mb-2">手机号码</div>
-										<div className="text-2xl font-semibold text-gray-900">
-											{user?.phone || '未设置'}
+										<div className="flex items-center justify-between">
+											<div>
+												<div className="text-xs text-gray-600 mb-2">手机号码</div>
+												<div className="text-2xl font-semibold text-gray-900">
+													{user?.phone && !user.phone.startsWith('WX') ? user.phone : '未设置'}
+												</div>
+											</div>
+											{(!user?.phone || user.phone.startsWith('WX')) && (
+												<button
+													onClick={() => setShowBindPhoneModal(true)}
+													className="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200"
+												>
+													绑定手机号
+												</button>
+											)}
 										</div>
 									</div>
 									<div className="p-6 bg-gray-50 rounded-xl">
@@ -661,6 +733,74 @@ export default function ProfilePage() {
 									</button>
 								</div>
 							)}
+						</div>
+					</div>
+				)}
+
+				{/* 手机号绑定弹窗 */}
+				{showBindPhoneModal && (
+					<div
+						className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+						onClick={() => setShowBindPhoneModal(false)}
+					>
+						<div
+							className="bg-white rounded-2xl w-full max-w-md p-8"
+							onClick={(e) => e.stopPropagation()}
+						>
+							<h2 className="text-2xl font-semibold text-gray-900 mb-6">绑定手机号</h2>
+
+							{successMessage && (
+								<div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg mb-4">
+									{successMessage}
+								</div>
+							)}
+
+							{errorMessage && (
+								<div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg mb-4">
+									{errorMessage}
+								</div>
+							)}
+
+							<div className="space-y-4 mb-6">
+								<div>
+									<label className="block text-sm font-medium text-gray-900 mb-2">
+										手机号码
+									</label>
+									<input
+										type="tel"
+										value={bindPhoneForm.phone}
+										onChange={(e) =>
+											setBindPhoneForm({ phone: e.target.value })
+										}
+										placeholder="请输入手机号码"
+										className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+									/>
+									<p className="text-xs text-gray-500 mt-1">
+										绑定后可以使用手机号登录
+									</p>
+								</div>
+							</div>
+
+							<div className="flex gap-3">
+								<button
+									onClick={handleBindPhone}
+									disabled={isBindingPhone}
+									className="flex-1 bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+								>
+									{isBindingPhone ? '绑定中...' : '确认绑定'}
+								</button>
+								<button
+									onClick={() => {
+										setShowBindPhoneModal(false);
+										setBindPhoneForm({ phone: '' });
+										setSuccessMessage('');
+										setErrorMessage('');
+									}}
+									className="px-6 py-3 border border-gray-300 rounded-full text-sm font-medium hover:bg-gray-50 transition-all duration-200"
+								>
+									取消
+								</button>
+							</div>
 						</div>
 					</div>
 				)}

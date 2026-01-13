@@ -1,4 +1,4 @@
-import { eq, and, SQL } from "drizzle-orm";
+import { eq, and, SQL, sql } from "drizzle-orm";
 import { getDb } from "coze-coding-dev-sdk";
 import { users, insertUserSchema, updateUserSchema, loginSchema } from "./shared/schema";
 import type { User, InsertUser, UpdateUser } from "./shared/schema";
@@ -79,6 +79,19 @@ export class UserManager {
 
 		const { password: _, ...userWithoutPassword } = user;
 		return userWithoutPassword;
+	}
+
+	/**
+	 * 检查手机号是否已存在（排除当前用户）
+	 */
+	async isPhoneExists(phone: string, excludeUserId?: string): Promise<boolean> {
+		const db = await getDb();
+		const conditions = excludeUserId
+			? and(eq(users.phone, phone), sql`${users.id} != ${excludeUserId}`)
+			: eq(users.phone, phone);
+		
+		const [user] = await db.select().from(users).where(conditions as SQL);
+		return !!user;
 	}
 
 	/**
