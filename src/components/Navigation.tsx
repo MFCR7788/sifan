@@ -193,6 +193,7 @@ function ContactHoverCard() {
           onMouseLeave={handleCardMouseLeave}
         >
           <div className="p-4">
+            <h4 className="text-sm font-semibold text-gray-900 mb-3 text-center">客服微信</h4>
             <img
               src="/assets/KF.png"
               alt="联系我们"
