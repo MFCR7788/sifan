@@ -9,6 +9,8 @@ import RechargeDialog from './RechargeDialog';
 
 const navItems = [
   { name: '首页', href: '/' },
+  { name: '产品', href: '/pricing' },
+  { name: '关于我们', href: '/about' },
   { name: '加盟', href: '/franchise' },
   { name: '联系', href: '/contact' },
 ];
@@ -119,7 +121,6 @@ function ProductDropdown() {
   const productItems = [
     { name: '产品报价', href: '/pricing' },
     { name: '定制方案', href: '/configurator' },
-    { name: '关于我们', href: '/about' },
   ];
 
   useEffect(() => {
@@ -527,6 +528,10 @@ export default function Navigation() {
                 if (item.name === '联系') {
                   return <ContactHoverCard key={item.href} />;
                 }
+                // 为"产品"项使用下拉菜单组件
+                if (item.name === '产品') {
+                  return <ProductDropdown key={item.href} />;
+                }
                 return (
                   <Link
                     key={item.href}
@@ -543,8 +548,6 @@ export default function Navigation() {
                   </Link>
                 );
               })}
-              {/* 产品下拉菜单 */}
-              <ProductDropdown />
             </div>
 
             {/* Auth Links */}
@@ -610,6 +613,30 @@ export default function Navigation() {
           <div className="px-4 pt-2 pb-4">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
+              // 为"产品"项显示为标题和子菜单
+              if (item.name === '产品') {
+                return (
+                  <div key={item.href}>
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-900 border-b border-gray-100">
+                      产品
+                    </div>
+                    <Link
+                      href="/pricing"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      产品报价
+                    </Link>
+                    <Link
+                      href="/configurator"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      定制方案
+                    </Link>
+                  </div>
+                );
+              }
               return (
                 <Link
                   key={item.href}
@@ -627,28 +654,6 @@ export default function Navigation() {
                 </Link>
               );
             })}
-            {/* 产品下拉菜单项 */}
-            <Link
-              href="/pricing"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
-            >
-              产品报价
-            </Link>
-            <Link
-              href="/configurator"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
-            >
-              定制方案
-            </Link>
-            <Link
-              href="/about"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
-            >
-              关于我们
-            </Link>
             {/* Mobile Auth Links */}
             {!isLoading && (
               <div className="mt-4 pt-4 border-t border-gray-200">
