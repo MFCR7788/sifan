@@ -17,7 +17,7 @@ export default function LoginPage() {
 	const { login, isAdmin } = useAuth();
 	const router = useRouter();
 
-	// 页面加载时检查是否有保存的登录信息
+	// 页面加载时检查是否有保存的登录信息或微信回调
 	useEffect(() => {
 		const savedPhone = localStorage.getItem('savedLoginPhone');
 		const savedPassword = localStorage.getItem('savedLoginPassword');
@@ -25,6 +25,25 @@ export default function LoginPage() {
 			setPhone(savedPhone);
 			setPassword(savedPassword);
 			setRememberMe(true);
+		}
+
+		// 检查微信回调
+		const urlParams = new URLSearchParams(window.location.search);
+		const wechatSuccess = urlParams.get('wechat');
+		const wechatError = urlParams.get('error');
+		const state = urlParams.get('state');
+
+		if (wechatSuccess === 'success' && state) {
+			// 微信扫码成功，开始轮询确认
+			setLoginMethod('qrcode');
+			setQrCodeStatus('scanned');
+			pollQrCodeStatus(state);
+		} else if (wechatError) {
+			// 微信登录失败
+			setError(wechatError);
+			setLoginMethod('password');
+			// 清除URL参数
+			window.history.replaceState({}, document.title, '/login');
 		}
 	}, []);
 
@@ -97,6 +116,9 @@ export default function LoginPage() {
 						setQrCodeStatus('scanned');
 						setTimeout(poll, 2000);
 					}
+				} else if (data.expired) {
+					// 二维码过期
+					setQrCodeStatus('expired');
 				} else {
 					attempts++;
 					setTimeout(poll, 2000);

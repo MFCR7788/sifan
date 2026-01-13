@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // 简单的内存存储（生产环境应该使用Redis）
-const qrCodeSessions = new Map<string, { scanned: boolean; confirmed: boolean; userId?: string; token?: string }>();
+const qrCodeSessions = new Map<string, {
+	scanned: boolean;
+	confirmed: boolean;
+	userId?: string;
+	token?: string;
+	authUrl?: string;
+	expireAt?: number;
+}>();
 
 export async function GET(request: NextRequest) {
 	try {
@@ -22,6 +29,18 @@ export async function GET(request: NextRequest) {
 				success: false,
 				scanned: false,
 				confirmed: false,
+				expired: true,
+			});
+		}
+
+		// 检查是否过期
+		if (session.expireAt && Date.now() > session.expireAt) {
+			qrCodeSessions.delete(sceneStr);
+			return NextResponse.json({
+				success: false,
+				scanned: false,
+				confirmed: false,
+				expired: true,
 			});
 		}
 
@@ -31,6 +50,7 @@ export async function GET(request: NextRequest) {
 			confirmed: session.confirmed,
 			userId: session.userId,
 			token: session.token,
+			expired: false,
 		});
 	} catch (error: any) {
 		console.error('Failed to check QR code status:', error);
