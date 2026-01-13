@@ -100,7 +100,15 @@ export default function KnowledgeBasePage() {
 	};
 
 	const handleSave = async () => {
+		// 表单验证
+		if (!formData.category || !formData.question || !formData.answer) {
+			alert('分类、问题和答案不能为空');
+			return;
+		}
+
 		try {
+			console.log('Saving knowledge base item:', formData);
+
 			const response = await fetch('/api/admin/knowledge-base', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -108,22 +116,34 @@ export default function KnowledgeBasePage() {
 				body: JSON.stringify(formData),
 			});
 
+			const data = await response.json();
+
 			if (response.ok) {
 				setIsModalOpen(false);
 				fetchItems();
 			} else {
-				alert('保存失败');
+				const errorMessage = data.error || data.message || '保存失败';
+				console.error('Save failed:', data);
+				alert(`保存失败: ${errorMessage}`);
 			}
 		} catch (error) {
 			console.error('Failed to save item:', error);
-			alert('保存失败');
+			alert(`保存失败: ${error instanceof Error ? error.message : '未知错误'}`);
 		}
 	};
 
 	const handleUpdate = async () => {
 		if (!selectedItem) return;
 
+		// 表单验证
+		if (!formData.category || !formData.question || !formData.answer) {
+			alert('分类、问题和答案不能为空');
+			return;
+		}
+
 		try {
+			console.log('Updating knowledge base item:', formData);
+
 			const response = await fetch(`/api/admin/knowledge-base/${selectedItem.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
@@ -131,16 +151,20 @@ export default function KnowledgeBasePage() {
 				body: JSON.stringify(formData),
 			});
 
+			const data = await response.json();
+
 			if (response.ok) {
 				setIsEditModalOpen(false);
 				setSelectedItem(null);
 				fetchItems();
 			} else {
-				alert('更新失败');
+				const errorMessage = data.error || data.message || '更新失败';
+				console.error('Update failed:', data);
+				alert(`更新失败: ${errorMessage}`);
 			}
 		} catch (error) {
 			console.error('Failed to update item:', error);
-			alert('更新失败');
+			alert(`更新失败: ${error instanceof Error ? error.message : '未知错误'}`);
 		}
 	};
 

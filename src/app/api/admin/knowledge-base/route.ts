@@ -117,25 +117,34 @@ export async function GET(request: NextRequest) {
 // POST - 新增知识库条目
 export async function POST(request: NextRequest) {
 	try {
+		console.log('[KnowledgeBase POST] Starting request...');
+
 		const adminUser = await verifyAdmin(request);
+		console.log('[KnowledgeBase POST] Admin user:', adminUser);
+
 		if (!adminUser) {
+			console.log('[KnowledgeBase POST] No admin user found');
 			return NextResponse.json(
-				{ success: false, error: '无管理员权限' },
+				{ success: false, error: '无管理员权限，请确保您已登录且具有管理员权限' },
 				{ status: 403 }
 			);
 		}
 
 		const body = await request.json();
+		console.log('[KnowledgeBase POST] Request body:', body);
+
 		const { category, question, answer, keywords, priority, isActive } = body;
 
 		// 验证必填字段
 		if (!category || !question || !answer) {
+			console.log('[KnowledgeBase POST] Validation failed - missing required fields');
 			return NextResponse.json(
 				{ success: false, error: '分类、问题和答案不能为空' },
 				{ status: 400 }
 			);
 		}
 
+		console.log('[KnowledgeBase POST] Inserting new item...');
 		// 创建知识库条目
 		const [newItem] = await db
 			.insert(knowledgeBase)
@@ -150,12 +159,15 @@ export async function POST(request: NextRequest) {
 			})
 			.returning();
 
+		console.log('[KnowledgeBase POST] Item created successfully:', newItem);
+
 		return NextResponse.json({
 			success: true,
 			item: newItem,
 		});
 	} catch (error: any) {
-		console.error('Failed to create knowledge base item:', error);
+		console.error('[KnowledgeBase POST] Failed to create knowledge base item:', error);
+		console.error('[KnowledgeBase POST] Error stack:', error.stack);
 		return NextResponse.json(
 			{ success: false, error: error.message || '创建知识库条目失败' },
 			{ status: 500 }
