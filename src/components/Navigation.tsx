@@ -669,7 +669,13 @@ export default function Navigation() {
             </div>
 
             {/* Auth Links */}
-            {!isLoading && (
+            {isLoading ? (
+              // 加载时显示占位符，保持布局稳定
+              <div className="flex items-center space-x-6 pl-6 border-l border-gray-200">
+                <div className="w-16 h-8 bg-gray-100 rounded-full animate-pulse" />
+                <div className="w-16 h-8 bg-gray-900 rounded-full animate-pulse" />
+              </div>
+            ) : (
               <div className="flex items-center space-x-6 pl-6 border-l border-gray-200">
                 {isAuthenticated ? (
                   <UserHoverCard
@@ -885,7 +891,13 @@ export default function Navigation() {
             )}
 
             {/* Mobile Auth Links */}
-            {!isLoading && (
+            {isLoading ? (
+              // 加载时显示占位符
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="px-3 py-3 h-10 bg-gray-100 rounded animate-pulse mb-2" />
+                <div className="px-3 py-3 h-10 bg-gray-100 rounded animate-pulse" />
+              </div>
+            ) : (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 {isAuthenticated ? (
                   <>
