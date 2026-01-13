@@ -119,6 +119,7 @@ function ProductDropdown() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const productItems = [
+    { name: '产品介绍', href: 'https://www.yuque.com/qingfeng-kbbz1/mfcr', external: true },
     { name: '产品报价', href: '/pricing' },
     { name: '定制方案', href: '/configurator' },
   ];
@@ -172,16 +173,19 @@ function ProductDropdown() {
           onMouseEnter={handleDropdownMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {productItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl"
-              onClick={() => setShowDropdown(false)}
-            >
-              {item.name}
-            </Link>
-          ))}
+          {productItems.map((item) => {
+            const linkProps = {
+              key: item.href,
+              href: item.href,
+              className: 'block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl',
+              onClick: () => setShowDropdown(false),
+            };
+
+            if (item.external) {
+              return <a {...linkProps} target="_blank" rel="noopener noreferrer">{item.name}</a>;
+            }
+            return <Link {...linkProps}>{item.name}</Link>;
+          })}
         </div>
       )}
     </div>
@@ -620,6 +624,15 @@ export default function Navigation() {
                     <div className="px-3 py-2 text-xs font-semibold text-gray-900 border-b border-gray-100">
                       产品
                     </div>
+                    <a
+                      href="https://www.yuque.com/qingfeng-kbbz1/mfcr"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      产品介绍
+                    </a>
                     <Link
                       href="/pricing"
                       onClick={() => setIsMobileMenuOpen(false)}
