@@ -5,5 +5,7 @@
 export { memberManager } from "./memberManager";
 export { memberTransactionManager } from "./memberTransactionManager";
 
+export { db } from './db';
+
 // 类型统一从 schema 导出
 export * from "./shared/schema";

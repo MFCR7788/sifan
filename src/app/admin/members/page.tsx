@@ -1,377 +1,393 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import type { Member } from '@/storage/database/shared/schema';
-import type { User } from '@/storage/database/shared/schema';
-
-interface MemberWithUser extends Member {
-	user: User | null;
-}
-
-// 会员等级映射
-const MEMBER_LEVEL_MAP: Record<string, string> = {
-	basic: '基础会员',
-	silver: '银牌会员',
-	gold: '金牌会员',
-	platinum: '白金会员',
-	diamond: '钻石会员',
-};
-
-// 会员状态映射
-const MEMBER_STATUS_MAP: Record<string, string> = {
-	active: '正常',
-	suspended: '已冻结',
-	expired: '已过期',
-};
+import { useEffect, useState } from 'react';
 
 export default function AdminMembersPage() {
-	const { user, isAdmin, isAuthenticated, isLoading } = useAuth();
-	const router = useRouter();
-	const [members, setMembers] = useState<MemberWithUser[]>([]);
-	const [isLoadingMembers, setIsLoadingMembers] = useState(true);
-	const [error, setError] = useState('');
-	const [successMessage, setSuccessMessage] = useState('');
-	const [editingMember, setEditingMember] = useState<MemberWithUser | null>(null);
-	const [editForm, setEditForm] = useState<Partial<Member>>({});
+	const [members, setMembers] = useState<any[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [searchTerm, setSearchTerm] = useState('');
+	const [selectedMember, setSelectedMember] = useState<any>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [editForm, setEditForm] = useState({
+		memberLevel: 'basic',
+		balance: 0,
+		points: 0,
+		memberStatus: 'active',
+		expiresAt: '',
+	});
 
-	// 验证权限
 	useEffect(() => {
-		if (!isLoading) {
-			if (!isAuthenticated || !isAdmin) {
-				router.push('/');
-			}
-		}
-	}, [isLoading, isAuthenticated, isAdmin, router]);
-
-	// 获取会员列表
-	useEffect(() => {
-		if (isAdmin) {
-			fetchMembers();
-		}
-	}, [isAdmin]);
+		fetchMembers();
+	}, []);
 
 	const fetchMembers = async () => {
+		setLoading(true);
 		try {
-			setIsLoadingMembers(true);
 			const response = await fetch('/api/admin/members', {
 				credentials: 'include',
 			});
 			if (response.ok) {
 				const data = await response.json();
-				setMembers(data.members);
-			} else {
-				const data = await response.json();
-				setError(data.error || '获取会员列表失败');
+				setMembers(data.members || []);
 			}
-		} catch (err: any) {
-			setError(err.message || '获取会员列表失败');
+		} catch (error) {
+			console.error('Failed to fetch members:', error);
 		} finally {
-			setIsLoadingMembers(false);
+			setLoading(false);
 		}
 	};
 
-	const handleEdit = (member: MemberWithUser) => {
-		setEditingMember(member);
-		setEditForm({
-			memberLevel: member.memberLevel,
-			memberStatus: member.memberStatus,
-			balance: member.balance,
-			points: member.points,
-		});
+	const handleViewMember = (member: any) => {
+		setSelectedMember(member);
+		setIsModalOpen(true);
 	};
 
-	const handleUpdate = async () => {
-		if (!editingMember) return;
+	const handleEditMember = (member: any) => {
+		setSelectedMember(member);
+		setEditForm({
+			memberLevel: member.memberLevel || 'basic',
+			balance: member.balance || 0,
+			points: member.points || 0,
+			memberStatus: member.memberStatus || 'active',
+			expiresAt: member.expiresAt ? member.expiresAt.split('T')[0] : '',
+		});
+		setIsEditModalOpen(true);
+	};
 
+	const handleUpdateMember = async () => {
 		try {
-			const response = await fetch('/api/admin/members', {
+			const response = await fetch(`/api/admin/members/${selectedMember.id}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
 				body: JSON.stringify({
-					memberId: editingMember.id,
 					...editForm,
+					balance: editForm.balance * 100, // 转换为分
+					points: editForm.points,
 				}),
 			});
 
 			if (response.ok) {
-				setSuccessMessage('会员信息更新成功');
-				setEditingMember(null);
-				setEditForm({});
+				setIsEditModalOpen(false);
 				fetchMembers();
-				setTimeout(() => setSuccessMessage(''), 3000);
 			} else {
-				const data = await response.json();
-				setError(data.error || '更新失败');
+				alert('更新会员信息失败');
 			}
-		} catch (err: any) {
-			setError(err.message || '更新失败');
+		} catch (error) {
+			console.error('Failed to update member:', error);
+			alert('更新会员信息失败');
 		}
 	};
 
-	if (isLoading || isLoadingMembers) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-gray-600">加载中...</div>
-			</div>
-		);
-	}
-
-	if (!isAuthenticated || !isAdmin) {
-		return null;
-	}
+	const filteredMembers = members.filter(member =>
+		member.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+		member.userPhone?.includes(searchTerm)
+	);
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-			<div className="container mx-auto px-4 py-8">
-				<div className="max-w-7xl mx-auto">
-					<div className="mb-8 flex items-center justify-between">
-						<div>
-							<Link
-								href="/"
-								className="text-gray-500 hover:text-gray-700 text-sm inline-flex items-center mb-4"
-							>
-								← 返回首页
-							</Link>
-							<h1 className="text-3xl font-bold text-gray-900 mb-2">会员管理</h1>
-							<p className="text-gray-600">管理所有会员信息和账户状态</p>
-						</div>
-					</div>
-
-					{successMessage && (
-						<div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg mb-6">
-							{successMessage}
-						</div>
-					)}
-
-					{error && (
-						<div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
-							{error}
-						</div>
-					)}
-
-					<div className="bg-white rounded-xl shadow-xl overflow-hidden">
-						<div className="overflow-x-auto">
-							<table className="w-full">
-								<thead className="bg-gray-50 border-b border-gray-200">
-									<tr>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											会员信息
-										</th>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											等级
-										</th>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											余额
-										</th>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											积分
-										</th>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											状态
-										</th>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											累计充值
-										</th>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											累计消费
-										</th>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											注册时间
-										</th>
-										<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-											操作
-										</th>
-									</tr>
-								</thead>
-								<tbody className="divide-y divide-gray-200">
-									{members.map((member) => (
-										<tr key={member.id} className="hover:bg-gray-50 transition">
-											<td className="px-6 py-4">
-												<div>
-													<div className="text-sm font-semibold text-gray-900">
-														{member.user?.name || '-'}
-													</div>
-													<div className="text-sm text-gray-500">
-														{member.user?.email || '-'}
-													</div>
-												</div>
-											</td>
-											<td className="px-6 py-4">
-												<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-													{member.memberLevel ? MEMBER_LEVEL_MAP[member.memberLevel] || '未知' : '未知'}
-												</span>
-											</td>
-											<td className="px-6 py-4">
-												<div className="text-sm font-medium text-gray-900">
-													¥{(member.balance / 100).toFixed(2)}
-												</div>
-											</td>
-											<td className="px-6 py-4">
-												<div className="text-sm font-medium text-blue-600">
-													{member.points.toLocaleString()}
-												</div>
-											</td>
-											<td className="px-6 py-4">
-												<span
-													className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-														member.memberStatus === 'active'
-															? 'bg-green-100 text-green-700'
-															: member.memberStatus === 'suspended'
-															? 'bg-yellow-100 text-yellow-700'
-															: 'bg-red-100 text-red-700'
-													}`}
-												>
-													{member.memberStatus ? MEMBER_STATUS_MAP[member.memberStatus] || member.memberStatus : member.memberStatus}
-												</span>
-											</td>
-											<td className="px-6 py-4">
-												<div className="text-sm text-gray-900">
-													¥{(member.totalRecharge / 100).toFixed(2)}
-												</div>
-											</td>
-											<td className="px-6 py-4">
-												<div className="text-sm text-gray-900">
-													¥{(member.totalConsumption / 100).toFixed(2)}
-												</div>
-											</td>
-											<td className="px-6 py-4">
-												<div className="text-sm text-gray-500">
-													{new Date(member.createdAt).toLocaleDateString('zh-CN')}
-												</div>
-											</td>
-											<td className="px-6 py-4">
-												<button
-													onClick={() => handleEdit(member)}
-													className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-												>
-													编辑
-												</button>
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
-
-						{members.length === 0 && (
-							<div className="text-center py-12">
-								<div className="text-gray-500">暂无会员数据</div>
-							</div>
-						)}
-					</div>
-
-					{/* 编辑弹窗 */}
-					{editingMember && (
-						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-							<div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-								<h3 className="text-xl font-bold text-gray-900 mb-6">编辑会员信息</h3>
-
-								<div className="space-y-4">
-									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-2">
-											会员姓名
-										</label>
-										<input
-											type="text"
-											value={editingMember.user?.name || ''}
-											disabled
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-										/>
-									</div>
-
-									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-2">
-											会员等级
-										</label>
-										<select
-											value={editForm.memberLevel || 'basic'}
-											onChange={(e) =>
-												setEditForm({ ...editForm, memberLevel: e.target.value })
-											}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-										>
-											<option value="basic">基础会员</option>
-											<option value="silver">银牌会员</option>
-											<option value="gold">金牌会员</option>
-											<option value="platinum">白金会员</option>
-											<option value="diamond">钻石会员</option>
-										</select>
-									</div>
-
-									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-2">
-											会员状态
-										</label>
-										<select
-											value={editForm.memberStatus || 'active'}
-											onChange={(e) =>
-												setEditForm({ ...editForm, memberStatus: e.target.value })
-											}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-										>
-											<option value="active">正常</option>
-											<option value="suspended">已冻结</option>
-											<option value="expired">已过期</option>
-										</select>
-									</div>
-
-									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-2">
-											余额（分）
-										</label>
-										<input
-											type="number"
-											min="0"
-											value={editForm.balance || 0}
-											onChange={(e) =>
-												setEditForm({ ...editForm, balance: parseInt(e.target.value) || 0 })
-											}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-										/>
-									</div>
-
-									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-2">
-											积分
-										</label>
-										<input
-											type="number"
-											min="0"
-											value={editForm.points || 0}
-											onChange={(e) =>
-												setEditForm({ ...editForm, points: parseInt(e.target.value) || 0 })
-											}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-										/>
-									</div>
-								</div>
-
-								<div className="flex space-x-3 mt-6">
-									<button
-										onClick={handleUpdate}
-										className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition"
-									>
-										保存
-									</button>
-									<button
-										onClick={() => {
-											setEditingMember(null);
-											setEditForm({});
-										}}
-										className="flex-1 px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition"
-									>
-										取消
-									</button>
-								</div>
-							</div>
-						</div>
-					)}
-				</div>
+		<div>
+			<div className="flex items-center justify-between mb-8">
+				<h1 className="text-3xl font-bold text-gray-900">会员信息管理</h1>
 			</div>
+
+			{/* Search */}
+			<div className="bg-white rounded-xl p-4 border border-gray-200 mb-6">
+				<input
+					type="text"
+					placeholder="搜索会员（姓名、手机号）"
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.target.value)}
+					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+				/>
+			</div>
+
+			{/* Members Table */}
+			{loading ? (
+				<div className="flex items-center justify-center h-64">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+				</div>
+			) : filteredMembers.length === 0 ? (
+				<div className="bg-white rounded-xl p-12 border border-gray-200 text-center">
+					<p className="text-gray-500">{searchTerm ? '未找到匹配的会员' : '暂无会员'}</p>
+				</div>
+			) : (
+				<div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+					<table className="w-full">
+						<thead className="bg-gray-50 border-b border-gray-200">
+							<tr>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">会员ID</th>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">用户信息</th>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">会员等级</th>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">余额</th>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">积分</th>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">状态</th>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">过期时间</th>
+								<th className="text-left px-6 py-4 text-sm font-medium text-gray-600">操作</th>
+							</tr>
+						</thead>
+						<tbody className="divide-y divide-gray-200">
+							{filteredMembers.map((member) => (
+								<tr key={member.id} className="hover:bg-gray-50">
+									<td className="px-6 py-4">
+										<span className="font-mono text-sm">{member.id.slice(0, 8)}...</span>
+									</td>
+									<td className="px-6 py-4">
+										<div>
+											<div className="font-medium text-gray-900">{member.userName || '-'}</div>
+											<div className="text-sm text-gray-500">{member.userPhone || '-'}</div>
+										</div>
+									</td>
+									<td className="px-6 py-4">
+										<span
+											className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+												member.memberLevel === 'premium'
+													? 'bg-yellow-100 text-yellow-800'
+													: member.memberLevel === 'vip'
+													? 'bg-purple-100 text-purple-800'
+													: 'bg-gray-100 text-gray-800'
+											}`}
+										>
+											{member.memberLevel === 'premium' ? '高级会员' : member.memberLevel === 'vip' ? 'VIP会员' : '基础会员'}
+										</span>
+									</td>
+									<td className="px-6 py-4 font-medium text-gray-900">
+										¥{(member.balance / 100).toFixed(2)}
+									</td>
+									<td className="px-6 py-4 font-medium text-gray-900">
+										{member.points}
+									</td>
+									<td className="px-6 py-4">
+										<span
+											className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+												member.memberStatus === 'active'
+													? 'bg-green-100 text-green-800'
+													: 'bg-red-100 text-red-800'
+											}`}
+										>
+											{member.memberStatus === 'active' ? '正常' : '禁用'}
+										</span>
+									</td>
+									<td className="px-6 py-4 text-sm text-gray-600">
+										{member.expiresAt ? new Date(member.expiresAt).toLocaleDateString('zh-CN') : '永久'}
+									</td>
+									<td className="px-6 py-4">
+										<div className="flex gap-2">
+											<button
+												onClick={() => handleViewMember(member)}
+												className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+											>
+												查看
+											</button>
+											<button
+												onClick={() => handleEditMember(member)}
+												className="text-green-600 hover:text-green-700 font-medium text-sm"
+											>
+												编辑
+											</button>
+										</div>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			)}
+
+			{/* Member Detail Modal */}
+			{isModalOpen && selectedMember && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+					<div className="bg-white rounded-xl max-w-md w-full mx-4">
+						<div className="p-6 border-b border-gray-200">
+							<div className="flex items-center justify-between">
+								<h2 className="text-xl font-semibold text-gray-900">会员详情</h2>
+								<button
+									onClick={() => setIsModalOpen(false)}
+									className="text-gray-400 hover:text-gray-600"
+								>
+									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+									</svg>
+								</button>
+							</div>
+						</div>
+
+						<div className="p-6">
+							<div className="space-y-4">
+								<div>
+									<div className="text-sm text-gray-600">会员ID</div>
+									<div className="font-mono text-sm">{selectedMember.id}</div>
+								</div>
+
+								<div className="grid grid-cols-2 gap-4">
+									<div>
+										<div className="text-sm text-gray-600">用户姓名</div>
+										<div className="font-medium">{selectedMember.userName || '-'}</div>
+									</div>
+									<div>
+										<div className="text-sm text-gray-600">用户手机</div>
+										<div className="font-medium">{selectedMember.userPhone || '-'}</div>
+									</div>
+								</div>
+
+								<div className="grid grid-cols-2 gap-4">
+									<div>
+										<div className="text-sm text-gray-600">会员等级</div>
+										<div>
+											{selectedMember.memberLevel === 'premium' ? '高级会员' : selectedMember.memberLevel === 'vip' ? 'VIP会员' : '基础会员'}
+										</div>
+									</div>
+									<div>
+										<div className="text-sm text-gray-600">状态</div>
+										<div>
+											{selectedMember.memberStatus === 'active' ? '正常' : '禁用'}
+										</div>
+									</div>
+								</div>
+
+								<div className="grid grid-cols-2 gap-4">
+									<div>
+										<div className="text-sm text-gray-600">余额</div>
+										<div className="font-semibold text-lg">¥{(selectedMember.balance / 100).toFixed(2)}</div>
+									</div>
+									<div>
+										<div className="text-sm text-gray-600">积分</div>
+										<div className="font-semibold text-lg">{selectedMember.points}</div>
+									</div>
+								</div>
+
+								<div className="grid grid-cols-2 gap-4">
+									<div>
+										<div className="text-sm text-gray-600">累计充值</div>
+										<div>¥{(selectedMember.totalRecharge / 100).toFixed(2)}</div>
+									</div>
+									<div>
+										<div className="text-sm text-gray-600">累计消费</div>
+										<div>¥{(selectedMember.totalConsumption / 100).toFixed(2)}</div>
+									</div>
+								</div>
+
+								<div>
+									<div className="text-sm text-gray-600">过期时间</div>
+									<div>{selectedMember.expiresAt ? new Date(selectedMember.expiresAt).toLocaleString('zh-CN') : '永久'}</div>
+								</div>
+
+								<div>
+									<div className="text-sm text-gray-600">创建时间</div>
+									<div>{new Date(selectedMember.createdAt).toLocaleString('zh-CN')}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Edit Member Modal */}
+			{isEditModalOpen && selectedMember && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+					<div className="bg-white rounded-xl max-w-md w-full mx-4">
+						<div className="p-6 border-b border-gray-200">
+							<div className="flex items-center justify-between">
+								<h2 className="text-xl font-semibold text-gray-900">编辑会员信息</h2>
+								<button
+									onClick={() => setIsEditModalOpen(false)}
+									className="text-gray-400 hover:text-gray-600"
+								>
+									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+									</svg>
+								</button>
+							</div>
+						</div>
+
+						<div className="p-6">
+							<div className="space-y-4">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-2">
+										会员等级
+									</label>
+									<select
+										value={editForm.memberLevel}
+										onChange={(e) => setEditForm({ ...editForm, memberLevel: e.target.value })}
+										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+									>
+										<option value="basic">基础会员</option>
+										<option value="premium">高级会员</option>
+										<option value="vip">VIP会员</option>
+									</select>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-2">
+										余额（元）
+									</label>
+									<input
+										type="number"
+										value={editForm.balance}
+										onChange={(e) => setEditForm({ ...editForm, balance: parseFloat(e.target.value) || 0 })}
+										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+									/>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-2">
+										积分
+									</label>
+									<input
+										type="number"
+										value={editForm.points}
+										onChange={(e) => setEditForm({ ...editForm, points: parseInt(e.target.value) || 0 })}
+										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+									/>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-2">
+										状态
+									</label>
+									<select
+										value={editForm.memberStatus}
+										onChange={(e) => setEditForm({ ...editForm, memberStatus: e.target.value })}
+										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+									>
+										<option value="active">正常</option>
+										<option value="inactive">禁用</option>
+									</select>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-2">
+										过期时间（留空表示永久）
+									</label>
+									<input
+										type="date"
+										value={editForm.expiresAt}
+										onChange={(e) => setEditForm({ ...editForm, expiresAt: e.target.value })}
+										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+									/>
+								</div>
+							</div>
+						</div>
+
+						<div className="p-6 border-t border-gray-200">
+							<div className="flex gap-3">
+								<button
+									onClick={() => setIsEditModalOpen(false)}
+									className="flex-1 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50"
+								>
+									取消
+								</button>
+								<button
+									onClick={handleUpdateMember}
+									className="flex-1 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800"
+								>
+									保存
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
