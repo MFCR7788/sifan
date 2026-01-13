@@ -10,6 +10,8 @@ export default function AdminDashboard() {
 		totalOrders: 0,
 		totalUsers: 0,
 		totalMembers: 0,
+		totalRecharge: 0,
+		totalConsumption: 0,
 		totalRevenue: 0,
 	});
 	const [loading, setLoading] = useState(true);
@@ -53,7 +55,7 @@ export default function AdminDashboard() {
 					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
 				</div>
 			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
 					{/* Total Orders */}
 					<Link href="/admin/orders" className="block">
 						<div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
@@ -99,6 +101,40 @@ export default function AdminDashboard() {
 								<div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
 									<svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+									</svg>
+								</div>
+							</div>
+						</div>
+					</Link>
+
+					{/* Total Recharge */}
+					<Link href="/admin/transactions/recharge" className="block">
+						<div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+							<div className="flex items-center justify-between">
+								<div>
+									<p className="text-sm text-gray-600 mb-1">总充值</p>
+									<p className="text-3xl font-bold text-gray-900">¥{stats.totalRecharge}</p>
+								</div>
+								<div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+									<svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+									</svg>
+								</div>
+							</div>
+						</div>
+					</Link>
+
+					{/* Total Consumption */}
+					<Link href="/admin/transactions/consumption" className="block">
+						<div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+							<div className="flex items-center justify-between">
+								<div>
+									<p className="text-sm text-gray-600 mb-1">总消费</p>
+									<p className="text-3xl font-bold text-gray-900">¥{stats.totalConsumption}</p>
+								</div>
+								<div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+									<svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
 									</svg>
 								</div>
 							</div>
