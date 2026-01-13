@@ -11,7 +11,6 @@ const navItems = [
   { name: '首页', href: '/' },
   { name: '产品', href: '/pricing' },
   { name: '关于', href: '/about' },
-  { name: '加盟', href: '/franchise' },
   { name: '联系', href: '/contact' },
 ];
 
@@ -200,6 +199,7 @@ function AboutDropdown() {
   const aboutItems = [
     { name: '关于我们', href: '/about' },
     { name: '公司资质', href: '/qualifications' },
+    { name: '招商加盟', href: '/franchise' },
   ];
 
   useEffect(() => {
@@ -758,6 +758,13 @@ export default function Navigation() {
                       className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
                     >
                       公司资质
+                    </Link>
+                    <Link
+                      href="/franchise"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      招商加盟
                     </Link>
                   </div>
                 );
