@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/storage/database';
+import { getDb } from 'coze-coding-dev-sdk';
 import { members } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
@@ -26,6 +26,8 @@ export async function PATCH(
 		if (body.points !== undefined) updateData.points = body.points;
 		if (body.memberStatus !== undefined) updateData.memberStatus = body.memberStatus;
 		if (body.expiresAt !== undefined) updateData.expiresAt = body.expiresAt ? new Date(body.expiresAt).toISOString() : null;
+
+		const db = await getDb();
 
 		await db
 			.update(members)

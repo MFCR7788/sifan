@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/storage/database';
+import { getDb } from 'coze-coding-dev-sdk';
 import { users } from '@/storage/database/shared/schema';
 import { desc } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
 				{ status: 403 }
 			);
 		}
+
+		const db = await getDb();
 
 		const result = await db
 			.select({

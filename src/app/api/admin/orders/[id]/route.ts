@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/storage/database';
+import { getDb } from 'coze-coding-dev-sdk';
 import { orders } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
@@ -24,6 +24,8 @@ export async function PATCH(
 		const updateData: any = { updatedAt: new Date().toISOString() };
 		if (status) updateData.status = status;
 		if (notes !== undefined) updateData.notes = notes;
+
+		const db = await getDb();
 
 		await db
 			.update(orders)

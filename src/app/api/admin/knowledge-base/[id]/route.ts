@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/storage/database';
+import { getDb } from 'coze-coding-dev-sdk';
 import { knowledgeBase } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
@@ -19,6 +19,7 @@ export async function GET(
 		}
 
 		const { id } = await params;
+		const db = await getDb();
 		const [item] = await db.select().from(knowledgeBase).where(eq(knowledgeBase.id, id));
 
 		if (!item) {
@@ -66,6 +67,8 @@ export async function PUT(
 				{ status: 400 }
 			);
 		}
+
+		const db = await getDb();
 
 		// 更新知识库条目
 		const [updatedItem] = await db
@@ -117,6 +120,7 @@ export async function DELETE(
 		}
 
 		const { id } = await params;
+		const db = await getDb();
 
 		// 删除知识库条目
 		const [deletedItem] = await db

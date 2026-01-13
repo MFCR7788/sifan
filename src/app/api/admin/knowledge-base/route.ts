@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/storage/database';
+import { getDb } from 'coze-coding-dev-sdk';
 import { knowledgeBase } from '@/storage/database/shared/schema';
 import { desc, eq, like, or, sql } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
 				{ status: 403 }
 			);
 		}
+
+		const db = await getDb();
 
 		const { searchParams } = new URL(request.url);
 		const category = searchParams.get('category');
@@ -143,6 +145,8 @@ export async function POST(request: NextRequest) {
 				{ status: 400 }
 			);
 		}
+
+		const db = await getDb();
 
 		console.log('[KnowledgeBase POST] Inserting new item...');
 		// 创建知识库条目

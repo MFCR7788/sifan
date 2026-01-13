@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/storage/database';
+import { getDb } from 'coze-coding-dev-sdk';
 import { users } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
@@ -36,6 +36,8 @@ export async function PATCH(
 		if (body.email !== undefined) updateData.email = body.email.trim() || null;
 		if (body.isAdmin !== undefined) updateData.isAdmin = body.isAdmin;
 		if (body.isActive !== undefined) updateData.isActive = body.isActive;
+
+		const db = await getDb();
 
 		const result = await db
 			.update(users)

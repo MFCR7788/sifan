@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/storage/database';
+import { getDb } from 'coze-coding-dev-sdk';
 import { orders, users, members, memberTransactions } from '@/storage/database/shared/schema';
 import { verifyAdmin } from '@/lib/admin-auth';
 import { eq, sql } from 'drizzle-orm';
@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
 				{ status: 403 }
 			);
 		}
+
+		const db = await getDb();
 
 		// 获取统计数据 - 使用正确的count聚合函数
 		const [totalOrdersResult, totalUsersResult, totalMembersResult, totalRevenueResult] = await Promise.all([
