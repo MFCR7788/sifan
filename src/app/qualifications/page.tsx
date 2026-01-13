@@ -160,26 +160,16 @@ export default function QualificationsPage() {
 
             {/* 资质卡片 5 */}
             <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-white flex items-center justify-center">
-                <iframe
-                  src="/documents/national-high-tech-certificate.pdf"
-                  className="w-full h-full"
-                  title="国家高新企业证书"
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+                <img
+                  src="/images/national-high-tech-certificate.png"
+                  alt="国家高新企业证书"
+                  className="w-full h-full object-contain rounded-lg"
                 />
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">国家高新企业证书</h3>
                 <p className="text-sm text-gray-600 mt-2">国家高新技术企业认证</p>
-                <a
-                  href="/documents/national-high-tech-certificate.pdf"
-                  download="思杋-国高证书.pdf"
-                  className="inline-flex items-center mt-3 text-sm text-gray-900 hover:text-gray-600 transition-colors"
-                >
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  下载证书
-                </a>
               </div>
             </div>
 
