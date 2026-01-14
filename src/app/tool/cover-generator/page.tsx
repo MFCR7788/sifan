@@ -170,6 +170,12 @@ export default function CoverGeneratorPage() {
 
     try {
       console.log('开始生成封面图...', { inputText, selectedPlatform, selectedStyle, selectedRatio });
+      console.log('发送的参数:', {
+        text: inputText,
+        platform: selectedPlatform,
+        style: selectedStyle,
+        ratio: selectedRatio
+      });
 
       // 调用API进行封面图生成
       const response = await fetch('/api/tool/cover-generator', {
@@ -189,6 +195,7 @@ export default function CoverGeneratorPage() {
       const data = await response.json();
 
       console.log('API 响应:', { status: response.status, data });
+      console.log('生成的 prompt:', data.data?.prompt?.substring(0, 200));
 
       if (!response.ok) {
         console.error('API 错误:', data);
