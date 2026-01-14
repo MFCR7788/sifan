@@ -7,29 +7,48 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const platform = searchParams.get('platform');
+    const userId = searchParams.get('userId');
     const isPublic = searchParams.get('public');
 
-    const db = await getDb();
+    console.log('获取封面图列表参数:', { platform, userId, isPublic });
+
+    const pool = await getPool();
 
     // 构建查询条件
-    const { desc, eq, and } = await import('drizzle-orm');
-    const conditions = [];
+    const conditions: string[] = [];
+    const params: any[] = [];
+    let paramIndex = 1;
+
+    // 如果指定了 userId，查询该用户的所有图片（不管是否公开）
+    // 否则只查询公开的图片
+    if (userId) {
+      conditions.push(`user_id = $${paramIndex}`);
+      params.push(userId);
+      paramIndex++;
+    } else if (isPublic === 'true') {
+      conditions.push(`is_public = true`);
+    }
 
     if (platform) {
-      conditions.push(eq(coverImages.platform, platform));
+      conditions.push(`platform = $${paramIndex}`);
+      params.push(platform);
+      paramIndex++;
     }
 
-    if (isPublic === 'true') {
-      conditions.push(eq(coverImages.isPublic, true));
+    // 构建完整 SQL
+    let sql = 'SELECT * FROM cover_images';
+    if (conditions.length > 0) {
+      sql += ' WHERE ' + conditions.join(' AND ');
     }
+    sql += ' ORDER BY created_at DESC LIMIT 50';
 
-    // 执行查询
-    const images = await db
-      .select()
-      .from(coverImages)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(desc(coverImages.createdAt))
-      .limit(50);
+    console.log('执行 SQL:', sql);
+    console.log('参数:', params);
+
+    const result = await pool.query(sql, params);
+    const images = result.rows;
+
+    console.log('查询结果:', images.length, '条记录');
 
     return NextResponse.json({
       success: true,

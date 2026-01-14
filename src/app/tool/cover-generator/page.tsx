@@ -87,19 +87,28 @@ export default function CoverGeneratorPage() {
 
   // 加载保存的图片列表
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       loadSavedImages();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.id]);
 
   // 加载保存的图片
   const loadSavedImages = async () => {
     setIsLoadingImages(true);
     try {
-      const response = await fetch('/api/cover-images?public=true');
+      // 如果已登录，加载当前用户的所有图片；否则只加载公开图片
+      const userId = user?.id;
+      const url = userId
+        ? `/api/cover-images?userId=${userId}`
+        : '/api/cover-images?public=true';
+
+      console.log('加载图片列表:', url);
+
+      const response = await fetch(url);
       const data = await response.json();
       if (data.success) {
         setSavedImages(data.data || []);
+        console.log('加载到', data.data?.length || 0, '张图片');
       }
     } catch (error) {
       console.error('加载图片列表失败:', error);
