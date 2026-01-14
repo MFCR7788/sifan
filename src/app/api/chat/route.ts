@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 		const knowledgeResults = await searchKnowledgeBase(message);
 
 		// 构建系统提示词
-		let systemPrompt = `你是魔法超人AGI的智能客服助手，负责回答用户关于公司产品、服务、技术、价格等方面的问题。
+		let systemPrompt = `你是魔法超人AIGC的智能客服助手，负责回答用户关于公司产品、服务、技术、价格等方面的问题。
 
 你的回答应该：
 1. 准确、专业、友好

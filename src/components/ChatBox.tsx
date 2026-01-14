@@ -121,7 +121,7 @@ export default function ChatBox() {
 				<div className="relative w-12 h-12">
 					<Image
 						src="/小超人.png"
-						alt="魔法超人AGI"
+						alt="魔法超人AIGC"
 						fill
 						className="object-contain"
 						priority
@@ -137,7 +137,7 @@ export default function ChatBox() {
 			<div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
 				<div>
 					<h3 className="text-lg font-semibold text-gray-900">智能客服</h3>
-					<p className="text-xs text-gray-500">魔法超人AGI</p>
+					<p className="text-xs text-gray-500">魔法超人AIGC</p>
 				</div>
 				<button
 					onClick={() => setIsOpen(false)}
@@ -164,7 +164,7 @@ export default function ChatBox() {
 			<div className="flex-1 overflow-y-auto p-5 space-y-4">
 				{messages.length === 0 && (
 					<div className="text-center text-gray-400 mt-20">
-						<p className="text-sm">您好！我是魔法超人AGI的智能客服</p>
+						<p className="text-sm">您好！我是魔法超人AIGC的智能客服</p>
 						<p className="text-sm mt-2">有什么可以帮您的吗？</p>
 					</div>
 				)}

@@ -38,14 +38,14 @@ function Logo() {
         <div className="relative w-7 h-7">
           <Image
             src="/小超人.png"
-            alt="魔法超人AGI"
+            alt="魔法超人AIGC"
             fill
             className="object-contain"
             priority
           />
         </div>
         <span className="text-lg font-semibold text-gray-900">
-          魔法超人AGI
+          魔法超人AIGC
         </span>
       </div>
     </Link>
