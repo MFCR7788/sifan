@@ -175,13 +175,13 @@ function AboutDropdown() {
       }}
       onMouseLeave={handleMouseLeave}
     >
-      {/* 触发区域 - 关于链接 */}
+      {/* 触发区域 - 加盟链接 */}
       <Link
-        href="/about"
+        href="/franchise"
         className="text-xs transition-colors hover:opacity-60"
         onClick={(e) => e.preventDefault()}
       >
-        关于
+        加盟
       </Link>
 
       {/* 下拉菜单 */}
