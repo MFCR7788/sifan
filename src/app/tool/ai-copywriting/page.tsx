@@ -72,7 +72,7 @@ export default function AICopywritingPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const platforms = ['抖音', '小红书', '视频号', '公众号'];
-  const contentTypes = ['电商', '大健康', '工具软件', '金融', '教育', '汽车', '内容信息'];
+  const contentTypes = ['校服', '电商', '大健康', '工具软件', '金融', '教育', '汽车', '内容信息'];
   const aiModels = [
     { id: 'model-1', name: '豆包-1.5-32k' },
     { id: 'model-2', name: '豆包-1.5-128k' },
@@ -272,23 +272,15 @@ export default function AICopywritingPage() {
               {/* 生成数量 */}
               <div>
                 <label className="block text-xs text-gray-600 mb-2">生成数量</label>
-                <div className="flex gap-2">
-                  {[1, 2, 3].map((count) => (
-                    <button
-                      key={count}
-                      onClick={() => setGenerateCount(count)}
-                      className={`
-                        flex-1 px-3 py-2.5 rounded-lg border transition-all duration-200 text-sm font-medium
-                        ${generateCount === count
-                          ? 'border-blue-600 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700'
-                        }
-                      `}
-                    >
-                      {count}篇
-                    </button>
-                  ))}
-                </div>
+                <select
+                  value={generateCount}
+                  onChange={(e) => setGenerateCount(parseInt(e.target.value))}
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+                >
+                  <option value="1">1篇</option>
+                  <option value="2">2篇</option>
+                  <option value="3">3篇</option>
+                </select>
               </div>
             </div>
           </div>
@@ -320,15 +312,24 @@ export default function AICopywritingPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">今日剩余未登录次</span>
+              <span className="text-sm text-gray-600">
+                {isAuthenticated ? '今日剩余会员次' : '今日剩余未登录次'}
+              </span>
             </div>
           </div>
 
           <button
-            onClick={() => router.push('/pricing')}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+            onClick={isAuthenticated ? handleGenerate : () => router.push('/pricing')}
+            disabled={isGenerating}
+            className={`
+              w-full font-medium py-3.5 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md
+              ${isGenerating
+                ? 'bg-gray-400 cursor-not-allowed text-white'
+                : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
+              }
+            `}
           >
-            开通会员
+            {isGenerating ? '生成中...' : (isAuthenticated ? '开始生成' : '开通会员')}
           </button>
         </div>
 

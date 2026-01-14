@@ -53,7 +53,7 @@ ${text}
 3. 字数范围：${wordCount}
 4. 生成数量：${count}篇
 
-请直接输出生成的文案内容，无需解释说明。`;
+请直接输出${count}篇文案，每篇之间用"=== 第N篇 ==="分隔。`;
 
     const response = await llmClient.chat({
       model: 'doubao-seed-1-6-251015',
