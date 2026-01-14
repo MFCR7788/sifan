@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from 'coze-coding-dev-sdk';
 import { resources } from '@/storage/database/shared/schema';
-import { eq, asc, sql } from 'drizzle-orm';
+import { eq, asc, and } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +10,12 @@ export async function GET(request: NextRequest) {
 
     const db = await getDb();
 
-    let query = db
+    const conditions = [eq(resources.isPublished, true)];
+    if (categoryId) {
+      conditions.push(eq(resources.categoryId, categoryId));
+    }
+
+    const resourcesList = await db
       .select({
         id: resources.id,
         title: resources.title,
@@ -26,13 +31,8 @@ export async function GET(request: NextRequest) {
         categoryId: resources.categoryId,
       })
       .from(resources)
-      .where(eq(resources.isPublished, true));
-
-    if (categoryId) {
-      query = query.where(eq(resources.categoryId, categoryId));
-    }
-
-    const resourcesList = await query.orderBy(asc(resources.sortOrder));
+      .where(and(...conditions))
+      .orderBy(asc(resources.sortOrder));
 
     return NextResponse.json({ resources: resourcesList });
   } catch (error) {
