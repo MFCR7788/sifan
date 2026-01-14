@@ -269,7 +269,7 @@ function ResourcesDropdown() {
         >
           {resourceItems.map((item, index) => (
             <Link
-              key={item.href}
+              key={`resource-${index}`}
               href={item.href}
               className={`block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 ${
                 index === 0 ? 'rounded-t-xl' : ''
