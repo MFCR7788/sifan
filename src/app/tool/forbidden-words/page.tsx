@@ -338,6 +338,54 @@ export default function ForbiddenWordsPage() {
 
         {/* 结果展示面板 */}
         <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
+          {/* 查询结果 */}
+          {queryResults && queryResults.success && (
+            <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-red-900 mb-1">
+                    {queryResults.message}
+                  </h3>
+                  {queryResults.fileName && (
+                    <p className="text-sm text-red-700">
+                      文件：{queryResults.fileName}
+                    </p>
+                  )}
+                </div>
+                <div className="text-3xl font-bold text-red-600">
+                  {queryResults.totalFound}
+                </div>
+              </div>
+
+              {Object.keys(queryResults.foundWords || {}).length > 0 ? (
+                <div className="space-y-3">
+                  {Object.entries(queryResults.foundWords).map(([category, words]) => (
+                    <div key={category} className="bg-white p-3 rounded-lg">
+                      <p className="text-sm font-medium text-gray-900 mb-2">{category}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {words.map((word: string, index: number) => (
+                          <span
+                            key={index}
+                            className="px-2.5 py-1 bg-red-100 text-red-700 text-sm rounded-md"
+                          >
+                            {word}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-4 text-center">
+                  <svg className="w-12 h-12 mx-auto mb-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-sm text-green-700 font-medium">未检测到违禁词</p>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900">高危内容词</h2>
             <div className="flex gap-2">
