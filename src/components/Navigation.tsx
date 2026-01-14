@@ -231,10 +231,10 @@ function ToolsDropdown() {
     {
       category: '视觉创作',
       items: [
+        { name: 'AI图像生成', href: '/tool/image-gen', hasSubmenu: true },
         { name: 'AI视频生成', href: '/video-gen' },
         { name: '封面图制作', href: '/tool/cover-gen' },
         { name: '图文提取', href: '/tool/image-extract' },
-        { name: 'AI图像生成', href: '/tool/image-gen', hasSubmenu: true },
       ],
     },
     {
@@ -290,7 +290,7 @@ function ToolsDropdown() {
       {/* 下拉菜单 - 两列分类布局 */}
       {showDropdown && (
         <div
-          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 w-[500px]"
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-max"
           onMouseEnter={handleDropdownMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
