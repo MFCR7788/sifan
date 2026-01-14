@@ -6,6 +6,17 @@ import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
+// 将比例字符串转换为 Tailwind aspect-ratio 类
+function getAspectRatioClass(ratio: string): string {
+  const ratioMap: Record<string, string> = {
+    '16:9': 'aspect-video',
+    '9:16': 'aspect-[9/16]',
+    '1:1': 'aspect-square',
+    '4:3': 'aspect-[4/3]',
+  };
+  return ratioMap[ratio] || 'aspect-[9/16]';
+}
+
 // 平台卡片组件
 const PlatformCard = ({ icon, title, description, selected, onClick }: {
   icon: string;
@@ -691,7 +702,7 @@ export default function CoverGeneratorPage() {
                   <img
                     src={image.image_url}
                     alt="封面图"
-                    className="w-full aspect-[9/16] object-cover transition-transform duration-500 group-hover:scale-105"
+                    className={`w-full ${getAspectRatioClass(image.ratio || '9:16')} object-cover transition-transform duration-500 group-hover:scale-105`}
                     loading="lazy"
                   />
 
