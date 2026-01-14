@@ -3,8 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
 
 // 平台图标组件
 const PlatformIcon = ({ name, selected, onClick }: { name: string; selected: boolean; onClick: () => void }) => {
@@ -14,12 +12,16 @@ const PlatformIcon = ({ name, selected, onClick }: { name: string; selected: boo
         return '#ff2442';
       case '公众号':
         return '#07c160';
-      case '抖音':
-        return '#000000';
-      case '微博':
-        return '#e6162d';
       case '知乎':
         return '#0084ff';
+      case '视频号':
+        return '#000000';
+      case '快手':
+        return '#ff5000';
+      case '抖音':
+        return '#000000';
+      case '哔哩哔哩':
+        return '#fb7299';
       default:
         return '#6b7280';
     }
@@ -69,7 +71,7 @@ export default function RewriteToolPage() {
   const [history, setHistory] = useState<Array<{ original: string; converted: string; platform: string; timestamp: Date }>>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const platforms = ['小红书', '公众号', '抖音', '微博', '知乎'];
+  const platforms = ['小红书', '公众号', '知乎', '视频号', '快手', '抖音', '哔哩哔哩'];
   const maxChars = 800;
 
   // 检查是否登录
@@ -148,34 +150,6 @@ export default function RewriteToolPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* 品牌栏 */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="relative w-8 h-8">
-                <Image
-                  src="/小超人.png"
-                  alt="魔法超人"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">新媒体，找魔法超人</h1>
-                <p className="text-xs text-gray-500">AI文案改写工具</p>
-              </div>
-            </div>
-            <Link
-              href="/"
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              返回首页
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* 主体内容 */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 功能操作区 */}
