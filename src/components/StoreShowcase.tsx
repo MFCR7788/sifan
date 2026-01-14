@@ -71,7 +71,7 @@ export default function StoreShowcase() {
     <section className="py-20 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Gallery Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {storeImages.map((image, index) => (
             <div
               key={image.id}
