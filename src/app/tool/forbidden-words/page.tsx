@@ -86,6 +86,7 @@ export default function ForbiddenWordsPage() {
   const [isQuerying, setIsQuerying] = useState(false);
   const [queryResults, setQueryResults] = useState<QueryResult | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; size: string } | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -181,6 +182,13 @@ export default function ForbiddenWordsPage() {
 
     setIsQuerying(true);
 
+    // 格式化文件大小
+    const formatFileSize = (bytes: number) => {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    };
+
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -198,11 +206,25 @@ export default function ForbiddenWordsPage() {
 
       const data = await response.json();
       setQueryResults(data);
+      setUploadedFile({
+        name: file.name,
+        size: formatFileSize(file.size),
+      });
     } catch (error) {
       console.error('上传失败:', error);
       alert('上传失败，请重试');
     } finally {
       setIsQuerying(false);
+    }
+  };
+
+  // 清除上传的文件
+  const handleClearFile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setUploadedFile(null);
+    setQueryResults(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -261,7 +283,13 @@ export default function ForbiddenWordsPage() {
               {queryModes.map((mode) => (
                 <button
                   key={mode}
-                  onClick={() => setQueryMode(mode)}
+                  onClick={() => {
+                    setQueryMode(mode);
+                    if (mode !== '查文档') {
+                      setUploadedFile(null);
+                      setQueryResults(null);
+                    }
+                  }}
                   className={`
                     px-4 py-2 rounded-lg border transition-all duration-200 text-sm font-medium
                     ${queryMode === mode
@@ -283,8 +311,12 @@ export default function ForbiddenWordsPage() {
             </h2>
             {queryMode === '查文档' ? (
               <div
-                className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-red-300 transition-colors cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
+                  uploadedFile
+                    ? 'border-green-300 bg-green-50'
+                    : 'border-gray-200 hover:border-red-300'
+                }`}
+                onClick={() => !isQuerying && fileInputRef.current?.click()}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                   e.preventDefault();
@@ -301,13 +333,40 @@ export default function ForbiddenWordsPage() {
                   accept=".txt,.doc,.docx"
                   className="hidden"
                 />
-                <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">点击上传文档或拖拽文件到此处</p>
-                <p className="text-xs text-gray-400">支持 TXT、DOC、DOCX 格式，文件大小不超过 10MB</p>
+                {uploadedFile ? (
+                  <div className="relative">
+                    <button
+                      onClick={handleClearFile}
+                      className="absolute top-0 right-0 p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                    <div className="space-y-3">
+                      <div className="w-12 h-12 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-green-900 mb-1">{uploadedFile.name}</p>
+                        <p className="text-xs text-green-700">{uploadedFile.size}</p>
+                      </div>
+                      <p className="text-xs text-green-600">点击重新上传</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">点击上传文档或拖拽文件到此处</p>
+                    <p className="text-xs text-gray-400">支持 TXT、DOC、DOCX 格式，文件大小不超过 10MB</p>
+                  </>
+                )}
               </div>
             ) : (
               <div className="relative">
