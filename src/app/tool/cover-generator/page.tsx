@@ -50,6 +50,8 @@ export default function CoverGeneratorPage() {
   const [progress, setProgress] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [savedImages, setSavedImages] = useState<Array<any>>([]);
+  const [isLoadingImages, setIsLoadingImages] = useState(false);
   const [history, setHistory] = useState<Array<{
     id: string;
     input: string;
@@ -80,6 +82,29 @@ export default function CoverGeneratorPage() {
       router.push('/login');
     }
   }, [isAuthenticated, authLoading, router]);
+
+  // 加载保存的图片列表
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadSavedImages();
+    }
+  }, [isAuthenticated]);
+
+  // 加载保存的图片
+  const loadSavedImages = async () => {
+    setIsLoadingImages(true);
+    try {
+      const response = await fetch('/api/cover-images?public=true');
+      const data = await response.json();
+      if (data.success) {
+        setSavedImages(data.data || []);
+      }
+    } catch (error) {
+      console.error('加载图片列表失败:', error);
+    } finally {
+      setIsLoadingImages(false);
+    }
+  };
 
   // 处理生成
   const handleGenerate = async () => {
@@ -176,6 +201,74 @@ export default function CoverGeneratorPage() {
     } catch (error) {
       console.error('下载失败:', error);
       alert('下载失败，请重试');
+    }
+  };
+
+  // 删除图片（管理员）
+  const handleDeleteImage = async (id: string) => {
+    if (!confirm('确定要删除这张图片吗？此操作不可恢复。')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/cover-images/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        alert('删除成功');
+        // 重新加载图片列表
+        loadSavedImages();
+      } else {
+        alert(data.error || '删除失败');
+      }
+    } catch (error) {
+      console.error('删除失败:', error);
+      alert('删除失败，请重试');
+    }
+  };
+
+  // 保存图片到数据库
+  const handleSaveImage = async (imageUrl: string, record: any) => {
+    if (!user) {
+      alert('请先登录');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/cover-images', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          userId: user.id,
+          userName: user.name,
+          platform: selectedPlatform,
+          style: selectedStyle,
+          ratio: selectedRatio,
+          size: record.size,
+          prompt: record.prompt,
+          inputText: inputText,
+          imageUrl: imageUrl,
+          isPublic: false, // 默认不公开
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        alert('保存成功');
+        // 重新加载图片列表
+        loadSavedImages();
+      } else {
+        alert(data.error || '保存失败');
+      }
+    } catch (error) {
+      console.error('保存失败:', error);
+      alert('保存失败，请重试');
     }
   };
 
@@ -460,6 +553,16 @@ export default function CoverGeneratorPage() {
                           className="w-full rounded-lg border border-gray-200"
                           loading="lazy"
                         />
+                        {/* 保存按钮 */}
+                        <button
+                          onClick={() => handleSaveImage(record.imageUrl!, record)}
+                          className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/95 hover:bg-white text-gray-700 px-4 py-2 rounded-lg shadow-md text-sm font-medium transition-all hover:shadow-lg"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                          保存到作品库
+                        </button>
                       </div>
                     )}
                   </div>
@@ -468,6 +571,90 @@ export default function CoverGeneratorPage() {
             )}
           </div>
         )}
+
+        {/* 保存的图片展示区 */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">封面图作品</h2>
+          {isLoadingImages ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-500">加载中...</p>
+            </div>
+          ) : savedImages.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p className="text-gray-500">暂无作品，快去生成第一个封面图吧！</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {savedImages.map((image) => (
+                <div
+                  key={image.id}
+                  className="group relative bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  {/* 图片 */}
+                  <img
+                    src={image.image_url}
+                    alt="封面图"
+                    className="w-full aspect-[9/16] object-cover"
+                    loading="lazy"
+                  />
+
+                  {/* 悬浮操作层 */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                    {/* 信息 */}
+                    <div className="mb-3">
+                      <p className="text-white text-sm font-medium mb-1 line-clamp-2">
+                        {image.input_text}
+                      </p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs text-gray-300">由</span>
+                        <span className="text-xs text-white font-medium">{image.user_name}</span>
+                        <span className="text-xs text-gray-300">生成</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <span>{image.platform}</span>
+                        {image.style && <span>· {image.style}</span>}
+                        {image.ratio && <span>· {image.ratio}</span>}
+                      </div>
+                    </div>
+
+                    {/* 操作按钮 */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDownloadImage(
+                          image.image_url,
+                          `cover-${image.platform}-${image.id.substring(0, 8)}.png`
+                        )}
+                        className="flex-1 flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        下载
+                      </button>
+                      {user?.isAdmin && (
+                        <button
+                          onClick={() => handleDeleteImage(image.id)}
+                          className="flex items-center justify-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          删除
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Footer */}

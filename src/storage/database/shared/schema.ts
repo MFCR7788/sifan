@@ -217,6 +217,33 @@ export const resources = pgTable("resources", {
 	}).onDelete("set null"),
 ]);
 
+// 封面图生成记录表
+export const coverImages = pgTable("cover_images", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	userId: varchar("user_id", { length: 36 }).notNull(), // 生成用户ID
+	userName: varchar("user_name", { length: 128 }).notNull(), // 用户姓名
+	platform: varchar({ length: 50 }).notNull(), // 平台：抖音、小红书、公众号
+	style: varchar({ length: 50 }), // 风格：简约、清新、商务等
+	ratio: varchar({ length: 10 }), // 比例：16:9、9:16、1:1、4:3
+	size: varchar({ length: 20 }), // 尺寸：1920x1080等
+	prompt: text(), // 生图prompt
+	inputText: text().notNull(), // 用户输入的文案内容
+	imageUrl: varchar("image_url", { length: 1000 }).notNull(), // 生成的图片URL
+	isPublic: boolean("is_public").default(false).notNull(), // 是否公开
+	viewCount: integer("view_count").default(0).notNull(), // 查看次数
+	downloadCount: integer("download_count").default(0).notNull(), // 下载次数
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	index("cover_images_user_id_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	index("cover_images_platform_idx").using("btree", table.platform.asc().nullsLast().op("text_ops")),
+	index("cover_images_is_public_idx").using("btree", table.isPublic.asc().nullsLast().op("text_ops")),
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "cover_images_user_id_users_id_fk"
+	}).onDelete("cascade"),
+]);
+
 // ==================== Zod Schemas ====================
 
 // Contact Messages
@@ -299,3 +326,21 @@ export const updateResourceSchema = createCoercedInsertSchema(resources).partial
 export type InsertResource = z.infer<typeof insertResourceSchema>
 export type UpdateResource = z.infer<typeof updateResourceSchema>
 export type Resource = typeof resources.$inferSelect
+
+// Cover Images
+export const insertCoverImageSchema = createCoercedInsertSchema(coverImages).pick({
+	userId: true,
+	userName: true,
+	platform: true,
+	style: true,
+	ratio: true,
+	size: true,
+	prompt: true,
+	inputText: true,
+	imageUrl: true,
+	isPublic: true,
+})
+export const updateCoverImageSchema = createCoercedInsertSchema(coverImages).partial()
+export type InsertCoverImage = z.infer<typeof insertCoverImageSchema>
+export type UpdateCoverImage = z.infer<typeof updateCoverImageSchema>
+export type CoverImage = typeof coverImages.$inferSelect
