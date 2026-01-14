@@ -695,20 +695,23 @@ export default function CoverGeneratorPage() {
               <p className="text-gray-500">暂无作品，快去生成第一个封面图吧！</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
               {savedImages.map((image) => (
                 <div
                   key={image.id}
-                  className="group relative bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                  className="relative group overflow-hidden rounded-2xl cursor-pointer"
                   onClick={() => handleImageClick(image)}
                 >
                   {/* 图片 */}
                   <img
                     src={image.image_url}
                     alt="封面图"
-                    className="w-full aspect-[9/16] object-cover"
+                    className="w-full aspect-[9/16] object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />
+
+                  {/* 悬浮遮罩 */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
 
                   {/* 悬浮操作层 */}
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
