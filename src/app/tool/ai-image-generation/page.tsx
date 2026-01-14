@@ -440,7 +440,7 @@ export default function AIImageGenerationPage() {
                     className={`
                       px-3 py-3 rounded-lg text-sm transition-all
                       ${selectedStyle === style.id
-                        ? 'bg-purple-600 text-white shadow-md'
+                        ? 'bg-blue-600 text-white shadow-md'
                         : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
                       }
                     `}
@@ -473,7 +473,7 @@ export default function AIImageGenerationPage() {
                       className={`
                         px-4 py-2 rounded-lg text-sm transition-all
                         ${quality === opt.id
-                          ? 'bg-purple-600 text-white shadow-md'
+                          ? 'bg-blue-600 text-white shadow-md'
                           : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
                         }
                       `}
@@ -493,7 +493,7 @@ export default function AIImageGenerationPage() {
                       className={`
                         px-3 py-2 rounded-lg text-sm transition-all
                         ${lighting === opt.id
-                          ? 'bg-purple-600 text-white shadow-md'
+                          ? 'bg-blue-600 text-white shadow-md'
                           : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
                         }
                       `}
@@ -515,7 +515,7 @@ export default function AIImageGenerationPage() {
                     className={`
                       px-4 py-2 rounded-lg text-sm transition-all
                       ${selectedRatio === ratio
-                        ? 'bg-purple-600 text-white shadow-md'
+                        ? 'bg-blue-600 text-white shadow-md'
                         : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
                       }
                     `}
