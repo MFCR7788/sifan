@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { useToast } from '@/components/Toast';
 
 // 将比例字符串转换为 Tailwind aspect-ratio 类
 function getAspectRatioClass(ratio: string): string {
@@ -34,6 +35,7 @@ const ParamCard = ({ title, children, className = '' }: {
 export default function AIImageGenerationPage() {
   const router = useRouter();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
+  const { showToast } = useToast();
 
   // 提前处理加载状态
   if (authLoading) {
@@ -306,21 +308,21 @@ export default function AIImageGenerationPage() {
 
       const data = await response.json();
       if (data.success) {
-        alert('删除成功');
+        showToast('success', '删除成功');
         loadSavedImages();
       } else {
-        alert(data.error || '删除失败');
+        showToast('error', data.error || '删除失败');
       }
     } catch (error) {
       console.error('删除失败:', error);
-      alert('删除失败，请重试');
+      showToast('error', '删除失败，请重试');
     }
   };
 
   // 保存图片到数据库
   const handleSaveImage = async (imageUrl: string, record: any) => {
     if (!user) {
-      alert('请先登录');
+      showToast('error', '请先登录');
       return;
     }
 
@@ -356,22 +358,22 @@ export default function AIImageGenerationPage() {
 
       const data = await response.json();
       if (data.success) {
-        alert('保存成功');
+        showToast('success', '保存成功');
         loadSavedImages();
       } else {
         const errorMsg = data.error || '保存失败';
 
         if (errorMsg.includes('重新登录') || errorMsg.includes('用户信息已过期')) {
-          alert('用户信息已过期，请重新登录');
+          showToast('error', '用户信息已过期，请重新登录');
           router.push('/login');
           return;
         }
 
-        alert(errorMsg);
+        showToast('error', errorMsg);
       }
     } catch (error) {
       console.error('保存失败:', error);
-      alert('保存失败，请重试');
+      showToast('error', '保存失败，请重试');
     }
   };
 

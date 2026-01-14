@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { useToast } from '@/components/Toast';
 
 // 将比例字符串转换为 Tailwind aspect-ratio 类
 function getAspectRatioClass(ratio: string): string {
@@ -61,6 +62,7 @@ const PlatformCard = ({ icon, title, description, selected, onClick }: {
 export default function CoverGeneratorPage() {
   const router = useRouter();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
+  const { showToast } = useToast();
 
   // 提前处理加载状态
   if (authLoading) {
@@ -331,7 +333,7 @@ export default function CoverGeneratorPage() {
   // 保存图片到数据库
   const handleSaveImage = async (imageUrl: string, record: any) => {
     if (!user) {
-      alert('请先登录');
+      showToast('error', '请先登录');
       return;
     }
 
@@ -375,7 +377,7 @@ export default function CoverGeneratorPage() {
       const data = await response.json();
       console.log('保存响应:', data);
       if (data.success) {
-        alert('保存成功');
+        showToast('success', '保存成功');
         // 重新加载图片列表
         loadSavedImages();
       } else {
@@ -383,17 +385,17 @@ export default function CoverGeneratorPage() {
 
         // 如果是用户信息过期，跳转到登录页
         if (errorMsg.includes('重新登录') || errorMsg.includes('用户信息已过期')) {
-          alert('用户信息已过期，请重新登录');
+          showToast('error', '用户信息已过期，请重新登录');
           router.push('/login');
           return;
         }
 
         const details = data.details ? `\n详细信息: ${JSON.stringify(data.details, null, 2)}` : '';
-        alert(errorMsg + details);
+        showToast('error', errorMsg + details);
       }
     } catch (error) {
       console.error('保存失败:', error);
-      alert('保存失败，请重试');
+      showToast('error', '保存失败，请重试');
     }
   };
 
