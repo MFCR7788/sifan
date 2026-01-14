@@ -50,6 +50,23 @@ const PlatformCard = ({ icon, title, description, selected, onClick }: {
 export default function CoverGeneratorPage() {
   const router = useRouter();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
+
+  // 提前处理加载状态
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  // 未登录时重定向
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
+
   const [selectedPlatform, setSelectedPlatform] = useState('抖音');
   const [inputText, setInputText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -91,13 +108,6 @@ export default function CoverGeneratorPage() {
 
   const styles = ['简约', '清新', '商务', '科技', '艺术', '复古'];
   const ratios = ['16:9', '9:16', '1:1', '4:3'];
-
-  // 检查是否登录
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, authLoading, router]);
 
   // 当平台变化时，自动设置对应的比例
   useEffect(() => {
@@ -385,14 +395,6 @@ export default function CoverGeneratorPage() {
     setShowAdvanced(false);
     textareaRef.current?.focus();
   };
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
