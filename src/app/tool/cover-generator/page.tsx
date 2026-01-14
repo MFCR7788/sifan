@@ -72,7 +72,6 @@ export default function CoverGeneratorPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [savedImages, setSavedImages] = useState<Array<any>>([]);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
   const [previewImage, setPreviewImage] = useState<{
@@ -111,19 +110,13 @@ export default function CoverGeneratorPage() {
 
   // 当平台变化时，自动设置对应的比例
   useEffect(() => {
-    // 如果用户没有展开详细条件（即没有手动修改过比例），则使用平台的默认比例
     const platformRatioMap: Record<string, string> = {
       '抖音': '9:16',
       '小红书': '9:16',
       '公众号': '16:9',
     };
-
-    // 只有当用户没有手动选择比例时，才使用平台的默认比例
-    // 这样可以保留用户的自定义比例
-    if (!showAdvanced) {
-      setSelectedRatio(platformRatioMap[selectedPlatform] || '16:9');
-    }
-  }, [selectedPlatform, showAdvanced]);
+    setSelectedRatio(platformRatioMap[selectedPlatform] || '16:9');
+  }, [selectedPlatform]);
 
   // 加载保存的图片列表
   useEffect(() => {
@@ -392,7 +385,6 @@ export default function CoverGeneratorPage() {
     setSelectedStyle('简约');
     setSelectedRatio('16:9');
     setProgress(0);
-    setShowAdvanced(false);
     textareaRef.current?.focus();
   };
 
@@ -446,64 +438,50 @@ export default function CoverGeneratorPage() {
           </div>
 
           {/* 详细条件控件 */}
-          <div className="mb-6">
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              <span>添加详细条件</span>
-              <svg className={`w-4 h-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {showAdvanced && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-xl space-y-4">
-                {/* 选择风格 */}
-                <div>
-                  <h3 className="text-xs font-medium text-gray-700 mb-2">选择风格</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {styles.map((style) => (
-                      <button
-                        key={style}
-                        onClick={() => setSelectedStyle(style)}
-                        className={`
-                          px-3 py-1.5 rounded-lg text-sm transition-all
-                          ${selectedStyle === style
-                            ? 'bg-blue-600 text-white shadow-md'
-                            : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
-                          }
-                        `}
-                      >
-                        {style}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 选择比例 */}
-                <div>
-                  <h3 className="text-xs font-medium text-gray-700 mb-2">选择比例</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {ratios.map((ratio) => (
-                      <button
-                        key={ratio}
-                        onClick={() => setSelectedRatio(ratio)}
-                        className={`
-                          px-3 py-1.5 rounded-lg text-sm transition-all
-                          ${selectedRatio === ratio
-                            ? 'bg-blue-600 text-white shadow-md'
-                            : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
-                          }
-                        `}
-                      >
-                        {ratio}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+          <div className="mb-6 p-4 bg-gray-50 rounded-xl space-y-4">
+            {/* 选择风格 */}
+            <div>
+              <h3 className="text-xs font-medium text-gray-700 mb-2">选择风格</h3>
+              <div className="flex flex-wrap gap-2">
+                {styles.map((style) => (
+                  <button
+                    key={style}
+                    onClick={() => setSelectedStyle(style)}
+                    className={`
+                      px-3 py-1.5 rounded-lg text-sm transition-all
+                      ${selectedStyle === style
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
+                      }
+                    `}
+                  >
+                    {style}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* 选择比例 */}
+            <div>
+              <h3 className="text-xs font-medium text-gray-700 mb-2">选择比例</h3>
+              <div className="flex flex-wrap gap-2">
+                {ratios.map((ratio) => (
+                  <button
+                    key={ratio}
+                    onClick={() => setSelectedRatio(ratio)}
+                    className={`
+                      px-3 py-1.5 rounded-lg text-sm transition-all
+                      ${selectedRatio === ratio
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
+                      }
+                    `}
+                  >
+                    {ratio}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* 文本输入框 */}
