@@ -47,6 +47,7 @@ export default function CoverGeneratorPage() {
   const [selectedPlatform, setSelectedPlatform] = useState('抖音');
   const [inputText, setInputText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [history, setHistory] = useState<Array<{
@@ -88,6 +89,18 @@ export default function CoverGeneratorPage() {
     }
 
     setIsGenerating(true);
+    setProgress(0);
+
+    // 模拟进度条更新
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 500);
 
     try {
       console.log('开始生成封面图...', { inputText, selectedPlatform, selectedStyle, selectedRatio });
@@ -116,6 +129,10 @@ export default function CoverGeneratorPage() {
         throw new Error(data.error || `生成失败 (HTTP ${response.status})`);
       }
 
+      // 进度条到 100%
+      setProgress(100);
+      clearInterval(progressInterval);
+
       // 添加到历史记录
       const newRecord = {
         id: Date.now().toString(),
@@ -129,10 +146,17 @@ export default function CoverGeneratorPage() {
 
       setHistory([newRecord, ...history]);
       setInputText('');
+
+      // 1秒后隐藏进度条
+      setTimeout(() => {
+        setProgress(0);
+      }, 1000);
     } catch (error) {
       console.error('生成失败:', error);
       const errorMessage = error instanceof Error ? error.message : '生成失败，请重试';
       alert(errorMessage);
+      setProgress(0);
+      clearInterval(progressInterval);
     } finally {
       setIsGenerating(false);
     }
@@ -161,6 +185,7 @@ export default function CoverGeneratorPage() {
     setSelectedPlatform('抖音');
     setSelectedStyle('简约');
     setSelectedRatio('16:9');
+    setProgress(0);
     setShowAdvanced(false);
     textareaRef.current?.focus();
   };
@@ -300,21 +325,40 @@ export default function CoverGeneratorPage() {
                 ${inputText.length > 0 ? 'border-gray-300' : 'border-gray-200'}
               `}
             />
-            <div className="flex items-center justify-between mt-3">
-              <span className="text-xs text-gray-400">按下 Shift + Enter 换行</span>
-              <button
-                onClick={handleGenerate}
-                disabled={isGenerating || !inputText.trim()}
-                className={`
-                  px-8 py-2.5 rounded-xl font-medium text-white transition-all duration-200
-                  ${isGenerating || !inputText.trim()
-                    ? 'bg-blue-300 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
-                  }
-                `}
-              >
-                {isGenerating ? '生成中...' : '开始生成'}
-              </button>
+            <div className="mt-3">
+              {/* 进度条 */}
+              {isGenerating && (
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-blue-600 font-medium">正在生成封面图...</span>
+                    <span className="text-xs text-blue-600">{Math.round(progress)}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* 操作按钮 */}
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">按下 Shift + Enter 换行</span>
+                <button
+                  onClick={handleGenerate}
+                  disabled={isGenerating || !inputText.trim()}
+                  className={`
+                    px-8 py-2.5 rounded-xl font-medium text-white transition-all duration-200
+                    ${isGenerating || !inputText.trim()
+                      ? 'bg-blue-300 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
+                    }
+                  `}
+                >
+                  {isGenerating ? '生成中...' : '开始生成'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
