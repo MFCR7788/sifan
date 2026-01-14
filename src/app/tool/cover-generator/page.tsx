@@ -59,6 +59,8 @@ export default function CoverGeneratorPage() {
     style?: string;
     ratio?: string;
     imageUrl?: string;
+    prompt?: string;
+    size?: string;
     timestamp: Date;
   }>>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -166,6 +168,8 @@ export default function CoverGeneratorPage() {
         style: selectedStyle,
         ratio: selectedRatio,
         imageUrl: data.data?.imageUrl,
+        prompt: data.data?.prompt,
+        size: data.data?.size,
         timestamp: new Date(),
       };
 
@@ -237,6 +241,12 @@ export default function CoverGeneratorPage() {
       return;
     }
 
+    console.log('保存图片参数:', {
+      user: user.id,
+      record: record,
+      imageUrl: imageUrl
+    });
+
     try {
       const response = await fetch('/api/cover-images', {
         method: 'POST',
@@ -247,18 +257,19 @@ export default function CoverGeneratorPage() {
         body: JSON.stringify({
           userId: user.id,
           userName: user.name,
-          platform: selectedPlatform,
-          style: selectedStyle,
-          ratio: selectedRatio,
+          platform: record.platform || selectedPlatform,
+          style: record.style || selectedStyle,
+          ratio: record.ratio || selectedRatio,
           size: record.size,
           prompt: record.prompt,
-          inputText: inputText,
+          inputText: record.input,
           imageUrl: imageUrl,
           isPublic: false, // 默认不公开
         }),
       });
 
       const data = await response.json();
+      console.log('保存响应:', data);
       if (data.success) {
         alert('保存成功');
         // 重新加载图片列表
