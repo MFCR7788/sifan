@@ -44,7 +44,7 @@ const PlatformCard = ({ icon, title, description, selected, onClick }: {
 export default function CoverGeneratorPage() {
   const router = useRouter();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
-  const [selectedPlatform, setSelectedPlatform] = useState('公众号');
+  const [selectedPlatform, setSelectedPlatform] = useState('抖音');
   const [inputText, setInputText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -57,9 +57,9 @@ export default function CoverGeneratorPage() {
   const [selectedRatio, setSelectedRatio] = useState('16:9');
 
   const platforms = [
-    { id: '公众号', icon: '📰', title: '公众号封面', description: '输入公众号的内容帮你生成公众号封面头图' },
+    { id: '抖音', icon: '🎵', title: '抖音封面', description: '输入文案内容帮你生成抖音封面图' },
     { id: '小红书', icon: '📱', title: '小红书封面', description: '输入小红书的内容帮你生成小红书的封面图' },
-    { id: '关键词', icon: '✨', title: '关键词生成', description: '输入关键词，选择生成小红书封面图' },
+    { id: '公众号', icon: '📰', title: '公众号封面', description: '输入公众号的内容帮你生成公众号封面头图' },
   ];
 
   const styles = ['简约', '清新', '商务', '科技', '艺术', '复古'];
@@ -125,7 +125,7 @@ export default function CoverGeneratorPage() {
   // 新会话
   const handleNewChat = () => {
     setInputText('');
-    setSelectedPlatform('公众号');
+    setSelectedPlatform('抖音');
     setSelectedStyle('简约');
     setSelectedRatio('16:9');
     setShowAdvanced(false);
@@ -256,8 +256,8 @@ export default function CoverGeneratorPage() {
               ref={textareaRef}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={selectedPlatform === '关键词'
-                ? '请输入关键词，例如：夏日海边、清冷色调...'
+              placeholder={selectedPlatform === '抖音'
+                ? '请输入文案内容，例如：今天分享一个超好用的美白产品...'
                 : '请输入文案内容，例如：今天分享一个超好用的美白产品...'
               }
               className={`
