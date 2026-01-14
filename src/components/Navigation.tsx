@@ -237,6 +237,12 @@ function ToolsDropdown() {
       ],
     },
     {
+      category: 'AI图像生成',
+      items: [
+        { name: '文生图', href: '/tool/image-gen' },
+      ],
+    },
+    {
       category: '智能分析',
       items: [
         { name: '账号AI分析', href: '/tool/account-analysis' },
@@ -296,7 +302,7 @@ function ToolsDropdown() {
           <div className="grid grid-cols-2 divide-x divide-gray-100">
             {/* 左列 */}
             <div className="divide-y divide-gray-100">
-              {toolCategories.slice(0, 2).map((category) => (
+              {toolCategories.slice(0, 3).map((category) => (
                 <div key={category.category}>
                   {/* 分类标题 */}
                   <div className="px-5 py-2 bg-gray-50">
@@ -321,7 +327,7 @@ function ToolsDropdown() {
 
             {/* 右列 */}
             <div className="divide-y divide-gray-100">
-              {toolCategories.slice(2, 4).map((category) => (
+              {toolCategories.slice(3, 5).map((category) => (
                 <div key={category.category}>
                   {/* 分类标题 */}
                   <div className="px-5 py-2 bg-gray-50">
