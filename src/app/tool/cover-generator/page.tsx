@@ -193,6 +193,9 @@ export default function CoverGeneratorPage() {
       setHistory([newRecord, ...history]);
       setInputText('');
 
+      // 自动打开历史记录
+      setShowHistory(true);
+
       // 1秒后隐藏进度条
       setTimeout(() => {
         setProgress(0);
