@@ -74,6 +74,7 @@ interface QueryResult {
   foundWords?: Record<string, string[]>;
   message: string;
   fileName?: string;
+  text?: string;
 }
 
 export default function ForbiddenWordsPage() {
@@ -92,7 +93,7 @@ export default function ForbiddenWordsPage() {
   const uploadedFileRef = useRef<File | null>(null);
 
   const platforms = ['公众号', '小红书', '抖音'];
-  const queryModes = ['查文字', '查文档', '查链接'];
+  const queryModes = ['查文字', '查文档'];
   const maxChars = 2000;
 
   // 检查是否登录
@@ -128,6 +129,30 @@ export default function ForbiddenWordsPage() {
     setExpandedCategories(new Set());
   };
 
+  // 高亮文本中的违禁词
+  const highlightText = (text: string, foundWords: Record<string, string[]>) => {
+    if (!text || !foundWords) return text;
+
+    // 收集所有违禁词
+    const allWords = Object.values(foundWords).flat();
+
+    if (allWords.length === 0) return text;
+
+    // 按词长度降序排序，优先匹配长词
+    const sortedWords = [...new Set(allWords)].sort((a, b) => b.length - a.length);
+
+    let result = text;
+    const escapedRegex = sortedWords.map(word => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+    // 使用正则替换，保持原文大小写
+    result = result.replace(
+      new RegExp(`(${escapedRegex.join('|')})`, 'g'),
+      '<mark class="bg-red-200 text-red-900 px-0.5 rounded">$1</mark>'
+    );
+
+    return result;
+  };
+
   // 处理查询
   const handleQuery = async () => {
     if (queryMode === '查文字' && !inputText.trim()) {
@@ -143,11 +168,6 @@ export default function ForbiddenWordsPage() {
         // 如果没有上传文件，触发文件选择
         fileInputRef.current?.click();
       }
-      return;
-    }
-
-    if (queryMode === '查链接' && !inputText.trim()) {
-      alert('请输入要查询的链接');
       return;
     }
 
@@ -173,7 +193,11 @@ export default function ForbiddenWordsPage() {
       }
 
       const data = await response.json();
-      setQueryResults(data);
+      // 保存查询的文本用于显示
+      setQueryResults({
+        ...data,
+        text: inputText,
+      });
     } catch (error) {
       console.error('查询失败:', error);
       alert('查询失败，请重试');
@@ -193,6 +217,9 @@ export default function ForbiddenWordsPage() {
         fileType: file.type,
         platform: selectedPlatform,
       });
+
+      // 读取文件内容
+      const fileText = await file.text();
 
       const formData = new FormData();
       formData.append('file', file);
@@ -222,7 +249,11 @@ export default function ForbiddenWordsPage() {
 
       const data = await response.json();
       console.log('API响应数据:', data);
-      setQueryResults(data);
+      // 保存文件内容用于显示
+      setQueryResults({
+        ...data,
+        text: fileText,
+      });
     } catch (error) {
       console.error('检测失败:', error);
       // alert('检测失败，请重试');
@@ -358,10 +389,10 @@ export default function ForbiddenWordsPage() {
             </div>
           </div>
 
-          {/* 文本/链接输入框 */}
+          {/* 文本/文档输入框 */}
           <div className="mb-6">
             <h2 className="text-sm font-medium text-gray-900 mb-3">
-              {queryMode === '查文字' ? '输入文本' : queryMode === '查链接' ? '输入链接' : '上传文档'}
+              {queryMode === '查文字' ? '输入文本' : '上传文档'}
             </h2>
             {queryMode === '查文档' ? (
               <div
@@ -428,7 +459,7 @@ export default function ForbiddenWordsPage() {
                   ref={textareaRef}
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  placeholder={queryMode === '查文字' ? '请输入要检测的文本内容...' : '请输入要检测的链接...'}
+                  placeholder="请输入要检测的文本内容..."
                   maxLength={maxChars}
                   className={`
                     w-full min-h-[180px] px-4 py-3 rounded-xl border-2
@@ -471,49 +502,91 @@ export default function ForbiddenWordsPage() {
 
         {/* 结果展示面板 */}
         <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
-          {/* 查询结果 */}
+          {/* 查询结果 - 新的展示方式 */}
           {queryResults && queryResults.success && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-xl">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-red-900 mb-1">
-                    {queryResults.message}
-                  </h3>
-                  {queryResults.fileName && (
-                    <p className="text-sm text-red-700">
-                      文件：{queryResults.fileName}
-                    </p>
-                  )}
-                </div>
-                <div className="text-3xl font-bold text-red-600">
-                  {queryResults.totalFound}
+            <div className="mb-8">
+              {/* 结果头部 */}
+              <div className={`p-4 rounded-xl mb-6 ${queryResults.totalFound > 0 ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${queryResults.totalFound > 0 ? 'bg-red-100' : 'bg-green-100'}`}>
+                      {queryResults.totalFound > 0 ? (
+                        <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className={`text-lg font-semibold mb-1 ${queryResults.totalFound > 0 ? 'text-red-900' : 'text-green-900'}`}>
+                        {queryResults.message}
+                      </h3>
+                      {queryResults.fileName && (
+                        <p className={`text-sm ${queryResults.totalFound > 0 ? 'text-red-700' : 'text-green-700'}`}>
+                          文件：{queryResults.fileName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className={`text-3xl font-bold ${queryResults.totalFound > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    {queryResults.totalFound}
+                  </div>
                 </div>
               </div>
 
-              {queryResults.foundWords && Object.keys(queryResults.foundWords).length > 0 ? (
-                <div className="space-y-3">
-                  {Object.entries(queryResults.foundWords).map(([category, words]) => (
-                    <div key={category} className="bg-white p-3 rounded-lg">
-                      <p className="text-sm font-medium text-gray-900 mb-2">{category}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {words.map((word: string, index: number) => (
-                          <span
-                            key={index}
-                            className="px-2.5 py-1 bg-red-100 text-red-700 text-sm rounded-md"
-                          >
-                            {word}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+              {/* 文本内容展示 */}
+              {queryResults.text && (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-base font-medium text-gray-900">检测内容</h3>
+                    <button
+                      onClick={() => {
+                        if (queryResults.text) {
+                          navigator.clipboard.writeText(queryResults.text);
+                          alert('已复制到剪贴板');
+                        }
+                      }}
+                      className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      复制文本
+                    </button>
+                  </div>
+                  <div
+                    className="p-4 bg-gray-50 rounded-xl text-sm leading-relaxed text-gray-800 whitespace-pre-wrap break-words max-h-96 overflow-y-auto"
+                    dangerouslySetInnerHTML={{
+                      __html: highlightText(queryResults.text, queryResults.foundWords || {})
+                    }}
+                  />
                 </div>
-              ) : (
-                <div className="py-4 text-center">
-                  <svg className="w-12 h-12 mx-auto mb-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="text-sm text-green-700 font-medium">未检测到违禁词</p>
+              )}
+
+              {/* 违禁词分类列表 */}
+              {queryResults.foundWords && Object.keys(queryResults.foundWords).length > 0 && (
+                <div>
+                  <h3 className="text-base font-medium text-gray-900 mb-3">违禁词分类</h3>
+                  <div className="space-y-2">
+                    {Object.entries(queryResults.foundWords).map(([category, words]) => (
+                      <div key={category} className="p-3 bg-gray-50 rounded-lg">
+                        <p className="text-sm font-medium text-gray-900 mb-2">{category}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {words.map((word: string, index: number) => (
+                            <span
+                              key={index}
+                              className="px-2.5 py-1 bg-red-100 text-red-700 text-sm rounded-md"
+                            >
+                              {word}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
