@@ -165,8 +165,8 @@ export default function CoverGeneratorPage() {
               <span className="text-2xl">🎨</span>
             </div>
             <div className="flex-1 bg-blue-50 rounded-2xl rounded-tl-none p-5">
-              <p className="text-gray-900 font-medium mb-2">你好，我是封面图小工具魔法超人</p>
-              <p className="text-gray-700 text-sm leading-relaxed">
+              <p className="text-gray-900 font-medium">你好，我是封面图制作小工具魔法小超人！</p>
+              <p className="text-gray-700 text-sm leading-relaxed mt-2">
                 你可以直接向我输入一篇文案内容或者一些关键词，选择你想要制作的封面图平台和尺寸，我就自动会自动帮你生成，免费的哦！
               </p>
             </div>
