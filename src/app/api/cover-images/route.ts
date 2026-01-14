@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from 'coze-coding-dev-sdk';
-import { coverImages } from '@/storage/database/shared/schema';
-import { desc, eq, and } from 'drizzle-orm';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { getDb, getPool } from 'coze-coding-dev-sdk';
+import { coverImages, users } from '@/storage/database/shared/schema';
 
 // GET - 获取封面图列表
 export async function GET(request: NextRequest) {
@@ -14,6 +12,7 @@ export async function GET(request: NextRequest) {
     const db = await getDb();
 
     // 构建查询条件
+    const { desc, eq, and } = await import('drizzle-orm');
     const conditions = [];
 
     if (platform) {
@@ -72,7 +71,7 @@ export async function POST(request: NextRequest) {
     if (!finalUserId) {
       console.error('缺少userId参数');
       return NextResponse.json(
-        { error: '缺少用户ID参数' },
+        { error: '缺少用户ID参数，请重新登录' },
         { status: 400 }
       );
     }
@@ -80,7 +79,7 @@ export async function POST(request: NextRequest) {
     if (!userName) {
       console.error('缺少userName参数');
       return NextResponse.json(
-        { error: '缺少用户名参数' },
+        { error: '缺少用户名参数，请重新登录' },
         { status: 400 }
       );
     }
@@ -109,28 +108,51 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = await getDb();
+    const pool = await getPool();
     console.log('数据库连接成功');
 
-    const insertData = {
-      userId: finalUserId,
+    // 检查用户是否存在
+    const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [finalUserId]);
+    if (userResult.rows.length === 0) {
+      console.error('用户不存在于数据库:', finalUserId);
+      return NextResponse.json(
+        {
+          error: '用户信息已过期，请重新登录',
+          details: { userId: finalUserId, message: '用户不存在于数据库' }
+        },
+        { status: 404 }
+      );
+    }
+
+    console.log('用户验证通过:', userResult.rows[0].name);
+
+    // 使用 pool.query 插入数据
+    const insertSql = `
+      INSERT INTO cover_images (user_id, user_name, platform, style, ratio, size, prompt, input_text, image_url, is_public)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *
+    `;
+
+    const params = [
+      finalUserId,
       userName,
       platform,
-      style,
-      ratio,
-      size,
-      prompt,
+      style || null,
+      ratio || null,
+      size || null,
+      prompt || null,
       inputText,
       imageUrl,
-      isPublic: isPublic || false,
-      viewCount: 0,
-      downloadCount: 0,
-    };
+      isPublic || false,
+    ];
 
-    console.log('准备插入数据:', insertData);
+    console.log('执行 SQL:', insertSql);
+    console.log('参数:', params);
 
-    const [image] = await db.insert(coverImages).values(insertData).returning();
+    const result = await pool.query(insertSql, params);
+    console.log('SQL 执行结果:', result);
 
+    const image = result.rows[0];
     console.log('保存成功:', image);
 
     return NextResponse.json({
@@ -138,12 +160,28 @@ export async function POST(request: NextRequest) {
       data: image,
     });
   } catch (error) {
-    console.error('保存封面图失败:', error);
+    console.error('保存封面图失败 - 完整错误对象:', error);
+
+    let errorMessage = '保存失败，请重试';
+    let errorDetails: any = {};
+
     if (error instanceof Error) {
-      console.error('错误详情:', error.message, error.stack);
+      errorMessage = error.message;
+      errorDetails = {
+        name: error.name,
+        message: error.message,
+        stack: error.stack?.split('\n').slice(0, 3).join('\n'), // 只显示前3行
+      };
+      console.error('错误详情:', errorDetails);
+    } else {
+      errorDetails = { error };
     }
+
     return NextResponse.json(
-      { error: '保存失败，请重试' },
+      {
+        error: errorMessage,
+        details: errorDetails,
+      },
       { status: 500 }
     );
   }

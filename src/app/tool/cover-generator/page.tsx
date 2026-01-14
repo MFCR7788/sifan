@@ -285,7 +285,17 @@ export default function CoverGeneratorPage() {
         // 重新加载图片列表
         loadSavedImages();
       } else {
-        alert(data.error || '保存失败');
+        const errorMsg = data.error || '保存失败';
+
+        // 如果是用户信息过期，跳转到登录页
+        if (errorMsg.includes('重新登录') || errorMsg.includes('用户信息已过期')) {
+          alert('用户信息已过期，请重新登录');
+          router.push('/login');
+          return;
+        }
+
+        const details = data.details ? `\n详细信息: ${JSON.stringify(data.details, null, 2)}` : '';
+        alert(errorMsg + details);
       }
     } catch (error) {
       console.error('保存失败:', error);
