@@ -207,6 +207,86 @@ function AboutDropdown() {
   );
 }
 
+function ResourcesDropdown() {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resourceItems = [
+    { name: '行业动态', href: '/resources/industry' },
+    { name: '前沿资讯', href: '/resources/news' },
+    { name: '升级日志', href: '/resources/changelog' },
+    { name: '魔法学院', href: '/resources/academy' },
+  ];
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowDropdown(false);
+    }, 150);
+  };
+
+  const handleDropdownMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setShowDropdown(true);
+      }}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 触发区域 - 资源链接 */}
+      <Link
+        href="/resources"
+        className="text-xs transition-colors hover:opacity-60"
+        onClick={(e) => e.preventDefault()}
+      >
+        资源
+      </Link>
+
+      {/* 下拉菜单 */}
+      {showDropdown && (
+        <div
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-max"
+          onMouseEnter={handleDropdownMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {resourceItems.map((item, index) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 ${
+                index === 0 ? 'rounded-t-xl' : ''
+              } ${
+                index === resourceItems.length - 1 ? 'rounded-b-xl' : ''
+              }`}
+              onClick={() => setShowDropdown(false)}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ToolsDropdown() {
   const [showDropdown, setShowDropdown] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -715,6 +795,10 @@ export default function Navigation() {
                 if (item.name === '工具') {
                   return <ToolsDropdown key={item.href} />;
                 }
+                // 为"资源"项使用下拉菜单组件
+                if (item.name === '资源') {
+                  return <ResourcesDropdown key={item.href} />;
+                }
                 // 为"关于"项使用下拉菜单组件
                 if (item.name === '关于') {
                   return <AboutDropdown key={item.href} />;
@@ -907,6 +991,44 @@ export default function Navigation() {
                         {tool.name}
                       </Link>
                     ))}
+                  </div>
+                );
+              }
+              // 为"资源"项显示为标题和子菜单
+              if (item.name === '资源') {
+                return (
+                  <div key={item.href}>
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-900 border-b border-gray-100">
+                      资源
+                    </div>
+                    <Link
+                      href="/resources/industry"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      行业动态
+                    </Link>
+                    <Link
+                      href="/resources/news"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      前沿资讯
+                    </Link>
+                    <Link
+                      href="/resources/changelog"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      升级日志
+                    </Link>
+                    <Link
+                      href="/resources/academy"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                    >
+                      魔法学院
+                    </Link>
                   </div>
                 );
               }
