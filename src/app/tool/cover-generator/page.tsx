@@ -647,11 +647,11 @@ export default function CoverGeneratorPage() {
 
                     {/* 生成的图片 */}
                     {record.imageUrl && (
-                      <div className="relative">
+                      <div className={`relative w-full ${getAspectRatioClass(record.ratio || '9:16')}`}>
                         <img
                           src={record.imageUrl}
                           alt="生成的封面图"
-                          className="w-full rounded-lg border border-gray-200"
+                          className="w-full h-full rounded-lg border border-gray-200 object-cover"
                           loading="lazy"
                         />
                         {/* 保存按钮 */}
