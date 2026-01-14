@@ -1,40 +1,96 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ImageGenerationClient, Config } from 'coze-coding-dev-sdk';
 
-// 模拟封面图生成（实际应调用生图API）
+// 平台到尺寸的映射
+const PLATFORM_SIZE_MAP: Record<string, string> = {
+  '抖音': '1080x1920',  // 9:16 竖屏
+  '小红书': '1080x1920', // 9:16 竖屏
+  '公众号': '900x383',   // 2.35:1 横屏
+};
+
+// 比例到尺寸的映射
+const RATIO_SIZE_MAP: Record<string, string> = {
+  '16:9': '1920x1080',
+  '9:16': '1080x1920',
+  '1:1': '1080x1080',
+  '4:3': '1600x1200',
+};
+
+// 构建生图 prompt
+function buildPrompt(platform: string, style: string, text: string): string {
+  const platformDescriptions: Record<string, string> = {
+    '抖音': '抖音短视频封面图，具有强烈视觉冲击力',
+    '小红书': '小红书封面图，精致优雅，时尚清新',
+    '公众号': '微信公众号封面图，专业正式，商务风格',
+  };
+
+  const styleDescriptions: Record<string, string> = {
+    '简约': '简约风格，留白充足，构图简洁',
+    '清新': '清新风格，色彩明亮，自然舒适',
+    '商务': '商务风格，专业稳重，大气得体',
+    '科技': '科技风格，现代感强，富有未来感',
+    '艺术': '艺术风格，富有创意，设计感强',
+    '复古': '复古风格，怀旧情调，经典耐看',
+  };
+
+  return `生成一张${platformDescriptions[platform]}，${styleDescriptions[style]}。
+
+主题内容：${text}
+
+设计要求：
+1. 高质量高清图片，细节丰富
+2. 构图均衡，视觉焦点突出
+3. 色彩搭配和谐，符合${style}风格
+4. 字体排版清晰（如需文字），大小适中
+5. 背景简洁，不喧宾夺主
+6. 适合作为社交媒体封面使用`;
+}
+
+// 调用生图大模型生成封面图
 async function generateCover(text: string, platform: string, style: string, ratio: string) {
-  const prompt = `生成一张${platform}平台风格的${style}封面图，比例为${ratio}。主题：${text}
-
-要求：
-1. 突出主题内容，视觉冲击力强
-2. 符合${platform}平台的设计风格和审美标准
-3. 采用${style}风格的设计元素
-4. 图片比例为${ratio}
-5. 色彩搭配协调，符合品牌调性
-6. 适合用作社交媒体封面`;
-
   try {
-    // TODO: 集成生图大模型 (integration-doubao-seedream)
-    // 这里先返回一个模拟的图片URL
-    // 实际使用时应该调用生图API并返回生成的图片URL
+    // 初始化生图客户端
+    const config = new Config();
+    const client = new ImageGenerationClient(config);
 
-    // 模拟延迟
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // 构建生图 prompt
+    const prompt = buildPrompt(platform, style, text);
 
-    // 返回示例图片URL（实际应替换为生成的图片）
-    const sampleImages = {
-      '16:9': 'https://via.placeholder.com/800x450/4A90E2/ffffff?text=Cover+Image',
-      '9:16': 'https://via.placeholder.com/450x800/4A90E2/ffffff?text=Cover+Image',
-      '1:1': 'https://via.placeholder.com/800x800/4A90E2/ffffff?text=Cover+Image',
-      '4:3': 'https://via.placeholder.com/800x600/4A90E2/ffffff?text=Cover+Image',
-    };
+    // 确定图片尺寸（优先使用用户选择的比例）
+    let imageSize = RATIO_SIZE_MAP[ratio] || '1920x1080';
+
+    // 调用生图 API
+    console.log('开始生成封面图...', { platform, style, ratio, imageSize });
+
+    const response = await client.generate({
+      prompt: prompt,
+      size: imageSize,
+      watermark: false, // 不加水印
+      responseFormat: 'url',
+    });
+
+    // 解析响应
+    const helper = client.getResponseHelper(response);
+
+    if (!helper.success) {
+      console.error('生图失败:', helper.errorMessages);
+      throw new Error(helper.errorMessages.join(', '));
+    }
+
+    if (!helper.imageUrls || helper.imageUrls.length === 0) {
+      throw new Error('未获取到图片 URL');
+    }
+
+    console.log('封面图生成成功:', helper.imageUrls[0]);
 
     return {
       success: true,
-      imageUrl: sampleImages[ratio as keyof typeof sampleImages] || sampleImages['16:9'],
+      imageUrl: helper.imageUrls[0],
       prompt,
       platform,
       style,
       ratio,
+      size: imageSize,
     };
   } catch (error) {
     console.error('生成封面图失败:', error);
@@ -62,7 +118,12 @@ export async function POST(request: NextRequest) {
     }
 
     // 调用封面图生成函数
-    const result = await generateCover(text, platform, style || '简约', ratio || '16:9');
+    const result = await generateCover(
+      text,
+      platform,
+      style || '简约',
+      ratio || '16:9'
+    );
 
     return NextResponse.json({
       success: true,
@@ -71,7 +132,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('封面图生成API错误:', error);
     return NextResponse.json(
-      { error: '生成失败，请重试' },
+      { error: error instanceof Error ? error.message : '生成失败，请重试' },
       { status: 500 }
     );
   }

@@ -49,7 +49,15 @@ export default function CoverGeneratorPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [history, setHistory] = useState<Array<{ id: string; input: string; platform: string; style?: string; timestamp: Date }>>([]);
+  const [history, setHistory] = useState<Array<{
+    id: string;
+    input: string;
+    platform: string;
+    style?: string;
+    ratio?: string;
+    imageUrl?: string;
+    timestamp: Date;
+  }>>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 详细选项
@@ -109,6 +117,8 @@ export default function CoverGeneratorPage() {
         input: inputText,
         platform: selectedPlatform,
         style: selectedStyle,
+        ratio: selectedRatio,
+        imageUrl: data.data?.imageUrl,
         timestamp: new Date(),
       };
 
@@ -119,6 +129,23 @@ export default function CoverGeneratorPage() {
       alert('生成失败，请重试');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // 下载图片
+  const handleDownloadImage = async (imageUrl: string, filename: string) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('下载失败:', error);
+      alert('下载失败，请重试');
     }
   };
 
@@ -323,13 +350,14 @@ export default function CoverGeneratorPage() {
                 <p className="text-gray-500">暂无历史记录</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-6">
                 {history.map((record) => (
                   <div
                     key={record.id}
-                    className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+                    className="p-5 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                   >
-                    <div className="flex items-center justify-between mb-2">
+                    {/* 头部信息 */}
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded">
                           {record.platform}
@@ -339,12 +367,51 @@ export default function CoverGeneratorPage() {
                             {record.style}
                           </span>
                         )}
+                        {record.ratio && (
+                          <span className="inline-block px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded">
+                            {record.ratio}
+                          </span>
+                        )}
                       </div>
-                      <span className="text-xs text-gray-400">
-                        {record.timestamp.toLocaleString('zh-CN')}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs text-gray-400">
+                          {record.timestamp.toLocaleString('zh-CN')}
+                        </span>
+                        {record.imageUrl && (
+                          <button
+                            onClick={() => handleDownloadImage(
+                              record.imageUrl!,
+                              `cover-${record.platform}-${record.timestamp.getTime()}.png`
+                            )}
+                            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span>下载图片</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-700 line-clamp-2">{record.input}</p>
+
+                    {/* 输入文案 */}
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-700 bg-white rounded-lg p-3 border border-gray-200">
+                        {record.input}
+                      </p>
+                    </div>
+
+                    {/* 生成的图片 */}
+                    {record.imageUrl && (
+                      <div className="relative">
+                        <img
+                          src={record.imageUrl}
+                          alt="生成的封面图"
+                          className="w-full rounded-lg border border-gray-200"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
