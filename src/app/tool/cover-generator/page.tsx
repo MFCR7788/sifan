@@ -25,11 +25,11 @@ const PlatformCard = ({ icon, title, description, selected, onClick }: {
         }
       `}
     >
-      <div className="mb-3 flex items-center justify-center w-12 h-12 rounded-xl bg-white">
+      <div className="mb-3 flex items-center justify-center w-16 h-16 rounded-xl bg-white">
         <img
           src={icon}
           alt={title}
-          className="w-8 h-8 object-contain"
+          className="w-12 h-12 object-contain"
         />
       </div>
       <h3 className={`font-semibold mb-1 ${selected ? 'text-blue-700' : 'text-gray-900'}`}>
