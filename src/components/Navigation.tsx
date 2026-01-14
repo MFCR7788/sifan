@@ -305,7 +305,7 @@ function ToolsDropdown() {
     {
       category: '内容安全',
       items: [
-        { name: '违禁词', href: '/tool/forbidden-words' },
+        { name: '违禁词', href: '/tool/coming-soon' },
       ],
     },
     {
@@ -313,14 +313,14 @@ function ToolsDropdown() {
       items: [
         { name: 'AI图像生成', href: '/tool/image-gen', hasSubmenu: true },
         { name: 'AI视频生成', href: '/video-gen' },
-        { name: '封面图制作', href: '/tool/cover-gen' },
-        { name: '图文提取', href: '/tool/image-extract' },
+        { name: '封面图制作', href: '/tool/coming-soon' },
+        { name: '图文提取', href: '/tool/coming-soon' },
       ],
     },
     {
       category: '智能分析',
       items: [
-        { name: '账号AI分析', href: '/tool/account-analysis' },
+        { name: '账号AI分析', href: '/tool/coming-soon' },
       ],
     },
   ];
@@ -967,13 +967,13 @@ export default function Navigation() {
                 const mobileToolItems = [
                   { name: '文案改写', href: '/tool/rewrite' },
                   { name: '标题生成', href: '/tool/title-gen' },
-                  { name: '违禁词', href: '/tool/forbidden-words' },
-                  { name: '图文提取', href: '/tool/image-extract' },
+                  { name: '违禁词', href: '/tool/coming-soon' },
+                  { name: '图文提取', href: '/tool/coming-soon' },
                   { name: '短视频提文案', href: '/tool/short-video-caption' },
                   { name: 'AI文案创作', href: '/tool/ai-copywriting' },
                   { name: 'AI视频生成', href: '/video-gen' },
-                  { name: '封面图制作', href: '/tool/cover-gen' },
-                  { name: '账号AI分析', href: '/tool/account-analysis' },
+                  { name: '封面图制作', href: '/tool/coming-soon' },
+                  { name: '账号AI分析', href: '/tool/coming-soon' },
                 ];
 
                 return (
