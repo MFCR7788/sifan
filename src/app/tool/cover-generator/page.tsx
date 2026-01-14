@@ -93,6 +93,22 @@ export default function CoverGeneratorPage() {
     }
   }, [isAuthenticated, authLoading, router]);
 
+  // 当平台变化时，自动设置对应的比例
+  useEffect(() => {
+    // 如果用户没有展开详细条件（即没有手动修改过比例），则使用平台的默认比例
+    const platformRatioMap: Record<string, string> = {
+      '抖音': '9:16',
+      '小红书': '9:16',
+      '公众号': '16:9',
+    };
+
+    // 只有当用户没有手动选择比例时，才使用平台的默认比例
+    // 这样可以保留用户的自定义比例
+    if (!showAdvanced) {
+      setSelectedRatio(platformRatioMap[selectedPlatform] || '16:9');
+    }
+  }, [selectedPlatform, showAdvanced]);
+
   // 加载保存的图片列表
   useEffect(() => {
     if (isAuthenticated && user) {
