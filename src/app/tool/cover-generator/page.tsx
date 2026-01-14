@@ -17,17 +17,6 @@ function getAspectRatioClass(ratio: string): string {
   return ratioMap[ratio] || 'aspect-[9/16]';
 }
 
-// 计算图片尺寸（1/4实际尺寸）
-function getImageSize(ratio: string): { width: number; height: number } {
-  const sizeMap: Record<string, { width: number; height: number }> = {
-    '16:9': { width: 480, height: 270 },   // 1920x1080 / 4
-    '9:16': { width: 270, height: 480 },   // 1080x1920 / 4
-    '1:1': { width: 270, height: 270 },   // 1080x1080 / 4
-    '4:3': { width: 400, height: 300 },   // 1600x1200 / 4
-  };
-  return sizeMap[ratio] || sizeMap['9:16'];
-}
-
 // 平台卡片组件
 const PlatformCard = ({ icon, title, description, selected, onClick }: {
   icon: string;
@@ -703,82 +692,74 @@ export default function CoverGeneratorPage() {
               <p className="text-gray-500">暂无作品，快去生成第一个封面图吧！</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {savedImages.map((image) => {
-                const size = getImageSize(image.ratio || '9:16');
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {savedImages.map((image) => (
+                <div
+                  key={image.id}
+                  className="relative group overflow-hidden rounded-2xl cursor-pointer"
+                  style={{ aspectRatio: '4/3' }}
+                  onClick={() => handleImageClick(image)}
+                >
+                  {/* 图片 */}
+                  <img
+                    src={image.image_url}
+                    alt="封面图"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
 
-                return (
-                  <div
-                    key={image.id}
-                    className="relative group cursor-pointer shadow-lg"
-                    style={{
-                      width: `${size.width}px`,
-                      height: `${size.height}px`,
-                      margin: '0 auto'
-                    }}
-                    onClick={() => handleImageClick(image)}
-                  >
-                    {/* 图片 */}
-                    <img
-                      src={image.image_url}
-                      alt="封面图"
-                      className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl"
-                      loading="lazy"
-                    />
+                  {/* 悬浮遮罩 */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
 
-                    {/* 悬浮遮罩 */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300" />
-
-                    {/* 悬浮操作层 */}
-                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-center items-center gap-3 p-4">
-                      {/* 信息 */}
-                      <div className="text-center">
-                        <p className="text-white text-sm font-medium mb-1 line-clamp-2">
-                          {image.input_text}
-                        </p>
-                        <div className="flex items-center justify-center gap-2 text-xs text-gray-300">
-                          <span>{image.platform}</span>
-                          {image.style && <span>· {image.style}</span>}
-                          {image.ratio && <span>· {image.ratio}</span>}
-                        </div>
+                  {/* 悬浮操作层 */}
+                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-center items-center gap-3 p-4">
+                    {/* 信息 */}
+                    <div className="text-center">
+                      <p className="text-white text-sm font-medium mb-1 line-clamp-2">
+                        {image.input_text}
+                      </p>
+                      <div className="flex items-center justify-center gap-2 text-xs text-gray-300">
+                        <span>{image.platform}</span>
+                        {image.style && <span>· {image.style}</span>}
+                        {image.ratio && <span>· {image.ratio}</span>}
                       </div>
+                    </div>
 
-                      {/* 操作按钮 */}
-                      <div className="flex items-center gap-2">
+                    {/* 操作按钮 */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadImage(
+                            image.image_url,
+                            `cover-${image.platform}-${image.id.substring(0, 8)}.png`
+                          );
+                        }}
+                        className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs transition-colors"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        下载
+                      </button>
+                      {user?.isAdmin && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDownloadImage(
-                              image.image_url,
-                              `cover-${image.platform}-${image.id.substring(0, 8)}.png`
-                            );
+                            handleDeleteImage(image.id);
                           }}
-                          className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs transition-colors"
+                          className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs transition-colors"
                         >
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
-                          下载
+                          删除
                         </button>
-                        {user?.isAdmin && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteImage(image.id);
-                            }}
-                            className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs transition-colors"
-                          >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            删除
-                          </button>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           )}
         </div>
