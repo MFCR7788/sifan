@@ -247,12 +247,22 @@ export default function CoverGeneratorPage() {
       imageUrl: imageUrl
     });
 
+    // 构建请求头（添加 x-user-id 备选方案）
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // 从 sessionStorage 读取 userId 作为备选方案
+    const sessionUserId = typeof window !== 'undefined' ? sessionStorage.getItem('userId') : null;
+    if (sessionUserId) {
+      headers['x-user-id'] = sessionUserId;
+      console.log('添加 x-user-id header:', sessionUserId);
+    }
+
     try {
       const response = await fetch('/api/cover-images', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include',
         body: JSON.stringify({
           userId: user.id,

@@ -51,17 +51,69 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { userId, userName, platform, style, ratio, size, prompt, inputText, imageUrl, isPublic } = body;
 
-    if (!userId || !userName || !platform || !inputText || !imageUrl) {
+    // 从 header 中获取备选 userId（用于嵌入式页面）
+    const headerUserId = request.headers.get('x-user-id');
+    const finalUserId = userId || headerUserId;
+
+    console.log('保存封面图请求参数:', {
+      bodyUserId: userId,
+      headerUserId,
+      finalUserId,
+      userName,
+      platform,
+      style,
+      ratio,
+      size,
+      inputText: inputText?.substring(0, 50),
+      imageUrl: imageUrl?.substring(0, 100),
+      isPublic,
+    });
+
+    if (!finalUserId) {
+      console.error('缺少userId参数');
       return NextResponse.json(
-        { error: '缺少必要参数' },
+        { error: '缺少用户ID参数' },
+        { status: 400 }
+      );
+    }
+
+    if (!userName) {
+      console.error('缺少userName参数');
+      return NextResponse.json(
+        { error: '缺少用户名参数' },
+        { status: 400 }
+      );
+    }
+
+    if (!platform) {
+      console.error('缺少platform参数');
+      return NextResponse.json(
+        { error: '缺少平台参数' },
+        { status: 400 }
+      );
+    }
+
+    if (!inputText) {
+      console.error('缺少inputText参数');
+      return NextResponse.json(
+        { error: '缺少文案内容参数' },
+        { status: 400 }
+      );
+    }
+
+    if (!imageUrl) {
+      console.error('缺少imageUrl参数');
+      return NextResponse.json(
+        { error: '缺少图片URL参数' },
         { status: 400 }
       );
     }
 
     const db = await getDb();
+    console.log('数据库连接成功');
 
-    const [image] = await db.insert(coverImages).values({
-      userId,
+    const insertData = {
+      userId: finalUserId,
       userName,
       platform,
       style,
@@ -73,7 +125,13 @@ export async function POST(request: NextRequest) {
       isPublic: isPublic || false,
       viewCount: 0,
       downloadCount: 0,
-    }).returning();
+    };
+
+    console.log('准备插入数据:', insertData);
+
+    const [image] = await db.insert(coverImages).values(insertData).returning();
+
+    console.log('保存成功:', image);
 
     return NextResponse.json({
       success: true,
@@ -81,6 +139,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('保存封面图失败:', error);
+    if (error instanceof Error) {
+      console.error('错误详情:', error.message, error.stack);
+    }
     return NextResponse.json(
       { error: '保存失败，请重试' },
       { status: 500 }
