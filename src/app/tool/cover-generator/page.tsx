@@ -28,79 +28,6 @@ function getImageSize(ratio: string): { width: number; height: number } {
   return sizeMap[ratio] || sizeMap['9:16'];
 }
 
-// 检查两个矩形是否重叠（padding表示图片间距）
-function checkOverlap(
-  pos1: { top: number; left: number },
-  size1: { width: number; height: number },
-  pos2: { top: number; left: number },
-  size2: { width: number; height: number },
-  padding: number = 10
-): boolean {
-  const rect1 = {
-    left: pos1.left,
-    right: pos1.left + size1.width,
-    top: pos1.top,
-    bottom: pos1.top + size1.height
-  };
-
-  const rect2 = {
-    left: pos2.left,
-    right: pos2.left + size2.width,
-    top: pos2.top,
-    bottom: pos2.top + size2.height
-  };
-
-  // 添加padding间距
-  return !(
-    rect1.right + padding <= rect2.left ||
-    rect1.left >= rect2.right + padding ||
-    rect1.bottom + padding <= rect2.top ||
-    rect1.top >= rect2.bottom + padding
-  );
-}
-
-// 生成随机位置（避免重叠，返回百分比值）
-function generateRandomPosition(
-  imageSize: { width: number; height: number },
-  existingPositions: Array<{ pos: { top: number; left: number }; size: { width: number; height: number } }>,
-  containerWidth: number,
-  containerHeight: number
-): { top: number; left: number } | null {
-  const maxAttempts = 100;
-  let attempt = 0;
-  const padding = 20; // 图片间距（像素）
-
-  while (attempt < maxAttempts) {
-    // 生成随机位置（留出右边距和下边距）
-    const leftPx = Math.random() * (containerWidth - imageSize.width - padding);
-    const topPx = Math.random() * (containerHeight - imageSize.height - padding);
-
-    const newPosPx = { top: topPx, left: leftPx };
-    let hasOverlap = false;
-
-    // 检查是否与已有图片重叠
-    for (const existing of existingPositions) {
-      if (checkOverlap(newPosPx, imageSize, existing.pos, existing.size, padding)) {
-        hasOverlap = true;
-        break;
-      }
-    }
-
-    if (!hasOverlap) {
-      // 返回百分比值
-      return {
-        top: (topPx / containerHeight) * 100,
-        left: (leftPx / containerWidth) * 100
-      };
-    }
-
-    attempt++;
-  }
-
-  // 如果尝试多次都无法找到不重叠的位置，返回null
-  return null;
-}
-
 // 平台卡片组件
 const PlatformCard = ({ icon, title, description, selected, onClick }: {
   icon: string;
@@ -169,7 +96,6 @@ export default function CoverGeneratorPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [savedImages, setSavedImages] = useState<Array<any>>([]);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
-  const [imagePositions, setImagePositions] = useState<Record<string, { top: number; left: number }>>({});
   const [previewImage, setPreviewImage] = useState<{
     url: string;
     inputText: string;
@@ -235,51 +161,7 @@ export default function CoverGeneratorPage() {
       if (data.success) {
         const images = data.data || [];
         setSavedImages(images);
-
-        // 为每张图片生成随机位置（避免重叠）
-        const positions: Record<string, { top: number; left: number }> = {};
-        const containerWidth = 1200; // 容器宽度（像素）
-        const containerHeight = 600; // 容器高度（像素）
-        const existingPositionsPx: Array<{ pos: { top: number; left: number }; size: { width: number; height: number } }> = [];
-
-        images.forEach((image: any) => {
-          const imageSize = getImageSize(image.ratio || '9:16');
-
-          // 尝试生成不重叠的位置
-          const positionPercent = generateRandomPosition(
-            imageSize,
-            existingPositionsPx,
-            containerWidth,
-            containerHeight
-          );
-
-          if (positionPercent) {
-            positions[image.id] = positionPercent;
-            // 将百分比转换为像素位置，用于后续碰撞检测
-            existingPositionsPx.push({
-              pos: {
-                top: (positionPercent.top / 100) * containerHeight,
-                left: (positionPercent.left / 100) * containerWidth
-              },
-              size: imageSize
-            });
-          } else {
-            // 如果无法找到不重叠的位置，随机放置
-            console.warn(`无法为图片 ${image.id} 找到不重叠的位置，随机放置`);
-            const randomPosPx = {
-              top: Math.random() * (containerHeight - imageSize.height),
-              left: Math.random() * (containerWidth - imageSize.width)
-            };
-            positions[image.id] = {
-              top: (randomPosPx.top / containerHeight) * 100,
-              left: (randomPosPx.left / containerWidth) * 100
-            };
-            existingPositionsPx.push({ pos: randomPosPx, size: imageSize });
-          }
-        });
-
-        setImagePositions(positions);
-        console.log('加载到', images.length || 0, '张图片，已生成位置');
+        console.log('加载到', images.length || 0, '张图片');
       }
     } catch (error) {
       console.error('加载图片列表失败:', error);
@@ -821,20 +703,18 @@ export default function CoverGeneratorPage() {
               <p className="text-gray-500">暂无作品，快去生成第一个封面图吧！</p>
             </div>
           ) : (
-            <div className="relative overflow-hidden w-full" style={{ minHeight: '600px', height: '600px' }}>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {savedImages.map((image) => {
                 const size = getImageSize(image.ratio || '9:16');
-                const position = imagePositions[image.id] || { top: 0, left: 0 };
 
                 return (
                   <div
                     key={image.id}
-                    className="absolute group cursor-pointer shadow-lg"
+                    className="relative group cursor-pointer shadow-lg"
                     style={{
-                      top: `${position.top}%`,
-                      left: `${position.left}%`,
                       width: `${size.width}px`,
                       height: `${size.height}px`,
+                      margin: '0 auto'
                     }}
                     onClick={() => handleImageClick(image)}
                   >
@@ -842,7 +722,7 @@ export default function CoverGeneratorPage() {
                     <img
                       src={image.image_url}
                       alt="封面图"
-                      className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:z-50 group-hover:shadow-2xl"
+                      className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl"
                       loading="lazy"
                     />
 
