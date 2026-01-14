@@ -3,13 +3,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { Music, Book, MessageSquare } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
 // 平台卡片组件
-const PlatformCard = ({ icon: Icon, title, description, selected, onClick }: {
-  icon: React.ElementType;
+const PlatformCard = ({ icon, title, description, selected, onClick }: {
+  icon: string;
   title: string;
   description: string;
   selected: boolean;
@@ -26,8 +25,12 @@ const PlatformCard = ({ icon: Icon, title, description, selected, onClick }: {
         }
       `}
     >
-      <div className="mb-3 flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200">
-        <Icon className={`w-7 h-7 ${selected ? 'text-blue-600' : 'text-gray-600'}`} />
+      <div className="mb-3 flex items-center justify-center w-12 h-12 rounded-xl bg-white">
+        <img
+          src={icon}
+          alt={title}
+          className="w-8 h-8 object-contain"
+        />
       </div>
       <h3 className={`font-semibold mb-1 ${selected ? 'text-blue-700' : 'text-gray-900'}`}>
         {title}
@@ -81,9 +84,9 @@ export default function CoverGeneratorPage() {
   const [selectedRatio, setSelectedRatio] = useState('16:9');
 
   const platforms = [
-    { id: '抖音', icon: Music, title: '抖音封面', description: '输入文案内容帮你生成抖音封面图' },
-    { id: '小红书', icon: Book, title: '小红书封面', description: '输入小红书的内容帮你生成小红书的封面图' },
-    { id: '公众号', icon: MessageSquare, title: '公众号封面', description: '输入公众号的内容帮你生成公众号封面头图' },
+    { id: '抖音', icon: '/images/douyin-logo.png', title: '抖音封面', description: '输入文案内容帮你生成抖音封面图' },
+    { id: '小红书', icon: '/images/xiaohongshu-logo.png', title: '小红书封面', description: '输入小红书的内容帮你生成小红书的封面图' },
+    { id: '公众号', icon: '/images/iwechat-logo.png', title: '公众号封面', description: '输入公众号的内容帮你生成公众号封面头图' },
   ];
 
   const styles = ['简约', '清新', '商务', '科技', '艺术', '复古'];
