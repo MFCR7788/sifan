@@ -97,7 +97,7 @@ export default function CoverGeneratorPage() {
 
   // 详细选项
   const [selectedStyle, setSelectedStyle] = useState('简约');
-  const [selectedRatio, setSelectedRatio] = useState('16:9');
+  const [selectedRatio, setSelectedRatio] = useState('9:16'); // 默认抖音竖屏
 
   const platforms = [
     { id: '抖音', icon: '/images/douyin-logo.png', title: '抖音封面', description: '输入文案内容帮你生成抖音封面图' },
