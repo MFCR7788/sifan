@@ -89,6 +89,7 @@ export default function ForbiddenWordsPage() {
   const [uploadedFile, setUploadedFile] = useState<{ name: string; size: string } | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadedFileRef = useRef<File | null>(null);
 
   const platforms = ['公众号', '小红书', '抖音'];
   const queryModes = ['查文字', '查文档', '查链接'];
@@ -136,8 +137,8 @@ export default function ForbiddenWordsPage() {
 
     if (queryMode === '查文档') {
       // 如果已上传文件，直接进行检测
-      if (uploadedFile && fileInputRef.current?.files?.[0]) {
-        await performFileCheck(fileInputRef.current.files[0]);
+      if (uploadedFileRef.current) {
+        await performFileCheck(uploadedFileRef.current);
       } else {
         // 如果没有上传文件，触发文件选择
         fileInputRef.current?.click();
@@ -245,6 +246,8 @@ export default function ForbiddenWordsPage() {
         name: file.name,
         size: formatFileSize(file.size),
       });
+      // 保存文件对象到 ref，供后续查询使用
+      uploadedFileRef.current = file;
     } catch (error) {
       console.error('上传失败:', error);
       alert('上传失败，请重试');
@@ -258,6 +261,7 @@ export default function ForbiddenWordsPage() {
     e.stopPropagation();
     setUploadedFile(null);
     setQueryResults(null);
+    uploadedFileRef.current = null;
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -305,7 +309,15 @@ export default function ForbiddenWordsPage() {
                   key={platform}
                   name={platform}
                   selected={selectedPlatform === platform}
-                  onClick={() => setSelectedPlatform(platform)}
+                  onClick={() => {
+                    setSelectedPlatform(platform);
+                    setUploadedFile(null);
+                    setQueryResults(null);
+                    uploadedFileRef.current = null;
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = '';
+                    }
+                  }}
                 />
               ))}
             </div>
@@ -323,6 +335,7 @@ export default function ForbiddenWordsPage() {
                     if (mode !== '查文档') {
                       setUploadedFile(null);
                       setQueryResults(null);
+                      uploadedFileRef.current = null;
                     }
                   }}
                   className={`
