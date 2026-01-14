@@ -67,6 +67,15 @@ const forbiddenWordsData = {
   '与"认证/奖项"有关': ['国家认证', '国际认证', '获得XX奖', 'XX品牌推荐', 'XX协会认证', 'ISO认证', '质量免检'],
 };
 
+// 查询结果类型定义
+interface QueryResult {
+  success: boolean;
+  totalFound: number;
+  foundWords?: Record<string, string[]>;
+  message: string;
+  fileName?: string;
+}
+
 export default function ForbiddenWordsPage() {
   const router = useRouter();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
@@ -75,7 +84,7 @@ export default function ForbiddenWordsPage() {
   const [inputText, setInputText] = useState('');
   const [charCount, setCharCount] = useState(0);
   const [isQuerying, setIsQuerying] = useState(false);
-  const [queryResults, setQueryResults] = useState<any>(null);
+  const [queryResults, setQueryResults] = useState<QueryResult | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -357,7 +366,7 @@ export default function ForbiddenWordsPage() {
                 </div>
               </div>
 
-              {Object.keys(queryResults.foundWords || {}).length > 0 ? (
+              {queryResults.foundWords && Object.keys(queryResults.foundWords).length > 0 ? (
                 <div className="space-y-3">
                   {Object.entries(queryResults.foundWords).map(([category, words]) => (
                     <div key={category} className="bg-white p-3 rounded-lg">
