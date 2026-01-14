@@ -12,7 +12,7 @@ const navItems = [
   { name: '产品', href: '/pricing' },
   { name: '工具', href: '/magic-ai' },
   { name: '资源', href: '/resources' },
-  { name: '关于', href: '/about' },
+  { name: '加盟', href: '/franchise' },
   { name: '联系', href: '/contact' },
 ];
 
@@ -799,8 +799,8 @@ export default function Navigation() {
                 if (item.name === '资源') {
                   return <ResourcesDropdown key={item.href} />;
                 }
-                // 为"关于"项使用下拉菜单组件
-                if (item.name === '关于') {
+                // 为"加盟"项使用下拉菜单组件
+                if (item.name === '加盟') {
                   return <AboutDropdown key={item.href} />;
                 }
                 return (

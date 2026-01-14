@@ -135,7 +135,13 @@ export default function ForbiddenWordsPage() {
     }
 
     if (queryMode === '查文档') {
-      fileInputRef.current?.click();
+      // 如果已上传文件，直接进行检测
+      if (uploadedFile && fileInputRef.current?.files?.[0]) {
+        await performFileCheck(fileInputRef.current.files[0]);
+      } else {
+        // 如果没有上传文件，触发文件选择
+        fileInputRef.current?.click();
+      }
       return;
     }
 
@@ -170,6 +176,35 @@ export default function ForbiddenWordsPage() {
     } catch (error) {
       console.error('查询失败:', error);
       alert('查询失败，请重试');
+    } finally {
+      setIsQuerying(false);
+    }
+  };
+
+  // 执行文件检测
+  const performFileCheck = async (file: File) => {
+    setIsQuerying(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('platform', selectedPlatform);
+
+      const response = await fetch('/api/tool/forbidden-words/upload', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('检测失败');
+      }
+
+      const data = await response.json();
+      setQueryResults(data);
+    } catch (error) {
+      console.error('检测失败:', error);
+      alert('检测失败，请重试');
     } finally {
       setIsQuerying(false);
     }
