@@ -244,6 +244,35 @@ export const coverImages = pgTable("cover_images", {
 	}).onDelete("cascade"),
 ]);
 
+// AI图像生成记录表
+export const aiImages = pgTable("ai_images", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	userId: varchar("user_id", { length: 36 }).notNull(), // 生成用户ID
+	userName: varchar("user_name", { length: 128 }).notNull(), // 用户姓名
+	themeContent: text("theme_content").notNull(), // 主题内容
+	style: varchar({ length: 50 }), // 风格：写实摄影、动漫风格等
+	detailRequirement: text("detail_requirement"), // 细节要求
+	quality: varchar({ length: 10 }), // 质量：2K、4K
+	lighting: varchar({ length: 50 }), // 光照：自然光线、柔和光线等
+	ratio: varchar({ length: 10 }), // 比例：16:9、9:16、1:1、4:3
+	size: varchar({ length: 20 }), // 尺寸：1920x1080等
+	prompt: text(), // 生图prompt
+	imageUrl: varchar("image_url", { length: 1000 }).notNull(), // 生成的图片URL
+	isPublic: boolean("is_public").default(false).notNull(), // 是否公开
+	viewCount: integer("view_count").default(0).notNull(), // 查看次数
+	downloadCount: integer("download_count").default(0).notNull(), // 下载次数
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	index("ai_images_user_id_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	index("ai_images_style_idx").using("btree", table.style.asc().nullsLast().op("text_ops")),
+	index("ai_images_is_public_idx").using("btree", table.isPublic.asc().nullsLast().op("text_ops")),
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "ai_images_user_id_users_id_fk"
+	}).onDelete("cascade"),
+]);
+
 // ==================== Zod Schemas ====================
 
 // Contact Messages
@@ -344,3 +373,23 @@ export const updateCoverImageSchema = createCoercedInsertSchema(coverImages).par
 export type InsertCoverImage = z.infer<typeof insertCoverImageSchema>
 export type UpdateCoverImage = z.infer<typeof updateCoverImageSchema>
 export type CoverImage = typeof coverImages.$inferSelect
+
+// AI Images
+export const insertAiImageSchema = createCoercedInsertSchema(aiImages).pick({
+	userId: true,
+	userName: true,
+	themeContent: true,
+	style: true,
+	detailRequirement: true,
+	quality: true,
+	lighting: true,
+	ratio: true,
+	size: true,
+	prompt: true,
+	imageUrl: true,
+	isPublic: true,
+})
+export const updateAiImageSchema = createCoercedInsertSchema(aiImages).partial()
+export type InsertAiImage = z.infer<typeof insertAiImageSchema>
+export type UpdateAiImage = z.infer<typeof updateAiImageSchema>
+export type AiImage = typeof aiImages.$inferSelect
