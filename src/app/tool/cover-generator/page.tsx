@@ -52,6 +52,14 @@ export default function CoverGeneratorPage() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [savedImages, setSavedImages] = useState<Array<any>>([]);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
+  const [previewImage, setPreviewImage] = useState<{
+    url: string;
+    inputText: string;
+    prompt?: string;
+    platform: string;
+    style?: string;
+    ratio?: string;
+  } | null>(null);
   const [history, setHistory] = useState<Array<{
     id: string;
     input: string;
@@ -217,6 +225,29 @@ export default function CoverGeneratorPage() {
     }
   };
 
+  // 点击图片预览
+  const handleImageClick = (image: any) => {
+    setPreviewImage({
+      url: image.image_url,
+      inputText: image.input_text,
+      prompt: image.prompt,
+      platform: image.platform,
+      style: image.style,
+      ratio: image.ratio,
+    });
+  };
+
+  // 复制提示词
+  const handleCopyPrompt = async (prompt: string) => {
+    try {
+      await navigator.clipboard.writeText(prompt);
+      alert('提示词已复制到剪贴板');
+    } catch (error) {
+      console.error('复制失败:', error);
+      alert('复制失败，请重试');
+    }
+  };
+
   // 删除图片（管理员）
   const handleDeleteImage = async (id: string) => {
     if (!confirm('确定要删除这张图片吗？此操作不可恢复。')) {
@@ -224,9 +255,19 @@ export default function CoverGeneratorPage() {
     }
 
     try {
+      // 构建请求头（添加 x-user-id 备选方案）
+      const headers: Record<string, string> = {};
+
+      // 从 sessionStorage 读取 userId 作为备选方案
+      const sessionUserId = typeof window !== 'undefined' ? sessionStorage.getItem('userId') : null;
+      if (sessionUserId) {
+        headers['x-user-id'] = sessionUserId;
+      }
+
       const response = await fetch(`/api/cover-images/${id}`, {
         method: 'DELETE',
         credentials: 'include',
+        headers,
       });
 
       const data = await response.json();
@@ -634,7 +675,8 @@ export default function CoverGeneratorPage() {
               {savedImages.map((image) => (
                 <div
                   key={image.id}
-                  className="group relative bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+                  className="group relative bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => handleImageClick(image)}
                 >
                   {/* 图片 */}
                   <img
@@ -666,10 +708,13 @@ export default function CoverGeneratorPage() {
                     {/* 操作按钮 */}
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleDownloadImage(
-                          image.image_url,
-                          `cover-${image.platform}-${image.id.substring(0, 8)}.png`
-                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadImage(
+                            image.image_url,
+                            `cover-${image.platform}-${image.id.substring(0, 8)}.png`
+                          );
+                        }}
                         className="flex-1 flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -677,9 +722,26 @@ export default function CoverGeneratorPage() {
                         </svg>
                         下载
                       </button>
+                      {image.prompt && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCopyPrompt(image.prompt);
+                          }}
+                          className="flex-1 flex items-center justify-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                          </svg>
+                          复制提示词
+                        </button>
+                      )}
                       {user?.isAdmin && (
                         <button
-                          onClick={() => handleDeleteImage(image.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteImage(image.id);
+                          }}
                           className="flex items-center justify-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -696,6 +758,85 @@ export default function CoverGeneratorPage() {
           )}
         </div>
       </div>
+
+      {/* 图片预览弹窗 */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
+          onClick={() => setPreviewImage(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 关闭按钮 */}
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* 图片 */}
+            <img
+              src={previewImage.url}
+              alt="封面图预览"
+              className="max-w-full max-h-[70vh] object-contain rounded-lg"
+            />
+
+            {/* 信息区域 */}
+            <div className="mt-4 bg-white rounded-xl p-6 w-full max-h-[20vh] overflow-y-auto">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded">
+                  {previewImage.platform}
+                </span>
+                {previewImage.style && (
+                  <span className="inline-block px-2 py-0.5 text-xs font-medium bg-purple-50 text-purple-700 rounded">
+                    {previewImage.style}
+                  </span>
+                )}
+                {previewImage.ratio && (
+                  <span className="inline-block px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded">
+                    {previewImage.ratio}
+                  </span>
+                )}
+              </div>
+
+              {previewImage.inputText && (
+                <div className="mb-3">
+                  <h3 className="text-xs font-medium text-gray-700 mb-2">输入文案</h3>
+                  <p className="text-sm text-gray-900 bg-gray-50 rounded-lg p-3 border border-gray-200">
+                    {previewImage.inputText}
+                  </p>
+                </div>
+              )}
+
+              {previewImage.prompt && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-medium text-gray-700">AI 提示词</h3>
+                    <button
+                      onClick={() => handleCopyPrompt(previewImage.prompt!)}
+                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                      </svg>
+                      复制提示词
+                    </button>
+                  </div>
+                  <div className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 border border-gray-200 max-h-32 overflow-y-auto">
+                    <pre className="whitespace-pre-wrap font-mono text-xs">{previewImage.prompt}</pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <Footer />
