@@ -282,7 +282,18 @@ export default function ForbiddenWordsPage() {
               {queryMode === '查文字' ? '输入文本' : queryMode === '查链接' ? '输入链接' : '上传文档'}
             </h2>
             {queryMode === '查文档' ? (
-              <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-red-300 transition-colors">
+              <div
+                className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-red-300 transition-colors cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) {
+                    handleFileUpload({ target: { files: e.dataTransfer.files } } as any);
+                  }
+                }}
+              >
                 <input
                   type="file"
                   ref={fileInputRef}
