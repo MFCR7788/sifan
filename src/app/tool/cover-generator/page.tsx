@@ -104,11 +104,8 @@ export default function CoverGeneratorPage() {
   const loadSavedImages = async () => {
     setIsLoadingImages(true);
     try {
-      // 如果已登录，加载当前用户的所有图片；否则只加载公开图片
-      const userId = user?.id;
-      const url = userId
-        ? `/api/cover-images?userId=${userId}`
-        : '/api/cover-images?public=true';
+      // 加载所有图片（所有人可见）
+      const url = '/api/cover-images';
 
       console.log('加载图片列表:', url);
 
