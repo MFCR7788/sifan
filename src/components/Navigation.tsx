@@ -211,16 +211,37 @@ function ToolsDropdown() {
   const [showDropdown, setShowDropdown] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const toolItems = [
-    { name: '文案改写', href: '/tool/rewrite' },
-    { name: '标题生成', href: '/tool/title-gen' },
-    { name: '违禁词', href: '/tool/forbidden-words' },
-    { name: '图文提取', href: '/tool/image-extract' },
-    { name: '短视频提文案', href: '/tool/short-video-caption' },
-    { name: 'AI文案创作', href: '/tool/ai-copywriting' },
-    { name: 'AI视频生成', href: '/video-gen' },
-    { name: '封面图制作', href: '/tool/cover-gen' },
-    { name: '账号AI分析', href: '/tool/account-analysis' },
+  // 工具分类
+  const toolCategories = [
+    {
+      category: '文案创作',
+      items: [
+        { name: '文案改写', href: '/tool/rewrite' },
+        { name: '标题生成', href: '/tool/title-gen' },
+        { name: 'AI文案创作', href: '/tool/ai-copywriting' },
+        { name: '短视频提文案', href: '/tool/short-video-caption' },
+      ],
+    },
+    {
+      category: '内容安全',
+      items: [
+        { name: '违禁词', href: '/tool/forbidden-words' },
+      ],
+    },
+    {
+      category: '视觉创作',
+      items: [
+        { name: 'AI视频生成', href: '/video-gen' },
+        { name: '封面图制作', href: '/tool/cover-gen' },
+        { name: '图文提取', href: '/tool/image-extract' },
+      ],
+    },
+    {
+      category: '智能分析',
+      items: [
+        { name: '账号AI分析', href: '/tool/account-analysis' },
+      ],
+    },
   ];
 
   useEffect(() => {
@@ -265,35 +286,37 @@ function ToolsDropdown() {
         工具
       </Link>
 
-      {/* 下拉菜单 - 两列布局 */}
+      {/* 下拉菜单 - 分类布局 */}
       {showDropdown && (
         <div
-          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-max"
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 w-[360px]"
           onMouseEnter={handleDropdownMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="grid grid-cols-2 gap-0">
-            {toolItems.map((item, index) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 ${
-                  index === 0 ? 'rounded-tl-xl' : ''
-                } ${
-                  index === 1 ? 'rounded-tr-xl' : ''
-                }`}
-                onClick={() => setShowDropdown(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-            {/* 空白占位，保持两列布局 */}
-            {[...Array(3)].map((_, index) => (
-              <div
-                key={`empty-${index}`}
-                className="block px-5 py-3 text-sm text-transparent pointer-events-none hover:bg-transparent"
-              >
-                空白
+          <div className="divide-y divide-gray-100">
+            {toolCategories.map((category, categoryIndex) => (
+              <div key={category.category}>
+                {/* 分类标题 */}
+                <div className="px-5 py-2 bg-gray-50">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                    {category.category}
+                  </span>
+                </div>
+                {/* 分类项 */}
+                {category.items.map((item, index) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`block px-5 py-2.5 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 ${
+                      categoryIndex === 0 && index === 0 ? 'rounded-tl-xl' : ''
+                    } ${
+                      categoryIndex === toolCategories.length -1 && index === category.items.length -1 ? 'rounded-bl-xl' : ''
+                    }`}
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
               </div>
             ))}
           </div>
