@@ -209,6 +209,14 @@ export default function ForbiddenWordsPage() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API错误响应:', errorText);
+
+        // 尝试解析错误信息
+        try {
+          const errorJson = JSON.parse(errorText);
+          alert(errorJson.error || '检测失败，请重试');
+        } catch {
+          alert('检测失败，请重试');
+        }
         throw new Error('检测失败');
       }
 
@@ -217,7 +225,7 @@ export default function ForbiddenWordsPage() {
       setQueryResults(data);
     } catch (error) {
       console.error('检测失败:', error);
-      alert('检测失败，请重试');
+      // alert('检测失败，请重试');
     } finally {
       setIsQuerying(false);
     }
@@ -227,6 +235,16 @@ export default function ForbiddenWordsPage() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // 检查文件格式
+    const fileName = file.name.toLowerCase();
+    if (!fileName.endsWith('.txt')) {
+      alert('仅支持TXT格式文件。DOCX文件请使用"查文字"模式复制粘贴');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
 
     // 格式化文件大小
     const formatFileSize = (bytes: number) => {
@@ -366,7 +384,7 @@ export default function ForbiddenWordsPage() {
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileUpload}
-                  accept=".txt,.docx"
+                  accept=".txt"
                   className="hidden"
                 />
                 {uploadedFile ? (
@@ -400,7 +418,7 @@ export default function ForbiddenWordsPage() {
                       </svg>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">点击上传文档或拖拽文件到此处</p>
-                    <p className="text-xs text-gray-400">支持 TXT、DOCX 格式，文件大小不超过 10MB</p>
+                    <p className="text-xs text-gray-400">支持 TXT 格式，文件大小不超过 10MB。DOCX文件请使用"查文字"模式复制粘贴</p>
                   </>
                 )}
               </div>

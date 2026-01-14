@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// 动态导入mammoth
-async function getMammoth() {
-  const mammoth = await import('mammoth');
-  return mammoth.default || mammoth;
-}
-
 // 违禁词库
 const forbiddenWordsLibrary = {
   '公众号': {
@@ -34,7 +28,7 @@ const forbiddenWordsLibrary = {
   },
 };
 
-// 读取文件内容（支持TXT、DOCX）
+// 读取文件内容（仅支持TXT）
 async function readFileContent(file: File): Promise<string> {
   const fileName = file.name.toLowerCase();
 
@@ -51,28 +45,12 @@ async function readFileContent(file: File): Promise<string> {
     return text;
   }
 
-  // DOCX文件需要使用mammoth解析
+  // DOCX文件（目前不支持）
   if (fileName.endsWith('.docx')) {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      console.log('DOCX文件ArrayBuffer大小:', arrayBuffer.byteLength);
-
-      const mammoth = await getMammoth();
-      const result = await mammoth.extractRawText({ arrayBuffer });
-      console.log('DOCX文件解析成功，提取文本长度:', result.value.length);
-
-      if (result.messages && result.messages.length > 0) {
-        console.warn('DOCX解析警告:', result.messages);
-      }
-
-      return result.value;
-    } catch (error) {
-      console.error('DOCX文件解析失败:', error);
-      throw new Error('DOCX文件解析失败');
-    }
+    throw new Error('DOCX文件格式暂不支持，请使用"查文字"模式将文档内容复制粘贴到文本框中');
   }
 
-  throw new Error('不支持的文件格式，仅支持TXT、DOCX格式，请将DOC文件转换为DOCX格式');
+  throw new Error('不支持的文件格式，仅支持TXT格式，请使用"查文字"模式');
 }
 
 export async function POST(request: NextRequest) {
