@@ -413,7 +413,7 @@ export default function AIImageGenerationPage() {
               <span className="text-2xl">🎨</span>
             </div>
             <div className="flex-1 bg-blue-50 rounded-2xl rounded-tl-none p-5">
-              <p className="text-gray-900 font-medium">你好，我是AI图像生成小助手！</p>
+              <p className="text-gray-900 font-medium">你好，我是AI图像生成工具魔法小超人！</p>
               <p className="text-gray-700 text-sm leading-relaxed mt-2">
                 按照四个步骤填写参数，我就能帮你生成高质量的图片。支持多种风格、质量与光照效果，让你的创作更自由！
               </p>
