@@ -695,14 +695,14 @@ export default function CoverGeneratorPage() {
               {savedImages.map((image) => (
                 <div
                   key={image.id}
-                  className="relative group overflow-hidden rounded-2xl cursor-pointer"
+                  className="relative group overflow-hidden rounded-2xl cursor-pointer aspect-video bg-gray-100"
                   onClick={() => handleImageClick(image)}
                 >
                   {/* 图片 */}
                   <img
                     src={image.image_url}
                     alt="封面图"
-                    className={`w-full ${getAspectRatioClass(image.ratio || '9:16')} object-cover transition-transform duration-500 group-hover:scale-105`}
+                    className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />
 
