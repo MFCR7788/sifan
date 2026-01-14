@@ -28,6 +28,45 @@ const forbiddenWordsLibrary = {
   },
 };
 
+// 读取文件内容（支持TXT、DOCX）
+async function readFileContent(file: File): Promise<string> {
+  const fileName = file.name.toLowerCase();
+
+  // TXT文件直接读取
+  if (fileName.endsWith('.txt')) {
+    return await file.text();
+  }
+
+  // DOCX文件需要使用mammoth解析
+  if (fileName.endsWith('.docx')) {
+    try {
+      const mammoth = await import('mammoth');
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      return result.value;
+    } catch (error) {
+      console.error('DOCX文件解析失败:', error);
+      throw new Error('DOCX文件解析失败');
+    }
+  }
+
+  // DOC文件（二进制格式，暂不支持）
+  if (fileName.endsWith('.doc')) {
+    console.warn('DOC格式支持有限，建议转换为DOCX或TXT格式');
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      // 简单提取文本，可能不准确
+      const decoder = new TextDecoder('utf-8', { fatal: false });
+      return decoder.decode(arrayBuffer).replace(/[^\x20-\x7E\u4e00-\u9fa5]/g, ' ');
+    } catch (error) {
+      console.error('DOC文件解析失败:', error);
+      throw new Error('DOC文件解析失败，建议转换为DOCX或TXT格式');
+    }
+  }
+
+  throw new Error('不支持的文件格式，仅支持TXT、DOCX格式');
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -42,7 +81,19 @@ export async function POST(request: NextRequest) {
     }
 
     // 读取文件内容
-    const text = await file.text();
+    let text: string;
+    try {
+      text = await readFileContent(file);
+    } catch (error) {
+      console.error('文件读取失败:', error);
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : '文件读取失败' },
+        { status: 400 }
+      );
+    }
+
+    console.log('文件读取成功，内容长度:', text.length);
+    console.log('文件内容（前200字符）:', text.substring(0, 200));
 
     // 获取对应平台的违禁词库
     const platformLibrary = forbiddenWordsLibrary[platform as keyof typeof forbiddenWordsLibrary] || forbiddenWordsLibrary['公众号'];
@@ -65,6 +116,11 @@ export async function POST(request: NextRequest) {
         foundWords[category] = foundInCategory;
       }
     }
+
+    console.log('检测结果:', {
+      totalFound: allWords.size,
+      foundWords,
+    });
 
     return NextResponse.json({
       success: true,

@@ -187,6 +187,13 @@ export default function ForbiddenWordsPage() {
     setIsQuerying(true);
 
     try {
+      console.log('开始执行文件检测:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        platform: selectedPlatform,
+      });
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('platform', selectedPlatform);
@@ -197,11 +204,16 @@ export default function ForbiddenWordsPage() {
         body: formData,
       });
 
+      console.log('API响应状态:', response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API错误响应:', errorText);
         throw new Error('检测失败');
       }
 
       const data = await response.json();
+      console.log('API响应数据:', data);
       setQueryResults(data);
     } catch (error) {
       console.error('检测失败:', error);
@@ -216,8 +228,6 @@ export default function ForbiddenWordsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsQuerying(true);
-
     // 格式化文件大小
     const formatFileSize = (bytes: number) => {
       if (bytes < 1024) return bytes + ' B';
@@ -225,35 +235,13 @@ export default function ForbiddenWordsPage() {
       return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
     };
 
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('platform', selectedPlatform);
-
-      const response = await fetch('/api/tool/forbidden-words/upload', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('上传失败');
-      }
-
-      const data = await response.json();
-      setQueryResults(data);
-      setUploadedFile({
-        name: file.name,
-        size: formatFileSize(file.size),
-      });
-      // 保存文件对象到 ref，供后续查询使用
-      uploadedFileRef.current = file;
-    } catch (error) {
-      console.error('上传失败:', error);
-      alert('上传失败，请重试');
-    } finally {
-      setIsQuerying(false);
-    }
+    // 只显示文件信息，不执行检测
+    setUploadedFile({
+      name: file.name,
+      size: formatFileSize(file.size),
+    });
+    // 保存文件对象到 ref，供后续查询使用
+    uploadedFileRef.current = file;
   };
 
   // 清除上传的文件
