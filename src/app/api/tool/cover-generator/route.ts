@@ -19,31 +19,32 @@ const RATIO_SIZE_MAP: Record<string, string> = {
 // 构建生图 prompt
 function buildPrompt(platform: string, style: string, text: string): string {
   const platformDescriptions: Record<string, string> = {
-    '抖音': '抖音短视频封面图，具有强烈视觉冲击力',
-    '小红书': '小红书封面图，精致优雅，时尚清新',
-    '公众号': '微信公众号封面图，专业正式，商务风格',
+    '抖音': '适合抖音短视频的封面图风格，具有强烈视觉冲击力，吸引眼球',
+    '小红书': '适合小红书的封面图风格，精致优雅，时尚清新，适合展示生活美学',
+    '公众号': '适合微信公众号的封面图风格，专业正式，商务大气，有质感',
   };
 
   const styleDescriptions: Record<string, string> = {
-    '简约': '简约风格，留白充足，构图简洁',
-    '清新': '清新风格，色彩明亮，自然舒适',
-    '商务': '商务风格，专业稳重，大气得体',
-    '科技': '科技风格，现代感强，富有未来感',
-    '艺术': '艺术风格，富有创意，设计感强',
-    '复古': '复古风格，怀旧情调，经典耐看',
+    '简约': '简约风格，留白充足，构图简洁，干净利落',
+    '清新': '清新风格，色彩明亮，自然舒适，给人轻松愉悦的感觉',
+    '商务': '商务风格，专业稳重，大气得体，适合商业场景',
+    '科技': '科技风格，现代感强，富有未来感，使用冷色调和几何元素',
+    '艺术': '艺术风格，富有创意，设计感强，色彩搭配独特',
+    '复古': '复古风格，怀旧情调，经典耐看，有年代感',
   };
 
-  return `生成一张${platformDescriptions[platform]}，${styleDescriptions[style]}。
+  return `生成一张高质量的封面图片，${platformDescriptions[platform]}，${styleDescriptions[style]}。
 
 主题内容：${text}
 
 设计要求：
-1. 高质量高清图片，细节丰富
-2. 构图均衡，视觉焦点突出
+1. 高质量高清图片，细节丰富，专业摄影级别
+2. 构图均衡，视觉焦点突出，主体鲜明
 3. 色彩搭配和谐，符合${style}风格
-4. 字体排版清晰（如需文字），大小适中
-5. 背景简洁，不喧宾夺主
-6. 适合作为社交媒体封面使用`;
+4. **重要：不要在图片中添加任何文字、标题或水印**
+5. 背景简洁，不喧宾夺主，突出主题
+6. 适合作为社交媒体封面使用，具有视觉吸引力
+7. 仅使用图像、图形、色彩、光影等视觉元素表达主题`;
 }
 
 // 调用生图大模型生成封面图
@@ -108,6 +109,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { text, platform, style, ratio } = body;
 
+    console.log('API 收到请求参数:', { text, platform, style, ratio });
+
     if (!text || !platform) {
       return NextResponse.json(
         { error: '缺少必要参数' },
@@ -129,6 +132,8 @@ export async function POST(request: NextRequest) {
       style || '简约',
       ratio || '16:9'
     );
+
+    console.log('API 返回结果:', result);
 
     return NextResponse.json({
       success: true,
