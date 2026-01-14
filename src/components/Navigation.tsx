@@ -305,7 +305,7 @@ function ToolsDropdown() {
     {
       category: '内容安全',
       items: [
-        { name: '违禁词', href: '/tool/coming-soon' },
+        { name: '违禁词', href: '/tool/forbidden-words' },
       ],
     },
     {
@@ -967,7 +967,7 @@ export default function Navigation() {
                 const mobileToolItems = [
                   { name: '文案改写', href: '/tool/rewrite' },
                   { name: '标题生成', href: '/tool/title-gen' },
-                  { name: '违禁词', href: '/tool/coming-soon' },
+                  { name: '违禁词', href: '/tool/forbidden-words' },
                   { name: '图文提取', href: '/tool/coming-soon' },
                   { name: '短视频提文案', href: '/tool/short-video-caption' },
                   { name: 'AI文案创作', href: '/tool/ai-copywriting' },
