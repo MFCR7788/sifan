@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 // 平台图标组件
 const PlatformIcon = ({ name, selected, onClick }: { name: string; selected: boolean; onClick: () => void }) => {
@@ -150,6 +152,8 @@ export default function RewriteToolPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <Navigation />
+
       {/* 主体内容 */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 功能操作区 */}
@@ -272,6 +276,9 @@ export default function RewriteToolPage() {
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
