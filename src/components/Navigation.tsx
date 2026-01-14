@@ -386,9 +386,9 @@ function ToolsDropdown() {
                     </span>
                   </div>
                   {/* 分类项 */}
-                  {category.items.map((item) => (
+                  {category.items.map((item, index) => (
                     <Link
-                      key={item.href}
+                      key={`tool-${category.category}-${index}`}
                       href={item.href}
                       className="block px-5 py-2.5 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200"
                       onClick={() => setShowDropdown(false)}
@@ -411,9 +411,9 @@ function ToolsDropdown() {
                     </span>
                   </div>
                   {/* 分类项 */}
-                  {category.items.map((item) => (
+                  {category.items.map((item, index) => (
                     <Link
-                      key={item.href}
+                      key={`tool-${category.category}-${index}`}
                       href={item.href}
                       className="block px-5 py-2.5 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200"
                       onClick={() => setShowDropdown(false)}
@@ -981,9 +981,9 @@ export default function Navigation() {
                     <div className="px-3 py-2 text-xs font-semibold text-gray-900 border-b border-gray-100">
                       工具
                     </div>
-                    {mobileToolItems.map((tool) => (
+                    {mobileToolItems.map((tool, index) => (
                       <Link
-                        key={tool.href}
+                        key={`mobile-tool-${index}`}
                         href={tool.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
