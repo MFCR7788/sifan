@@ -366,7 +366,7 @@ export default function ForbiddenWordsPage() {
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileUpload}
-                  accept=".txt,.doc,.docx"
+                  accept=".txt,.docx"
                   className="hidden"
                 />
                 {uploadedFile ? (
@@ -400,7 +400,7 @@ export default function ForbiddenWordsPage() {
                       </svg>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">点击上传文档或拖拽文件到此处</p>
-                    <p className="text-xs text-gray-400">支持 TXT、DOC、DOCX 格式，文件大小不超过 10MB</p>
+                    <p className="text-xs text-gray-400">支持 TXT、DOCX 格式，文件大小不超过 10MB</p>
                   </>
                 )}
               </div>

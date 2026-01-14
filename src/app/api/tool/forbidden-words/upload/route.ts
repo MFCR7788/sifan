@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// 动态导入mammoth
+async function getMammoth() {
+  const mammoth = await import('mammoth');
+  return mammoth.default || mammoth;
+}
+
 // 违禁词库
 const forbiddenWordsLibrary = {
   '公众号': {
@@ -32,17 +38,33 @@ const forbiddenWordsLibrary = {
 async function readFileContent(file: File): Promise<string> {
   const fileName = file.name.toLowerCase();
 
+  console.log('开始读取文件:', {
+    fileName,
+    fileType: file.type,
+    fileSize: file.size,
+  });
+
   // TXT文件直接读取
   if (fileName.endsWith('.txt')) {
-    return await file.text();
+    const text = await file.text();
+    console.log('TXT文件读取成功，长度:', text.length);
+    return text;
   }
 
   // DOCX文件需要使用mammoth解析
   if (fileName.endsWith('.docx')) {
     try {
-      const mammoth = await import('mammoth');
       const arrayBuffer = await file.arrayBuffer();
+      console.log('DOCX文件ArrayBuffer大小:', arrayBuffer.byteLength);
+
+      const mammoth = await getMammoth();
       const result = await mammoth.extractRawText({ arrayBuffer });
+      console.log('DOCX文件解析成功，提取文本长度:', result.value.length);
+
+      if (result.messages && result.messages.length > 0) {
+        console.warn('DOCX解析警告:', result.messages);
+      }
+
       return result.value;
     } catch (error) {
       console.error('DOCX文件解析失败:', error);
@@ -50,21 +72,7 @@ async function readFileContent(file: File): Promise<string> {
     }
   }
 
-  // DOC文件（二进制格式，暂不支持）
-  if (fileName.endsWith('.doc')) {
-    console.warn('DOC格式支持有限，建议转换为DOCX或TXT格式');
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      // 简单提取文本，可能不准确
-      const decoder = new TextDecoder('utf-8', { fatal: false });
-      return decoder.decode(arrayBuffer).replace(/[^\x20-\x7E\u4e00-\u9fa5]/g, ' ');
-    } catch (error) {
-      console.error('DOC文件解析失败:', error);
-      throw new Error('DOC文件解析失败，建议转换为DOCX或TXT格式');
-    }
-  }
-
-  throw new Error('不支持的文件格式，仅支持TXT、DOCX格式');
+  throw new Error('不支持的文件格式，仅支持TXT、DOCX格式，请将DOC文件转换为DOCX格式');
 }
 
 export async function POST(request: NextRequest) {
@@ -79,6 +87,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    console.log('接收到文件上传请求:', {
+      fileName: file.name,
+      platform,
+    });
 
     // 读取文件内容
     let text: string;
