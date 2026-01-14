@@ -90,6 +90,8 @@ export default function CoverGeneratorPage() {
     setIsGenerating(true);
 
     try {
+      console.log('开始生成封面图...', { inputText, selectedPlatform, selectedStyle, selectedRatio });
+
       // 调用API进行封面图生成
       const response = await fetch('/api/tool/cover-generator', {
         method: 'POST',
@@ -105,11 +107,14 @@ export default function CoverGeneratorPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('生成失败');
-      }
-
       const data = await response.json();
+
+      console.log('API 响应:', { status: response.status, data });
+
+      if (!response.ok) {
+        console.error('API 错误:', data);
+        throw new Error(data.error || `生成失败 (HTTP ${response.status})`);
+      }
 
       // 添加到历史记录
       const newRecord = {
@@ -126,7 +131,8 @@ export default function CoverGeneratorPage() {
       setInputText('');
     } catch (error) {
       console.error('生成失败:', error);
-      alert('生成失败，请重试');
+      const errorMessage = error instanceof Error ? error.message : '生成失败，请重试';
+      alert(errorMessage);
     } finally {
       setIsGenerating(false);
     }

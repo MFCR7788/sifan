@@ -59,15 +59,17 @@ async function generateCover(text: string, platform: string, style: string, rati
     // 确定图片尺寸（优先使用用户选择的比例）
     let imageSize = RATIO_SIZE_MAP[ratio] || '1920x1080';
 
-    // 调用生图 API
-    console.log('开始生成封面图...', { platform, style, ratio, imageSize });
+    console.log('开始生成封面图...', { platform, style, ratio, imageSize, prompt: prompt.substring(0, 100) });
 
+    // 调用生图 API
     const response = await client.generate({
       prompt: prompt,
       size: imageSize,
       watermark: false, // 不加水印
       responseFormat: 'url',
     });
+
+    console.log('生图 API 响应:', JSON.stringify(response, null, 2).substring(0, 500));
 
     // 解析响应
     const helper = client.getResponseHelper(response);
@@ -94,6 +96,9 @@ async function generateCover(text: string, platform: string, style: string, rati
     };
   } catch (error) {
     console.error('生成封面图失败:', error);
+    if (error instanceof Error) {
+      console.error('错误详情:', error.message, error.stack);
+    }
     throw error;
   }
 }
