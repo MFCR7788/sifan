@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from 'coze-coding-dev-sdk';
 import { resources } from '@/storage/database/shared/schema';
 import { eq, or, and, sql } from 'drizzle-orm';
-import { integration_detail } from '@/coze-coding-dev-sdk';
 
 export async function POST(request: NextRequest) {
   try {
