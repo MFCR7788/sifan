@@ -1,5 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMClient } from 'coze-coding-dev-sdk';
+import { LLMClient, Config } from 'coze-coding-dev-sdk';
+
+// 调用大语言模型生成文案
+async function generateCopywriting(text: string, platform: string, type: string, wordCount: string, count: number) {
+  const prompt = `请根据以下信息生成${platform}平台的${type}类型文案：
+
+${text}
+
+要求：
+1. 平台：${platform}
+2. 类型：${type}
+3. 字数范围：${wordCount}
+4. 生成数量：${count}篇
+
+请直接输出${count}篇文案，每篇之间用"=== 第N篇 ==="分隔。`;
+
+  try {
+    // 初始化LLM客户端
+    const config = new Config();
+    const client = new LLMClient(config);
+
+    // 使用非流式调用获取结果
+    const response = await client.invoke([
+      {
+        role: 'system',
+        content: '你是一个专业的AI文案创作助手，擅长根据用户需求生成各类平台的专业文案，包括电商、大健康、工具软件、金融、教育、汽车等内容领域的文案创作。',
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ], {
+      model: 'doubao-seed-1-6-251015',
+      temperature: 0.8,
+    });
+
+    // 提取返回的内容
+    const result = response.content?.toString() || '';
+
+    if (!result) {
+      throw new Error('未获取到生成结果');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('生成文案失败:', error);
+    throw error;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,13 +75,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!model) {
-      return NextResponse.json(
-        { error: '请选择AI模型' },
-        { status: 400 }
-      );
-    }
-
     if (!wordCount) {
       return NextResponse.json(
         { error: '请选择字数要求' },
@@ -41,54 +82,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 调用大语言模型生成文案
-    const llmClient = new LLMClient();
-    
-    const prompt = `请根据以下信息生成${platform}平台的${type}类型文案：
-${text}
-
-要求：
-1. 平台：${platform}
-2. 类型：${type}
-3. 字数范围：${wordCount}
-4. 生成数量：${count}篇
-
-请直接输出${count}篇文案，每篇之间用"=== 第N篇 ==="分隔。`;
-
-    const response = await llmClient.chat({
-      model: 'doubao-seed-1-6-251015',
-      messages: [
-        {
-          role: 'system',
-          content: '你是一个专业的AI文案创作助手，擅长根据用户需求生成各类平台的专业文案，包括电商、大健康、工具软件、金融、教育、汽车等内容领域的文案创作。'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      stream: false
-    });
-
-    // 提取生成的内容
-    let content = '';
-    if (response && response.content) {
-      content = response.content;
-    } else if (typeof response === 'string') {
-      content = response;
-    } else {
-      content = JSON.stringify(response);
+    if (text.length > 5000) {
+      return NextResponse.json(
+        { error: '内容长度不能超过5000字' },
+        { status: 400 }
+      );
     }
+
+    // 调用大模型生成文案
+    const content = await generateCopywriting(text, platform, type, wordCount, count);
 
     return NextResponse.json({
       success: true,
-      content: content
+      content,
     });
-
   } catch (error) {
-    console.error('AI文案生成失败:', error);
+    console.error('AI文案生成API错误:', error);
     return NextResponse.json(
-      { error: '生成失败，请稍后重试' },
+      { error: '生成失败，请重试' },
       { status: 500 }
     );
   }
