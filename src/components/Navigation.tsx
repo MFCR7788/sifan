@@ -313,7 +313,7 @@ function ToolsDropdown() {
       items: [
         { name: 'AI图像生成', href: '/tool/image-gen', hasSubmenu: true },
         { name: 'AI视频生成', href: '/video-gen' },
-        { name: '封面图制作', href: '/tool/coming-soon' },
+        { name: '封面图制作', href: '/tool/cover-generator' },
         { name: '图文提取', href: '/tool/coming-soon' },
       ],
     },
