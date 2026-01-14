@@ -104,6 +104,10 @@ export default function TransactionsPage() {
 		return colorMap[type] || 'bg-gray-100 text-gray-800';
 	};
 
+	const isRecharge = (type: string) => {
+		return type === 'recharge';
+	};
+
 	return (
 		<div>
 			<div className="flex items-center justify-between mb-8">
