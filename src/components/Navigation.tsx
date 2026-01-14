@@ -286,39 +286,63 @@ function ToolsDropdown() {
         工具
       </Link>
 
-      {/* 下拉菜单 - 分类布局 */}
+      {/* 下拉菜单 - 两列分类布局 */}
       {showDropdown && (
         <div
-          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 w-[360px]"
+          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 w-[500px]"
           onMouseEnter={handleDropdownMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="divide-y divide-gray-100">
-            {toolCategories.map((category, categoryIndex) => (
-              <div key={category.category}>
-                {/* 分类标题 */}
-                <div className="px-5 py-2 bg-gray-50">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                    {category.category}
-                  </span>
+          <div className="grid grid-cols-2 divide-x divide-gray-100">
+            {/* 左列 */}
+            <div className="divide-y divide-gray-100">
+              {toolCategories.slice(0, 2).map((category) => (
+                <div key={category.category}>
+                  {/* 分类标题 */}
+                  <div className="px-5 py-2 bg-gray-50">
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                      {category.category}
+                    </span>
+                  </div>
+                  {/* 分类项 */}
+                  {category.items.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="block px-5 py-2.5 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
                 </div>
-                {/* 分类项 */}
-                {category.items.map((item, index) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`block px-5 py-2.5 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 ${
-                      categoryIndex === 0 && index === 0 ? 'rounded-tl-xl' : ''
-                    } ${
-                      categoryIndex === toolCategories.length -1 && index === category.items.length -1 ? 'rounded-bl-xl' : ''
-                    }`}
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* 右列 */}
+            <div className="divide-y divide-gray-100">
+              {toolCategories.slice(2, 4).map((category) => (
+                <div key={category.category}>
+                  {/* 分类标题 */}
+                  <div className="px-5 py-2 bg-gray-50">
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                      {category.category}
+                    </span>
+                  </div>
+                  {/* 分类项 */}
+                  {category.items.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="block px-5 py-2.5 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
