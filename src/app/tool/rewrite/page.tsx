@@ -156,6 +156,17 @@ export default function RewriteToolPage() {
 
       {/* 主体内容 */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 功能标签 */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-6 bg-blue-600 rounded"></div>
+            <h1 className="text-2xl font-semibold text-gray-900">文案改写</h1>
+          </div>
+          <span className="px-3 py-1 bg-blue-50 text-blue-600 text-sm font-medium rounded-full">
+            一键体验文案改写
+          </span>
+        </div>
+
         {/* 功能操作区 */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
           {/* 平台选择 */}
