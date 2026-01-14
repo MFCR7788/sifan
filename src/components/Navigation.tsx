@@ -212,10 +212,10 @@ function ResourcesDropdown() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const resourceItems = [
-    { name: '行业动态', href: '/resources/industry' },
-    { name: '前沿资讯', href: '/resources/news' },
-    { name: '升级日志', href: '/resources/changelog' },
-    { name: '魔法学院', href: '/resources/academy' },
+    { name: '行业动态', href: '/business-school' },
+    { name: '前沿资讯', href: '/business-school' },
+    { name: '升级日志', href: '/business-school' },
+    { name: '魔法学院', href: '/business-school' },
   ];
 
   useEffect(() => {
@@ -253,7 +253,7 @@ function ResourcesDropdown() {
     >
       {/* 触发区域 - 资源链接 */}
       <Link
-        href="/resources"
+        href="/business-school"
         className="text-xs transition-colors hover:opacity-60"
         onClick={(e) => e.preventDefault()}
       >
