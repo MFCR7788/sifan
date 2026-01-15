@@ -22,8 +22,21 @@ const isoCertificates = [
   },
 ];
 
+// 所有资质图片（用于预览）
+const qualificationImages = [
+  { src: '/images/business-license.jpg', alt: '营业执照', title: '营业执照' },
+  { src: '/images/franchise-license.jpg', alt: '特许经营许可证', title: '特许经营许可证' },
+  { src: '/images/national-high-tech-certificate.png', alt: '国家高新企业证书', title: '国家高新企业证书' },
+  { src: '/images/technology-sme.png', alt: '科技型中小企业', title: '科技型中小企业' },
+  { src: '/images/iso-quality.png', alt: '质量管理体系认证证书', title: '质量管理体系认证证书' },
+  { src: '/images/iso-environment.png', alt: '环境管理体系认证证书', title: '环境管理体系认证证书' },
+  { src: '/images/iso-ohs.png', alt: '职业健康安全管理体系认证证书', title: '职业健康安全管理体系认证证书' },
+  { src: '/images/value-added-telecom-license.jpg', alt: '增值电信业务经营许可证', title: '增值电信业务经营许可证' },
+];
+
 export default function QualificationsPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<{ src: string; alt: string; title: string } | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -74,13 +87,17 @@ export default function QualificationsPage() {
         <div className="max-w-6xl mx-auto mt-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* 资质卡片 1 */}
-            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+            <div
+              className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
+              onClick={() => setSelectedImage(qualificationImages[0])}
+            >
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
                 <img
                   src="/images/business-license.jpg"
                   alt="营业执照"
                   className="w-full h-full object-contain rounded-lg"
                 />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">营业执照</h3>
@@ -89,13 +106,17 @@ export default function QualificationsPage() {
             </div>
 
             {/* 资质卡片 2 */}
-            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+            <div
+              className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
+              onClick={() => setSelectedImage(qualificationImages[1])}
+            >
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
                 <img
                   src="/images/franchise-license.jpg"
                   alt="特许经营许可证"
                   className="w-full h-full object-contain rounded-lg"
                 />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">特许经营许可证</h3>
@@ -104,13 +125,17 @@ export default function QualificationsPage() {
             </div>
 
             {/* 资质卡片 3 */}
-            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+            <div
+              className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
+              onClick={() => setSelectedImage(qualificationImages[2])}
+            >
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
                 <img
                   src="/images/national-high-tech-certificate.png"
                   alt="国家高新企业证书"
                   className="w-full h-full object-contain rounded-lg"
                 />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">国家高新企业证书</h3>
@@ -119,13 +144,17 @@ export default function QualificationsPage() {
             </div>
 
             {/* 资质卡片 4 */}
-            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+            <div
+              className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
+              onClick={() => setSelectedImage(qualificationImages[3])}
+            >
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
                 <img
                   src="/images/technology-sme.png"
                   alt="科技型中小企业"
                   className="w-full h-full object-contain rounded-lg"
                 />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">科技型中小企业</h3>
@@ -134,7 +163,10 @@ export default function QualificationsPage() {
             </div>
 
             {/* 资质卡片 5 */}
-            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <div
+              className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
+              onClick={() => setSelectedImage(isoCertificates[currentSlide])}
+            >
               <div className="relative aspect-[4/3] bg-white">
                 <img
                   src={isoCertificates[currentSlide].src}
@@ -178,13 +210,17 @@ export default function QualificationsPage() {
             </div>
 
             {/* 资质卡片 6 */}
-            <div className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
+            <div
+              className="group bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
+              onClick={() => setSelectedImage(qualificationImages[7])}
+            >
+              <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
                 <img
                   src="/images/value-added-telecom-license.jpg"
                   alt="增值电信业务经营许可证"
                   className="w-full h-full object-contain rounded-lg"
                 />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900">增值电信业务经营许可证</h3>
@@ -232,6 +268,37 @@ export default function QualificationsPage() {
           </div>
         </div>
       </section>
+
+      {/* Image Preview Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)' }}
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-6xl max-h-[90vh]">
+            <img
+              src={selectedImage.src}
+              alt={selectedImage.alt}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            />
+            <button
+              className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+            >
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-lg text-sm">
+              {selectedImage.title}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <Footer />
