@@ -1,14 +1,30 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+
+interface Member {
+	id: string;
+	userId: string;
+	memberLevel: string;
+	balance: number;
+	points: number;
+	totalRecharge: number;
+	totalConsumption: number;
+	memberStatus: string;
+	expiresAt: string | null;
+	createdAt: string;
+	updatedAt: string;
+	userName: string;
+	userPhone: string;
+}
 
 export default function AdminMembersPage() {
 	const { user } = useAuth();
-	const [members, setMembers] = useState<any[]>([]);
+	const [members, setMembers] = useState<Member[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [selectedMember, setSelectedMember] = useState<any>(null);
+	const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [editForm, setEditForm] = useState({
@@ -28,11 +44,7 @@ export default function AdminMembersPage() {
 		return headers;
 	};
 
-	useEffect(() => {
-		fetchMembers();
-	}, []);
-
-	const fetchMembers = async () => {
+	const fetchMembers = useCallback(async () => {
 		setLoading(true);
 		try {
 			const response = await fetch('/api/admin/members', {
@@ -48,14 +60,18 @@ export default function AdminMembersPage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [getAuthHeaders]);
 
-	const handleViewMember = (member: any) => {
+	useEffect(() => {
+		fetchMembers();
+	}, [fetchMembers]);
+
+	const handleViewMember = (member: Member) => {
 		setSelectedMember(member);
 		setIsModalOpen(true);
 	};
 
-	const handleEditMember = (member: any) => {
+	const handleEditMember = (member: Member) => {
 		setSelectedMember(member);
 		setEditForm({
 			memberLevel: member.memberLevel || 'basic',

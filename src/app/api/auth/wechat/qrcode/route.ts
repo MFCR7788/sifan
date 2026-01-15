@@ -46,10 +46,10 @@ export async function POST(request: NextRequest) {
 			sceneStr,
 			qrCodeUrl,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to generate QR code:', error);
 		return NextResponse.json(
-			{ success: false, error: error.message || '生成二维码失败' },
+			{ success: false, error: error instanceof Error ? error.message : '生成二维码失败' },
 			{ status: 500 }
 		);
 	}

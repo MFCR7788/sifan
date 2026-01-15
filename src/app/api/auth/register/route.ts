@@ -82,10 +82,10 @@ export async function POST(request: NextRequest) {
 		console.log('Register: Cookie已设置，userId:', user.id);
 
 		return response;
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Registration error:', error);
 		return NextResponse.json(
-			{ error: error.message || '注册失败，请稍后重试' },
+			{ error: error instanceof Error ? error.message : '注册失败，请稍后重试' },
 			{ status: 500 }
 		);
 	}

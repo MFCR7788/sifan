@@ -8,7 +8,7 @@ import mammoth from 'mammoth';
 
 // pdf-parse 需要动态导入
 async function parsePDF(buffer: Buffer) {
-	// @ts-ignore - pdf-parse 的类型定义有问题
+	// @ts-expect-error - pdf-parse 的类型定义有问题
 	const pdfParse = (await import('pdf-parse')).default;
 	return pdfParse(buffer);
 }
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
 				throw new Error('未找到有效的JSON数组');
 			}
 			qaPairs = JSON.parse(jsonMatch[0]);
-		} catch (error) {
+		} catch {
 			console.error('Failed to parse LLM response:', response.content);
 			return NextResponse.json(
 				{ error: 'LLM 返回格式错误，请重试' },

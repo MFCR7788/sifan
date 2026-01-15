@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 		}
 
 		return NextResponse.json({ member });
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Get member error:', error);
 
 		// 如果是数据库连接错误，返回 401 而不是 500

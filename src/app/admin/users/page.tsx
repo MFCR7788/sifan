@@ -3,12 +3,22 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
+interface User {
+	id: string;
+	name: string;
+	phone: string;
+	email: string | null;
+	isAdmin: boolean;
+	isActive: boolean;
+	createdAt: string;
+}
+
 export default function AdminUsersPage() {
 	const { user } = useAuth();
-	const [users, setUsers] = useState<any[]>([]);
+	const [users, setUsers] = useState<User[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [selectedUser, setSelectedUser] = useState<any>(null);
+	const [selectedUser, setSelectedUser] = useState<User | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [editForm, setEditForm] = useState({
@@ -49,12 +59,12 @@ export default function AdminUsersPage() {
 		}
 	};
 
-	const handleViewUser = (user: any) => {
+	const handleViewUser = (user: User) => {
 		setSelectedUser(user);
 		setIsModalOpen(true);
 	};
 
-	const handleEditUser = (user: any) => {
+	const handleEditUser = (user: User) => {
 		setSelectedUser(user);
 		setEditForm({
 			name: user.name,

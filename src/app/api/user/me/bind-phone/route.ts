@@ -52,10 +52,10 @@ export async function POST(request: NextRequest) {
 			message: '手机号绑定成功',
 			user,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Bind phone error:', error);
 		return NextResponse.json(
-			{ error: error.message || '绑定失败，请稍后重试' },
+			{ error: error instanceof Error ? error.message : '绑定失败，请稍后重试' },
 			{ status: 500 }
 		);
 	}

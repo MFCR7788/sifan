@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 		return NextResponse.json({
 			message: '密码修改成功',
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Change password error:', error);
 		return NextResponse.json(
 			{ error: '修改密码失败，请稍后重试' },

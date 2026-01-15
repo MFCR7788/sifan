@@ -64,10 +64,10 @@ export async function POST(request: NextRequest) {
 			user: { id: user.id, email: user.email, name: user.name, isAdmin: user.isAdmin },
 			member,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Create admin error:', error);
 		return NextResponse.json(
-			{ error: error.message || '创建管理员失败' },
+			{ error: error instanceof Error ? error.message : '创建管理员失败' },
 			{ status: 500 }
 		);
 	}

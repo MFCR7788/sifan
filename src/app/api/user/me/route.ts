@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
 		console.log('/api/user/me: 返回用户信息:', user);
 		return NextResponse.json({ user });
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Get user error:', error);
 
 		// 如果是数据库连接错误，返回 401 而不是 500

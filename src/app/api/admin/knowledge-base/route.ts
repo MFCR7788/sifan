@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from 'coze-coding-dev-sdk';
 import { knowledgeBase } from '@/storage/database/shared/schema';
-import { desc, eq, like, or, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
 
 // GET - 获取知识库列表
@@ -107,10 +107,11 @@ export async function GET(request: NextRequest) {
 			success: true,
 			items: result,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to fetch knowledge base:', error);
+		const errorMessage = error instanceof Error ? error.message : '获取知识库列表失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '获取知识库列表失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}
@@ -169,11 +170,14 @@ export async function POST(request: NextRequest) {
 			success: true,
 			item: newItem,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('[KnowledgeBase POST] Failed to create knowledge base item:', error);
-		console.error('[KnowledgeBase POST] Error stack:', error.stack);
+		const errorMessage = error instanceof Error ? error.message : '创建知识库条目失败';
+		if (error instanceof Error) {
+			console.error('[KnowledgeBase POST] Error stack:', error.stack);
+		}
 		return NextResponse.json(
-			{ success: false, error: error.message || '创建知识库条目失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}

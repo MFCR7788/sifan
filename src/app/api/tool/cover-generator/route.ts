@@ -75,7 +75,7 @@ async function generateCover(text: string, platform: string, style: string, rati
     const prompt = buildPrompt(platform, style, text, ratio);
 
     // 确定图片尺寸（优先使用用户选择的比例）
-    let imageSize = RATIO_SIZE_MAP[ratio] || '1920x1080';
+    const imageSize = RATIO_SIZE_MAP[ratio] || '1920x1080';
 
     console.log('========== 开始生成封面图 ==========');
     console.log('接收到的参数:', { platform, style, ratio });

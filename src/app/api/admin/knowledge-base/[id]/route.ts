@@ -33,10 +33,11 @@ export async function GET(
 			success: true,
 			item,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to fetch knowledge base item:', error);
+		const errorMessage = error instanceof Error ? error.message : '获取知识库条目失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '获取知识库条目失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}
@@ -96,10 +97,11 @@ export async function PUT(
 			success: true,
 			item: updatedItem,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to update knowledge base item:', error);
+		const errorMessage = error instanceof Error ? error.message : '更新知识库条目失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '更新知识库条目失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}
@@ -139,10 +141,11 @@ export async function DELETE(
 			success: true,
 			item: deletedItem,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to delete knowledge base item:', error);
+		const errorMessage = error instanceof Error ? error.message : '删除知识库条目失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '删除知识库条目失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}

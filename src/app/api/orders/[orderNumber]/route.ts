@@ -25,13 +25,13 @@ export async function GET(
 			success: true,
 			data: order,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Get order error:', error);
 
 		return NextResponse.json(
 			{
 				success: false,
-				error: error.message || '获取订单失败',
+				error: error instanceof Error ? error.message : '获取订单失败',
 			},
 			{ status: 500 }
 		);
@@ -77,13 +77,13 @@ export async function PATCH(
 			},
 			{ status: 400 }
 		);
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Update order error:', error);
 
 		return NextResponse.json(
 			{
 				success: false,
-				error: error.message || '更新订单失败',
+				error: error instanceof Error ? error.message : '更新订单失败',
 			},
 			{ status: 500 }
 		);

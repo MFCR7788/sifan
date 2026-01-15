@@ -113,7 +113,7 @@ async function generateImage(
     );
 
     // 确定图片尺寸
-    let imageSize = RATIO_SIZE_MAP[ratio] || '1920x1080';
+    const imageSize = RATIO_SIZE_MAP[ratio] || '1920x1080';
 
     console.log('========== 开始生成AI图像 ==========');
     console.log('接收到的参数:', {

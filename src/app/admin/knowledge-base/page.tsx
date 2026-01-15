@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface KnowledgeItem {
@@ -14,6 +14,11 @@ interface KnowledgeItem {
 	viewCount: number;
 	createdAt: string;
 	updatedAt: string;
+}
+
+interface UploadResult {
+	total: number;
+	items: KnowledgeItem[];
 }
 
 export default function KnowledgeBasePage() {
@@ -39,7 +44,7 @@ export default function KnowledgeBasePage() {
 	const [uploadFile, setUploadFile] = useState<File | null>(null);
 	const [uploading, setUploading] = useState(false);
 	const [parsing, setParsing] = useState(false);
-	const [uploadResult, setUploadResult] = useState<{ total: number; items: any[] } | null>(null);
+	const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
 
 	const categories = [
 		'all',
@@ -61,11 +66,7 @@ export default function KnowledgeBasePage() {
 		return headers;
 	};
 
-	useEffect(() => {
-		fetchItems();
-	}, [selectedCategory]);
-
-	const fetchItems = async () => {
+	const fetchItems = useCallback(async () => {
 		setLoading(true);
 		try {
 			const url = selectedCategory === 'all'
@@ -84,7 +85,11 @@ export default function KnowledgeBasePage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [selectedCategory, getAuthHeaders]);
+
+	useEffect(() => {
+		fetchItems();
+	}, [fetchItems]);
 
 	const handleAdd = () => {
 		setFormData({
@@ -207,7 +212,7 @@ export default function KnowledgeBasePage() {
 		}
 	};
 
-	const handleSearch = async () => {
+	const handleSearch = useCallback(async () => {
 		setLoading(true);
 		try {
 			const url = searchTerm
@@ -226,7 +231,7 @@ export default function KnowledgeBasePage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [searchTerm, getAuthHeaders]);
 
 	useEffect(() => {
 		if (searchTerm) {
@@ -237,7 +242,7 @@ export default function KnowledgeBasePage() {
 		} else {
 			fetchItems();
 		}
-	}, [searchTerm]);
+	}, [searchTerm, handleSearch, fetchItems]);
 
 	// 处理文件上传
 	const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

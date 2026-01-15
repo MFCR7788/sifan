@@ -71,10 +71,10 @@ export async function GET(request: NextRequest) {
 			success: true,
 			transactions: result,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to fetch transactions:', error);
 		return NextResponse.json(
-			{ success: false, error: error.message || '获取交易记录失败' },
+			{ success: false, error: error instanceof Error ? error.message : '获取交易记录失败' },
 			{ status: 500 }
 		);
 	}

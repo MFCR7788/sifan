@@ -33,7 +33,7 @@ export async function GET() {
       const privateKey = fs.readFileSync(privateKeyPath, 'utf-8');
       results.cert_files.private_key_size = privateKey.length;
       results.cert_files.private_key_preview = privateKey.substring(0, 50) + '...';
-    } catch (error: any) {
+    } catch (error: unknown) {
       results.cert_files.private_key_error = error.message;
     }
   }
@@ -43,7 +43,7 @@ export async function GET() {
       const cert = fs.readFileSync(certPath, 'utf-8');
       results.cert_files.cert_size = cert.length;
       results.cert_files.cert_preview = cert.substring(0, 50) + '...';
-    } catch (error: any) {
+    } catch (error: unknown) {
       results.cert_files.cert_error = error.message;
     }
   }
@@ -87,10 +87,10 @@ export async function GET() {
     // 尝试测试调用（可能会失败，但可以看错误信息）
     try {
       // 这里不实际调用，只是测试 SDK 是否可用
-    } catch (error: any) {
+    } catch (error: unknown) {
       results.sdk_test_error = error.message;
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     results.sdk_status = '初始化失败';
     results.sdk_error = error.message;
     results.sdk_stack = error.stack;

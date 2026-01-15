@@ -126,10 +126,10 @@ export async function GET(request: NextRequest) {
         amount: order.amount,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Query Payment Status Error:', error);
     return NextResponse.json(
-      { success: false, error: error.message || '查询支付状态失败' },
+      { success: false, error: error instanceof Error ? error.message : '查询支付状态失败' },
       { status: 500 }
     );
   }

@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
       qrCodeImage,
       amount: amount,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('=== Create Payment Order Error ===');
     console.error('Error message:', error.message);
     console.error('Error name:', error.name);
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         error: '创建支付订单失败',
-        details: error.message || '服务器内部错误',
+        details: error instanceof Error ? error.message : '服务器内部错误',
         debug: process.env.NODE_ENV === 'development' ? {
           name: error.name,
           message: error.message,

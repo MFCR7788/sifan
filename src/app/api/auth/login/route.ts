@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 		// 检查是否是admin账户（支持手机号或邮箱登录）
 		if (phone === ADMIN_PHONE || phone === ADMIN_EMAIL) {
 			// 先尝试从数据库中查找用户
-			let dbUser = await userManager.getUserByPhone(ADMIN_PHONE);
+			const dbUser = await userManager.getUserByPhone(ADMIN_PHONE);
 
 			if (dbUser) {
 				// 验证密码
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 			}
 		} else {
 			// 先尝试从数据库中查找用户（可能包括管理员账号）
-			let dbUser = await userManager.getUserByPhone(phone);
+			const dbUser = await userManager.getUserByPhone(phone);
 
 			if (dbUser) {
 				// 验证密码
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 		console.log('==================');
 
 		return response;
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Login error:', error);
 		return NextResponse.json(
 			{ error: '登录失败，请稍后重试' },

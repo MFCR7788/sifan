@@ -1,0 +1,4 @@
+tmp/
+webhook-server.js
+*.js
+!next.config.js

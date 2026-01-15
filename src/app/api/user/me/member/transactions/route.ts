@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 				totalPages: Math.ceil(total / limit),
 			}
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Get transactions error:', error);
 
 		// 如果是数据库连接错误，返回 401

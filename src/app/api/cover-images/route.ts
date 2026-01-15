@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     // 构建查询条件
     const conditions: string[] = [];
-    const params: any[] = [];
+    const params: (string | number | boolean)[] = [];
     let paramIndex = 1;
 
     // 如果指定了 userId，查询该用户的所有图片（不管是否公开）
@@ -182,10 +182,14 @@ export async function POST(request: NextRequest) {
     console.error('保存封面图失败 - 完整错误对象:', error);
 
     let errorMessage = '保存失败，请重试';
-    let errorDetails: any = {};
+    let errorDetails: {
+      name?: string;
+      message?: string;
+      stack?: string;
+    } = {};
 
     if (error instanceof Error) {
-      errorMessage = error.message;
+      errorMessage = error instanceof Error ? error.message : errorMessage;
       errorDetails = {
         name: error.name,
         message: error.message,

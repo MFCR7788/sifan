@@ -15,10 +15,10 @@ export async function GET() {
     const worksheet = workbook.Sheets[sheetName];
 
     // 转换为JSON（带表头）
-    const data = XLSX.utils.sheet_to_json(worksheet) as any[];
+    const data = XLSX.utils.sheet_to_json(worksheet) as Record<string, string | number>[];
 
     // 更新特定功能的价格
-    data.forEach((item: any) => {
+    data.forEach((item: Record<string, string | number>) => {
       if (item['功能名称'] === '区域合伙人（新）') {
         item['价格/月'] = 500; // 6000 / 12 = 500
       }

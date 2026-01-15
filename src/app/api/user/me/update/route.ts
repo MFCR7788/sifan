@@ -29,10 +29,10 @@ export async function PATCH(request: NextRequest) {
 			message: '更新成功',
 			user,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Update user error:', error);
 		return NextResponse.json(
-			{ error: error.message || '更新失败，请稍后重试' },
+			{ error: error instanceof Error ? error.message : '更新失败，请稍后重试' },
 			{ status: 500 }
 		);
 	}

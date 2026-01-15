@@ -41,10 +41,10 @@ export async function POST(request: NextRequest) {
 			success: true,
 			token,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to confirm QR code login:', error);
 		return NextResponse.json(
-			{ success: false, error: error.message || '确认登录失败' },
+			{ success: false, error: error instanceof Error ? error.message : '确认登录失败' },
 			{ status: 500 }
 		);
 	}

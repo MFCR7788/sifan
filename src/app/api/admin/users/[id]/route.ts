@@ -4,6 +4,14 @@ import { users } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
 
+type UserUpdateData = {
+	name?: string;
+	email?: string | null;
+	isAdmin?: boolean;
+	isActive?: boolean;
+	updatedAt: string;
+};
+
 export async function PATCH(
 	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> }
@@ -29,7 +37,7 @@ export async function PATCH(
 			);
 		}
 
-		const updateData: any = { updatedAt: new Date().toISOString() };
+		const updateData: UserUpdateData = { updatedAt: new Date().toISOString() };
 
 		if (body.name !== undefined) updateData.name = body.name;
 		// 空字符串转换为null
@@ -45,10 +53,11 @@ export async function PATCH(
 			.where(eq(users.id, id));
 
 		return NextResponse.json({ success: true });
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to update user:', error);
+		const errorMessage = error instanceof Error ? error.message : '更新用户失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '更新用户失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}

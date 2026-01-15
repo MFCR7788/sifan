@@ -3,12 +3,24 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
+interface Order {
+	id: string;
+	userId: string;
+	memberLevel: string;
+	totalPrice: number;
+	status: string;
+	notes: string | null;
+	createdAt: string;
+	updatedAt: string;
+	selectedFeatures?: Array<string | { name: string }>;
+}
+
 export default function AdminOrdersPage() {
 	const { user } = useAuth();
-	const [orders, setOrders] = useState<any[]>([]);
+	const [orders, setOrders] = useState<Order[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [filter, setFilter] = useState<'all' | 'pending' | 'processing' | 'completed' | 'cancelled'>('all');
-	const [selectedOrder, setSelectedOrder] = useState<any>(null);
+	const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	// 获取认证头
@@ -42,7 +54,7 @@ export default function AdminOrdersPage() {
 		}
 	};
 
-	const handleViewOrder = (order: any) => {
+	const handleViewOrder = (order: Order) => {
 		setSelectedOrder(order);
 		setIsModalOpen(true);
 	};
@@ -223,7 +235,7 @@ export default function AdminOrdersPage() {
 								<div>
 									<div className="text-sm text-gray-600 mb-2">已选功能</div>
 									<div className="flex flex-wrap gap-2">
-										{selectedOrder.selectedFeatures && selectedOrder.selectedFeatures.map((feature: any, idx: number) => (
+										{selectedOrder.selectedFeatures && selectedOrder.selectedFeatures.map((feature: string | { name: string }, idx: number) => (
 											<span key={idx} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
 												{typeof feature === 'string' ? feature : feature.name || feature}
 											</span>

@@ -4,6 +4,15 @@ import { members } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
 
+type MemberUpdateData = {
+	memberLevel?: string;
+	balance?: number;
+	points?: number;
+	memberStatus?: string;
+	expiresAt?: string | null;
+	updatedAt: string;
+};
+
 export async function PATCH(
 	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> }
@@ -19,7 +28,7 @@ export async function PATCH(
 
 		const { id } = await params;
 		const body = await request.json();
-		const updateData: any = { updatedAt: new Date().toISOString() };
+		const updateData: MemberUpdateData = { updatedAt: new Date().toISOString() };
 
 		if (body.memberLevel !== undefined) updateData.memberLevel = body.memberLevel;
 		if (body.balance !== undefined) updateData.balance = body.balance;
@@ -35,10 +44,11 @@ export async function PATCH(
 			.where(eq(members.id, id));
 
 		return NextResponse.json({ success: true });
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to update member:', error);
+		const errorMessage = error instanceof Error ? error.message : '更新会员信息失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '更新会员信息失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}

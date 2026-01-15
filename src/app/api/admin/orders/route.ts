@@ -39,10 +39,11 @@ export async function GET(request: NextRequest) {
 				orders: result,
 			});
 		}
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to fetch orders:', error);
+		const errorMessage = error instanceof Error ? error.message : '获取定制定单失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '获取定制定单失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}

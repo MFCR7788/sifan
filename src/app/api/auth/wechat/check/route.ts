@@ -52,10 +52,10 @@ export async function GET(request: NextRequest) {
 			token: session.token,
 			expired: false,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to check QR code status:', error);
 		return NextResponse.json(
-			{ success: false, error: error.message || '检查扫码状态失败' },
+			{ success: false, error: error instanceof Error ? error.message : '检查扫码状态失败' },
 			{ status: 500 }
 		);
 	}

@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 				balanceAfter: updatedMember.balance,
 			},
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Recharge error:', error);
 
 		// 如果是数据库连接错误，返回 401
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		return NextResponse.json(
-			{ error: error.message || '充值失败，请稍后重试' },
+			{ error: error instanceof Error ? error.message : '充值失败，请稍后重试' },
 			{ status: 500 }
 		);
 	}

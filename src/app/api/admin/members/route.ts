@@ -40,10 +40,11 @@ export async function GET(request: NextRequest) {
 			success: true,
 			members: result,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to fetch members:', error);
+		const errorMessage = error instanceof Error ? error.message : '获取会员列表失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '获取会员列表失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}

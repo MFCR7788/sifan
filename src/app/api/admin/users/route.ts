@@ -33,10 +33,11 @@ export async function GET(request: NextRequest) {
 			success: true,
 			users: result,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to fetch users:', error);
+		const errorMessage = error instanceof Error ? error.message : '获取用户列表失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '获取用户列表失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}

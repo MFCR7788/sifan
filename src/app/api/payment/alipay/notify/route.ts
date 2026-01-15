@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // 返回成功响应
     return new Response('success', { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('支付宝回调处理错误:', error);
     return new Response('success', { status: 200 });
   }

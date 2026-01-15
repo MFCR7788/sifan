@@ -30,10 +30,10 @@ export async function GET(request: NextRequest) {
       transactions,
       total: transactions.length,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get transactions error:', error);
     return NextResponse.json(
-      { success: false, error: error.message || '获取交易记录失败' },
+      { success: false, error: error instanceof Error ? error.message : '获取交易记录失败' },
       { status: 500 }
     );
   }

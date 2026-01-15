@@ -59,7 +59,7 @@ export async function GET(
       success: true,
       data: order
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get order by number error:', error);
     return NextResponse.json(
       { error: '获取订单失败' },

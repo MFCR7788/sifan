@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { orderManager } from '@/storage/database/orderManager';
 import { insertOrderSchema } from '@/storage/database/shared/schema';
 
+type OrderData = {
+	customerName: string;
+	customerPhone: string;
+	customerEmail: string;
+	platform: string;
+	selectedFeatures: Array<string | { name: string }>;
+	totalPrice: number;
+	monthlyFee?: number;
+	orderNumber: string;
+	serviceLevel?: string;
+	valueServices?: Array<string | { name: string }>;
+	notes?: string | null;
+};
+
 export async function POST(request: NextRequest) {
 	try {
 		const body = await request.json();
@@ -13,7 +27,7 @@ export async function POST(request: NextRequest) {
 		const orderNumber = orderManager.generateOrderNumber();
 
 		// 准备订单数据，确保JSONB字段格式正确
-		const orderData: any = {
+		const orderData: OrderData = {
 			customerName: validatedData.customerName,
 			customerPhone: validatedData.customerPhone,
 			customerEmail: validatedData.customerEmail,
@@ -51,13 +65,13 @@ export async function POST(request: NextRequest) {
 				createdAt: dbOrder.created_at,
 			},
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Create order error:', error);
 
 		return NextResponse.json(
 			{
 				success: false,
-				error: error.message || '创建订单失败',
+				error: error instanceof Error ? error.message : '创建订单失败',
 			},
 			{ status: 400 }
 		);
@@ -78,13 +92,13 @@ export async function GET(request: NextRequest) {
 			success: true,
 			data: orders,
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Get orders error:', error);
 
 		return NextResponse.json(
 			{
 				success: false,
-				error: error.message || '获取订单列表失败',
+				error: error instanceof Error ? error.message : '获取订单列表失败',
 			},
 			{ status: 500 }
 		);

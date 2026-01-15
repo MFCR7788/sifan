@@ -4,6 +4,11 @@ import { knowledgeBase } from '@/storage/database/shared/schema';
 import { eq, and, or, like, desc, sql } from 'drizzle-orm';
 import { LLMClient, Config } from 'coze-coding-dev-sdk';
 
+type Message = {
+	role: 'system' | 'user' | 'assistant';
+	content: string;
+};
+
 // 知识库检索：根据用户问题查找相关知识
 async function searchKnowledgeBase(query: string): Promise<any[]> {
 	// 提取关键词（简单实现：拆分中文和英文）
@@ -86,7 +91,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		// 构建消息列表
-		const messages: any[] = [
+		const messages: Message[] = [
 			{ role: 'system', content: systemPrompt },
 		];
 
@@ -121,7 +126,7 @@ export async function POST(request: NextRequest) {
 					}
 
 					controller.close();
-				} catch (error: any) {
+				} catch (error: unknown) {
 					console.error('LLM stream error:', error);
 					controller.enqueue(encoder.encode('\n\n抱歉，服务暂时不可用，请稍后再试。'));
 					controller.close();
@@ -138,9 +143,9 @@ export async function POST(request: NextRequest) {
 				'Transfer-Encoding': 'chunked',
 			},
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Chat API error:', error);
-		return new Response(JSON.stringify({ error: error.message || '聊天服务异常' }), {
+		return new Response(JSON.stringify({ error: error instanceof Error ? error.message : '聊天服务异常' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' },
 		});

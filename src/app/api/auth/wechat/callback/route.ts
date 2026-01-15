@@ -145,8 +145,8 @@ export async function GET(request: NextRequest) {
 
 		// 6. 重定向到前端登录成功页面
 		return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login?wechat=success&state=${state}`);
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('微信回调处理失败:', error);
-		return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login?error=${encodeURIComponent(error.message || '登录失败')}`);
+		return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login?error=${encodeURIComponent(error instanceof Error ? error.message : '登录失败')}`);
 	}
 }

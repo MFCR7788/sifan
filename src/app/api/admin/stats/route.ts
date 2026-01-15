@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from 'coze-coding-dev-sdk';
 import { orders, users, members, memberTransactions } from '@/storage/database/shared/schema';
 import { verifyAdmin } from '@/lib/admin-auth';
-import { eq, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
 	try {
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 		const totalOrders = totalOrdersResult[0]?.count || 0;
 		const totalUsers = totalUsersResult[0]?.count || 0;
 		const totalMembers = totalMembersResult[0]?.count || 0;
-		const totalRevenue = totalRevenueResult.reduce((sum: number, t: any) => sum + (t.amount || 0), 0) / 100; // 转换为元
+		const totalRevenue = totalRevenueResult.reduce((sum: number, t: { amount: number | null }) => sum + (t.amount || 0), 0) / 100; // 转换为元
 
 		return NextResponse.json({
 			success: true,
@@ -42,10 +42,11 @@ export async function GET(request: NextRequest) {
 			totalMembers,
 			totalRevenue: totalRevenue.toFixed(2),
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Failed to fetch admin stats:', error);
+		const errorMessage = error instanceof Error ? error.message : '获取统计数据失败';
 		return NextResponse.json(
-			{ success: false, error: error.message || '获取统计数据失败' },
+			{ success: false, error: errorMessage },
 			{ status: 500 }
 		);
 	}

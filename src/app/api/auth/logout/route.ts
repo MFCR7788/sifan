@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 		});
 
 		return response;
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Logout error:', error);
 		return NextResponse.json(
 			{ error: '登出失败' },

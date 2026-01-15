@@ -42,10 +42,10 @@ export async function POST(request: NextRequest) {
       message: '模拟支付成功',
       orderNo,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('模拟支付完成错误:', error);
     return NextResponse.json(
-      { success: false, error: error.message || '模拟支付失败' },
+      { success: false, error: error instanceof Error ? error.message : '模拟支付失败' },
       { status: 500 }
     );
   }

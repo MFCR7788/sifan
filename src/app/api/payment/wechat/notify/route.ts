@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 获取交易状态
-    let tradeState = data?.resource?.ciphertext
+    const tradeState = data?.resource?.ciphertext
       ? JSON.parse(
           Buffer.from(
             data.resource.ciphertext,
@@ -87,8 +87,8 @@ export async function POST(request: NextRequest) {
 
     // 返回成功响应
     return NextResponse.json({ code: 'SUCCESS', message: '成功' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('微信支付回调处理错误:', error);
-    return NextResponse.json({ code: 'FAIL', message: error.message || '处理失败' }, { status: 500 });
+    return NextResponse.json({ code: 'FAIL', message: error instanceof Error ? error.message : '处理失败' }, { status: 500 });
   }
 }
