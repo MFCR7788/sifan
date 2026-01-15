@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useToast } from '@/components/Toast';
@@ -26,6 +27,16 @@ const PlatformCard = ({ icon, title, description, selected, onClick }: {
   selected: boolean;
   onClick: () => void;
 }) => {
+  const [imgError, setImgError] = useState(false);
+
+  // 平台图标备用文本
+  const getPlatformIcon = (title: string) => {
+    if (title.includes('抖音')) return '🎵';
+    if (title.includes('小红书')) return '📕';
+    if (title.includes('公众号')) return '📱';
+    return '📷';
+  };
+
   return (
     <button
       onClick={onClick}
@@ -38,11 +49,19 @@ const PlatformCard = ({ icon, title, description, selected, onClick }: {
       `}
     >
       <div className="mb-3 flex items-center justify-center w-16 h-16 rounded-xl bg-white">
-        <img
-          src={icon}
-          alt={title}
-          className="w-12 h-12 object-contain"
-        />
+        {imgError ? (
+          <span className="text-3xl">{getPlatformIcon(title)}</span>
+        ) : (
+          <Image
+            src={icon}
+            alt={title}
+            width={48}
+            height={48}
+            className="object-contain"
+            onError={() => setImgError(true)}
+            unoptimized
+          />
+        )}
       </div>
       <h3 className={`font-semibold mb-1 ${selected ? 'text-blue-700' : 'text-gray-900'}`}>
         {title}
