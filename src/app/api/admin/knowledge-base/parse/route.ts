@@ -78,6 +78,7 @@ export async function POST(request: NextRequest) {
 		// 使用 LLM 生成问答对
 		const llmConfig = new Config({
 			baseUrl: 'https://api.coze.cn', // 指定使用国内 API 端点
+			modelBaseUrl: 'https://api.coze.cn/v3', // 模型 API 端点
 		});
 		const llmClient = new LLMClient(llmConfig);
 

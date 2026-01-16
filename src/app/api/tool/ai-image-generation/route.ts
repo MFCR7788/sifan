@@ -108,6 +108,7 @@ async function generateImage(
     const config = new Config({
       apiKey: apiKey,
       baseUrl: 'https://api.coze.cn', // 指定使用国内 API 端点
+      modelBaseUrl: 'https://api.coze.cn/v3', // 模型 API 端点
     });
     const client = new ImageGenerationClient(config);
 

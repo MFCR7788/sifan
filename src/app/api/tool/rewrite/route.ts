@@ -20,6 +20,7 @@ async function rewriteText(text: string, platform: string) {
     // 初始化LLM客户端
     const config = new Config({
       baseUrl: 'https://api.coze.cn', // 指定使用国内 API 端点
+      modelBaseUrl: 'https://api.coze.cn/v3', // 模型 API 端点
     });
     const client = new LLMClient(config);
 
