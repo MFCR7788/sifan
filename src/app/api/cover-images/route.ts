@@ -189,15 +189,13 @@ export async function POST(request: NextRequest) {
     } = {};
 
     if (error instanceof Error) {
-      errorMessage = error instanceof Error ? error.message : errorMessage;
+      errorMessage = error.message;
       errorDetails = {
         name: error.name,
         message: error.message,
         stack: error.stack?.split('\n').slice(0, 3).join('\n'), // 只显示前3行
       };
       console.error('错误详情:', errorDetails);
-    } else {
-      errorDetails = { error };
     }
 
     return NextResponse.json(

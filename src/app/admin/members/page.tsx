@@ -84,6 +84,8 @@ export default function AdminMembersPage() {
 	};
 
 	const handleUpdateMember = async () => {
+		if (!selectedMember) return;
+
 		try {
 			const response = await fetch(`/api/admin/members/${selectedMember.id}`, {
 				method: 'PATCH',

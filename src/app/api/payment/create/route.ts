@@ -5,6 +5,11 @@ import QRCode from 'qrcode';
 import { createPaymentOrder } from '@/storage/database/paymentOrderManager';
 import { useAuth } from '@/contexts/AuthContext';
 
+// 类型守卫：检查error是否为Error对象
+function isError(error: unknown): error is Error {
+  return error instanceof Error;
+}
+
 export async function POST(request: NextRequest) {
   try {
     // 获取用户身份 - 支持从 Cookie 和 Header 两种方式读取
@@ -156,12 +161,15 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error('=== Create Payment Order Error ===');
-    console.error('Error message:', error.message);
-    console.error('Error name:', error.name);
-    console.error('Error stack:', error.stack);
+
+    if (isError(error)) {
+      console.error('Error message:', error.message);
+      console.error('Error name:', error.name);
+      console.error('Error stack:', error.stack);
+    }
 
     // 判断错误类型，返回更详细的错误信息
-    if (error.message?.includes('微信支付未初始化')) {
+    if (isError(error) && error.message?.includes('微信支付未初始化')) {
       console.error('❌ 微信支付 SDK 未初始化，请检查证书配置');
       return NextResponse.json(
         {
@@ -173,7 +181,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (error.message?.includes('创建微信支付订单失败')) {
+    if (isError(error) && error.message?.includes('创建微信支付订单失败')) {
       console.error('❌ 调用微信支付 API 失败');
       return NextResponse.json(
         {
@@ -185,7 +193,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (error.message?.includes('code_url')) {
+    if (isError(error) && error.message?.includes('code_url')) {
       console.error('❌ 微信支付返回数据异常');
       return NextResponse.json(
         {
@@ -198,7 +206,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 数据库错误
-    if (error.message?.includes('Database') || error.message?.includes('PGDATABASE')) {
+    if (isError(error) && (error.message?.includes('Database') || error.message?.includes('PGDATABASE'))) {
       console.error('❌ 数据库错误');
       return NextResponse.json(
         {
@@ -216,8 +224,8 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         error: '创建支付订单失败',
-        details: error instanceof Error ? error.message : '服务器内部错误',
-        debug: process.env.NODE_ENV === 'development' ? {
+        details: isError(error) ? error.message : '服务器内部错误',
+        debug: process.env.NODE_ENV === 'development' && isError(error) ? {
           name: error.name,
           message: error.message,
           stack: error.stack?.substring(0, 500),

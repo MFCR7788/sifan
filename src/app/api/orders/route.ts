@@ -32,7 +32,9 @@ export async function POST(request: NextRequest) {
 			customerPhone: validatedData.customerPhone,
 			customerEmail: validatedData.customerEmail,
 			platform: validatedData.platform,
-			selectedFeatures: validatedData.selectedFeatures || [],
+			selectedFeatures: Array.isArray(validatedData.selectedFeatures)
+				? (validatedData.selectedFeatures as (string | { name: string })[])
+				: [],
 			totalPrice: validatedData.totalPrice,
 			monthlyFee: validatedData.monthlyFee || 0,
 			orderNumber,

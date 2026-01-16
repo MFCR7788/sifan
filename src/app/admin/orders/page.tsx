@@ -13,6 +13,13 @@ interface Order {
 	createdAt: string;
 	updatedAt: string;
 	selectedFeatures?: Array<string | { name: string }>;
+	orderNumber?: string;
+	customerName?: string;
+	customerPhone?: string;
+	customerEmail?: string;
+	platform?: string;
+	serviceLevel?: string;
+	monthlyFee?: number;
 }
 
 export default function AdminOrdersPage() {
@@ -237,7 +244,7 @@ export default function AdminOrdersPage() {
 									<div className="flex flex-wrap gap-2">
 										{selectedOrder.selectedFeatures && selectedOrder.selectedFeatures.map((feature: string | { name: string }, idx: number) => (
 											<span key={idx} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-												{typeof feature === 'string' ? feature : feature.name || feature}
+												{typeof feature === 'string' ? feature : feature.name}
 											</span>
 										))}
 									</div>

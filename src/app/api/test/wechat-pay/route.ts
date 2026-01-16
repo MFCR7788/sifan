@@ -34,7 +34,7 @@ export async function GET() {
       results.cert_files.private_key_size = privateKey.length;
       results.cert_files.private_key_preview = privateKey.substring(0, 50) + '...';
     } catch (error: unknown) {
-      results.cert_files.private_key_error = error.message;
+      results.cert_files.private_key_error = error instanceof Error ? error.message : '读取私钥失败';
     }
   }
 
@@ -44,7 +44,7 @@ export async function GET() {
       results.cert_files.cert_size = cert.length;
       results.cert_files.cert_preview = cert.substring(0, 50) + '...';
     } catch (error: unknown) {
-      results.cert_files.cert_error = error.message;
+      results.cert_files.cert_error = error instanceof Error ? error.message : '读取证书失败';
     }
   }
 
@@ -88,12 +88,12 @@ export async function GET() {
     try {
       // 这里不实际调用，只是测试 SDK 是否可用
     } catch (error: unknown) {
-      results.sdk_test_error = error.message;
+      results.sdk_test_error = error instanceof Error ? error.message : '测试调用失败';
     }
   } catch (error: unknown) {
     results.sdk_status = '初始化失败';
-    results.sdk_error = error.message;
-    results.sdk_stack = error.stack;
+    results.sdk_error = error instanceof Error ? error.message : '未知错误';
+    results.sdk_stack = error instanceof Error ? error.stack : undefined;
   }
 
   return NextResponse.json(results);

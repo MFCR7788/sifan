@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 		console.error('Get member error:', error);
 
 		// 如果是数据库连接错误，返回 401 而不是 500
-		if (error.message?.includes('Database') || error.message?.includes('PGDATABASE')) {
+		if (error instanceof Error && (error.message?.includes('Database') || error.message?.includes('PGDATABASE'))) {
 			return NextResponse.json(
 				{ error: '数据库未配置' },
 				{ status: 401 }

@@ -76,6 +76,8 @@ export default function AdminUsersPage() {
 	};
 
 	const handleUpdateUser = async () => {
+		if (!selectedUser) return;
+
 		try {
 			const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
 				method: 'PATCH',

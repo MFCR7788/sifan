@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 
 		// 如果是数据库连接错误，返回 401 而不是 500
 		// 这样前端会将其视为未登录状态，而不是系统错误
-		if (error.message?.includes('Database') || error.message?.includes('PGDATABASE')) {
+		if (error instanceof Error && (error.message?.includes('Database') || error.message?.includes('PGDATABASE'))) {
 			return NextResponse.json(
 				{ error: '数据库未配置' },
 				{ status: 401 }
