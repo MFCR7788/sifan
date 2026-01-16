@@ -201,12 +201,29 @@ export default function AIImageGenerationPage() {
         }),
       });
 
+      console.log('API 响应状态:', response.status, response.statusText);
+
       const data = await response.json();
+
+      console.log('API 返回数据:', JSON.stringify(data, null, 2).substring(0, 1000));
 
       if (!response.ok) {
         console.error('API 错误:', data);
         throw new Error(data.error || `生成失败 (HTTP ${response.status})`);
       }
+
+      if (!data.success || !data.data) {
+        console.error('API 返回数据格式错误:', data);
+        throw new Error('API 返回数据格式错误');
+      }
+
+      // 检查是否包含有效的图片 URL
+      if (!data.data.imageUrl) {
+        console.error('API 未返回图片 URL:', data.data);
+        throw new Error('API 未返回图片 URL');
+      }
+
+      console.log('图片 URL:', data.data.imageUrl);
 
       // 进度条到 100%
       setProgress(100);
@@ -221,13 +238,17 @@ export default function AIImageGenerationPage() {
         quality,
         lighting,
         ratio: selectedRatio,
-        imageUrl: data.data?.imageUrl,
-        prompt: data.data?.prompt,
-        size: data.data?.size,
+        imageUrl: data.data.imageUrl,
+        prompt: data.data.prompt,
+        size: data.data.size,
         timestamp: new Date(),
       };
 
+      console.log('添加到历史记录:', newRecord);
       setHistory([newRecord, ...history]);
+
+      // 自动打开历史记录
+      setShowHistory(true);
 
       // 1秒后隐藏进度条
       setTimeout(() => {

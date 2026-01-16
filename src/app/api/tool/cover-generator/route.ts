@@ -133,14 +133,22 @@ async function generateCover(text: string, platform: string, style: string, rati
     }
 
     try {
+      console.log('开始上传封面图到对象存储...');
       const fileName = `cover-images/${platform}_${Date.now()}_${ratio.replace(':', 'x')}.png`;
+      console.log('文件名:', fileName);
+
       const fileKey = await storage.uploadFromUrl({
         url: generatedImageUrl,
         timeout: 30000,
       });
       console.log('封面图已保存到对象存储，key:', fileKey);
 
+      if (!fileKey || typeof fileKey !== 'string') {
+        throw new Error('uploadFromUrl 返回了无效的 key');
+      }
+
       // 生成签名 URL（有效期 7 天）
+      console.log('开始生成签名 URL...');
       const signedUrl = await storage.generatePresignedUrl({
         key: fileKey,
         expireTime: 604800, // 7 天
@@ -149,9 +157,11 @@ async function generateCover(text: string, platform: string, style: string, rati
 
       // 验证生成的签名 URL
       if (!signedUrl || typeof signedUrl !== 'string' || !signedUrl.startsWith('http')) {
+        console.error('生成的签名 URL 格式无效:', signedUrl);
         throw new Error('生成的签名 URL 格式无效');
       }
 
+      console.log('对象存储操作成功，返回签名 URL');
       return {
         success: true,
         imageUrl: signedUrl,
@@ -166,9 +176,10 @@ async function generateCover(text: string, platform: string, style: string, rati
       console.error('对象存储操作失败:', storageError);
       if (storageError instanceof Error) {
         console.error('存储错误详情:', storageError.message);
+        console.error('存储错误堆栈:', storageError.stack);
       }
       // 如果对象存储失败，尝试返回原始 URL
-      console.log('尝试返回原始生成的图片 URL');
+      console.log('对象存储失败，降级返回原始生成的图片 URL');
       return {
         success: true,
         imageUrl: generatedImageUrl,
