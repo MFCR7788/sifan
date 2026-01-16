@@ -76,7 +76,7 @@ async function generateCover(text: string, platform: string, style: string, rati
 
     const config = new Config({
       apiKey: apiKey,
-      baseURL: 'https://api.coze.cn', // 指定使用国内 API 端点
+      baseUrl: 'https://api.coze.cn', // 指定使用国内 API 端点
     });
     const client = new ImageGenerationClient(config);
 

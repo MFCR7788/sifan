@@ -21,7 +21,7 @@ async function generateTitles(text: string, platform: string) {
   try {
     // 初始化LLM客户端
     const config = new Config({
-      baseURL: 'https://api.coze.cn', // 指定使用国内 API 端点
+      baseUrl: 'https://api.coze.cn', // 指定使用国内 API 端点
     });
     const client = new LLMClient(config);
 
