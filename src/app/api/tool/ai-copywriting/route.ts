@@ -25,6 +25,7 @@ ${text}
 
     const config = new Config({
       apiKey: apiKey,
+      timeout: 120000, // 增加超时时间到 120 秒
     });
     const client = new LLMClient(config);
 
@@ -34,8 +35,9 @@ ${text}
     console.log('生成的完整 prompt:', prompt);
     console.log('===================================');
 
-    // 使用非流式调用获取结果
-    const response = await client.invoke([
+    // 使用流式调用获取结果
+    let result = '';
+    const stream = client.stream([
       {
         role: 'system',
         content: '你是一个专业的AI文案创作助手，擅长根据用户需求生成各类平台的专业文案，包括电商、大健康、工具软件、金融、教育、汽车等内容领域的文案创作。',
@@ -49,10 +51,13 @@ ${text}
       temperature: 0.8,
     });
 
-    console.log('LLM API 响应:', JSON.stringify(response, null, 2).substring(0, 1000));
+    for await (const chunk of stream) {
+      if (chunk.content) {
+        result += chunk.content.toString();
+      }
+    }
 
-    // 提取返回的内容
-    const result = response.content?.toString() || '';
+    console.log('LLM API 响应长度:', result.length);
 
     if (!result) {
       console.error('未获取到生成结果');
