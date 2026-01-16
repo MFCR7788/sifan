@@ -22,56 +22,42 @@ export async function POST(request: NextRequest) {
 
 		// 检查是否是admin账户（支持手机号或邮箱登录）
 		if (phone === ADMIN_PHONE || phone === ADMIN_EMAIL) {
-			// 先尝试从数据库中查找用户
-			const dbUser = await userManager.getUserByPhone(ADMIN_PHONE);
-
-			if (dbUser) {
-				// 验证密码
-				let isValidPassword;
-				if (password === 'Qf229888777') {
-					// 硬编码密码验证（临时）
-					isValidPassword = true;
-
-					// 如果数据库中的密码不是这个哈希值，更新它
-					const expectedHash = await bcrypt.hash('Qf229888777', 10);
-					if (dbUser.password !== expectedHash) {
-						await userManager.updateUser(dbUser.id, { password: await bcrypt.hash('Qf229888777', 10) } as any);
-					}
-				} else {
-					// 使用数据库密码验证
-					isValidPassword = await bcrypt.compare(password, dbUser.password);
-				}
-
-				if (isValidPassword && dbUser.isAdmin) {
-					// 返回数据库中的真实用户
-					const { password: _, ...userWithoutPassword } = dbUser;
-					user = userWithoutPassword;
-				}
+			// 优先验证硬编码的admin密码（即使数据库不可用也能登录）
+			if (password === 'Qf229888777') {
+				user = {
+					id: 'admin-id',
+					phone: ADMIN_PHONE,
+					email: ADMIN_EMAIL,
+					name: 'Admin',
+					isAdmin: true,
+					isActive: true,
+					createdAt: new Date().toISOString(),
+				};
+				console.log('✅ 管理员硬编码密码验证成功（数据库模式）');
 			} else {
-				// 兜底：验证硬编码的admin密码（临时方案）
-				if (password === 'Qf229888777') {
-					// 创建临时的admin用户对象
-					user = {
-						id: 'admin-id',
-						phone: ADMIN_PHONE,
-						email: ADMIN_EMAIL,
-						name: 'Admin',
-						isAdmin: true,
-						isActive: true,
-						createdAt: new Date().toISOString(),
-					};
+				// 硬编码密码错误，尝试从数据库验证
+				try {
+					const dbUser = await userManager.getUserByPhone(ADMIN_PHONE);
+					if (dbUser && dbUser.isAdmin) {
+						const isValidPassword = await bcrypt.compare(password, dbUser.password);
+						if (isValidPassword) {
+							const { password: _, ...userWithoutPassword } = dbUser;
+							user = userWithoutPassword;
+							console.log('✅ 管理员数据库密码验证成功');
+						}
+					}
+				} catch (dbError) {
+					console.error('数据库查询失败，使用硬编码验证:', dbError);
 				}
 			}
 		} else {
-			// 先尝试从数据库中查找用户（可能包括管理员账号）
+			// 普通用户，从数据库验证
 			const dbUser = await userManager.getUserByPhone(phone);
 
 			if (dbUser) {
-				// 验证密码
 				const isValidPassword = await bcrypt.compare(password, dbUser.password);
 
 				if (isValidPassword) {
-					// 返回用户信息（不包含密码）
 					const { password: _, ...userWithoutPassword } = dbUser;
 					user = userWithoutPassword;
 				}
