@@ -77,8 +77,8 @@ export default function AICopywritingPage() {
   const platforms = ['抖音', '小红书', '视频号', '公众号'];
   const contentTypes = ['校服', '电商', '大健康', '工具软件', '金融', '教育', '汽车', '内容信息'];
   const aiModels = [
-    { id: 'doubao-seed-1-6-251015', name: '豆包-1.5-32k' },
-    { id: 'doubao-seed-1-6-251015', name: '豆包-1.5-128k' },
+    { id: 'doubao-seed-1-6-251015', name: '豆包-1.5-32k（平衡）' },
+    { id: 'doubao-seed-1-6-lite-251015', name: '豆包-1.5-128k（轻量）' },
     { id: 'deepseek-v3-2-251201', name: 'DeepSeek-V3' },
   ];
   const wordCountOptions = [
