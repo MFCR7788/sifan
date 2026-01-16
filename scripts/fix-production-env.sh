@@ -102,8 +102,9 @@ if [[ "$CURRENT_JWT" == *"your-"* ]] || [[ "$CURRENT_JWT" == *"YOUR_"* ]] || [[ 
         exit 1
     fi
 
-    # 替换 JWT_SECRET
-    sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$NEW_JWT|" .env.production
+    # 替换 JWT_SECRET（使用 awk 避免 sed 的特殊字符问题）
+    awk -v new_jwt="$NEW_JWT" '/^JWT_SECRET=/ { print "JWT_SECRET=" new_jwt; next } { print }' .env.production > .env.production.tmp
+    mv .env.production.tmp .env.production
 
     print_success "JWT_SECRET 已更新"
     print_info "新密钥：${NEW_JWT:0:20}..."
