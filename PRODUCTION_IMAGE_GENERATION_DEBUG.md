@@ -103,7 +103,52 @@ pm2 logs enterprise-website --err
 
 ### 5. 常见问题及解决方案
 
-#### 问题 1：对象存储环境变量未配置
+#### 问题 1：API Key 未配置（Invalid URL 错误）
+
+**错误日志：**
+```
+Error [NetworkError]: Invalid URL
+    at g.request (.next/server/chunks/5409.js:204:21957)
+```
+
+**原因：**
+- 生产环境未配置 `COZE_WORKLOAD_IDENTITY_API_KEY` 环境变量
+- SDK 无法正确调用生图 API，导致请求 URL 无效
+
+**解决方案：**
+
+1. 登录生产服务器：
+```bash
+ssh root@42.121.218.14
+```
+
+2. 编辑环境变量文件：
+```bash
+cd /root/sifan
+vim .env.production
+```
+
+3. 添加以下配置：
+```bash
+COZE_WORKLOAD_IDENTITY_API_KEY=your-actual-api-key-here
+```
+
+4. 保存文件并重启应用：
+```bash
+pm2 restart enterprise-website
+```
+
+5. 验证配置：
+```bash
+pm2 logs enterprise-website --lines 50
+# 应该能看到：生图客户端初始化成功，API Key 已配置
+```
+
+**详细配置说明：** 请参考 [PRODUCTION_ENV_SETUP.md](./PRODUCTION_ENV_SETUP.md)
+
+---
+
+#### 问题 2：对象存储环境变量未配置
 
 **错误日志：**
 ```
@@ -124,7 +169,9 @@ COZE_BUCKET_NAME: undefined
    pm2 restart enterprise-website
    ```
 
-#### 问题 2：生图 API 返回的 URL 无法访问
+---
+
+#### 问题 3：生图 API 返回的 URL 无法访问
 
 **错误日志：**
 ```
@@ -137,7 +184,9 @@ COZE_BUCKET_NAME: undefined
 2. 检查生图 API 的 API Key 是否正确
 3. 确认生产环境可以访问生图 API 的域名
 
-#### 问题 3：uploadFromUrl 超时
+---
+
+#### 问题 4：uploadFromUrl 超时
 
 **错误日志：**
 ```
@@ -149,7 +198,9 @@ COZE_BUCKET_NAME: undefined
 2. 检查网络连接是否正常
 3. 检查对象存储服务是否可用
 
-#### 问题 4：签名 URL 生成失败
+---
+
+#### 问题 5：签名 URL 生成失败
 
 **错误日志：**
 ```

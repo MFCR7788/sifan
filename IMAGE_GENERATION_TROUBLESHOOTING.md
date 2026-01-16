@@ -4,12 +4,30 @@
 
 ### 可能的原因
 
-1. **对象存储环境变量未配置**
-2. **生图 API 返回的 URL 格式不正确**
-3. **签名 URL 生成失败**
-4. **网络连接问题**
+1. **API Key 未配置（最常见）**
+2. **对象存储环境变量未配置**
+3. **生图 API 返回的 URL 格式不正确**
+4. **签名 URL 生成失败**
+5. **网络连接问题**
 
 ### 排查步骤
+
+#### 0. 快速诊断：检查 API Key 配置
+
+首先检查是否配置了生图 API Key，这是最常见的问题：
+
+```bash
+# 登录生产服务器
+ssh root@42.121.218.14
+
+# 进入项目目录
+cd /root/sifan
+
+# 检查环境变量文件
+cat .env.production | grep COZE_WORKLOAD_IDENTITY_API_KEY
+```
+
+**如果没有看到 `COZE_WORKLOAD_IDENTITY_API_KEY` 的配置，这就是问题所在！**
 
 #### 1. 检查生产环境日志
 
@@ -27,6 +45,9 @@ tail -f /path/to/app/logs/error.log
 
 在日志中查找以下关键字：
 
+- `COZE_WORKLOAD_IDENTITY_API_KEY 环境变量未配置`（说明 API Key 未配置）
+- `生图功能需要配置 API Key`（说明 API Key 未配置）
+- `Error [NetworkError]: Invalid URL`（说明 API 调用失败，通常是因为缺少 API Key）
 - `对象存储环境变量未配置`
 - `生成的图片 URL 格式无效`
 - `对象存储操作失败`
@@ -38,19 +59,16 @@ tail -f /path/to/app/logs/error.log
 
 ```bash
 # 登录生产服务器
-ssh user@42.121.218.14
+ssh root@42.121.218.14
 
-# 检查环境变量（根据你的部署方式）
-pm2 env 0
-# 或者
-cat .env.production
-# 或者
-pm2 show enterprise-website | grep env
+# 检查环境变量
+cat .env.production | grep -E "COZE_"
 ```
 
 确保以下环境变量已配置：
-- `COZE_BUCKET_ENDPOINT_URL`
-- `COZE_BUCKET_NAME`
+- `COZE_WORKLOAD_IDENTITY_API_KEY`（必需，用于生图 API 调用）
+- `COZE_BUCKET_ENDPOINT_URL`（可选，用于对象存储）
+- `COZE_BUCKET_NAME`（可选，用于对象存储）
 
 #### 4. 测试生图 API
 
@@ -86,7 +104,43 @@ curl -X POST http://localhost:3000/api/tool/ai-image-generation \
 
 ### 解决方案
 
-#### 方案 1：配置对象存储环境变量
+#### 方案 0：配置 API Key（必需）
+
+这是最常见的问题，必须先解决：
+
+```bash
+# 1. 登录生产服务器
+ssh root@42.121.218.14
+
+# 2. 进入项目目录
+cd /root/sifan
+
+# 3. 编辑环境变量文件
+vim .env.production
+
+# 4. 添加以下配置（替换为实际的 API Key）
+COZE_WORKLOAD_IDENTITY_API_KEY=your-actual-api-key-here
+
+# 5. 保存文件并重启应用
+# 在 vim 中按 Esc，然后输入 :wq 保存退出
+pm2 restart enterprise-website
+
+# 6. 验证配置
+pm2 logs enterprise-website --lines 50
+# 应该能看到：生图客户端初始化成功，API Key 已配置
+```
+
+**如何获取 API Key：**
+- 从 Coze 平台获取 Workload Identity API Key
+- 确保该 API Key 有调用生图服务的权限
+
+**详细配置说明：** 请参考 [PRODUCTION_ENV_SETUP.md](./PRODUCTION_ENV_SETUP.md)
+
+---
+
+#### 方案 1：配置对象存储环境变量（推荐）
+
+如果日志显示"对象存储环境变量未配置"，建议配置对象存储以获得更好的图片存储体验：
 
 如果日志显示"对象存储环境变量未配置"，需要在生产环境配置这些变量：
 
@@ -128,13 +182,23 @@ echo $COZE_BUCKET_NAME
 
 **注意：** 原始 URL 可能有过期时间限制，不适合长期使用。
 
+#### 方案 3：使用原始图片 URL（临时方案）
+
+如果对象存储暂时无法配置，代码已经做了降级处理，会直接返回生图 API 生成的原始 URL。
+
+**注意：** 原始 URL 可能有过期时间限制，不适合长期使用。但只要配置了 API Key，生图功能本身就能正常工作。
+
 ### 常见问题
 
-#### Q1: 如何获取对象存储的配置信息？
+#### Q1: 为什么会报 "Invalid URL" 错误？
 
-对象存储配置通常由平台提供。在 CozeCoding 环境中，这些配置会自动注入到环境变量中。
+**A:** 这通常是因为没有配置 `COZE_WORKLOAD_IDENTITY_API_KEY` 环境变量，导致 SDK 无法正确调用生图 API。请按照方案 0 配置 API Key。
 
-#### Q2: 为什么开发环境正常，生产环境报错？
+#### Q2: 如何获取 COZE_WORKLOAD_IDENTITY_API_KEY？
+
+**A:** 从 Coze 平台获取 Workload Identity API Key。确保该 API Key 有调用 `integration-doubao-seedream` 的权限。
+
+#### Q3: 为什么开发环境正常，生产环境报错？
 
 可能的原因：
 1. 生产环境缺少环境变量配置

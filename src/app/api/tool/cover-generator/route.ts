@@ -67,9 +67,19 @@ function buildPrompt(platform: string, style: string, text: string, ratio: strin
 // 调用生图大模型生成封面图
 async function generateCover(text: string, platform: string, style: string, ratio: string) {
   try {
-    // 初始化生图客户端
-    const config = new Config();
+    // 初始化生图客户端，传入 API Key
+    const apiKey = process.env.COZE_WORKLOAD_IDENTITY_API_KEY;
+    if (!apiKey) {
+      console.error('COZE_WORKLOAD_IDENTITY_API_KEY 环境变量未配置');
+      throw new Error('生图功能需要配置 API Key，请联系管理员');
+    }
+
+    const config = new Config({
+      apiKey: apiKey,
+    });
     const client = new ImageGenerationClient(config);
+
+    console.log('生图客户端初始化成功，API Key 已配置');
 
     // 初始化对象存储
     const storage = new S3Storage({
