@@ -76,7 +76,9 @@ export async function POST(request: NextRequest) {
 		}
 
 		// 使用 LLM 生成问答对
-		const llmConfig = new Config();
+		const llmConfig = new Config({
+			baseURL: 'https://api.coze.cn', // 指定使用国内 API 端点
+		});
 		const llmClient = new LLMClient(llmConfig);
 
 		const systemPrompt = `你是一个专业的知识库问答生成助手。请根据提供的文档内容，生成 5-10 个高质量的问答对。

@@ -25,6 +25,7 @@ ${text}
 
     const config = new Config({
       apiKey: apiKey,
+      baseURL: 'https://api.coze.cn', // 指定使用国内 API 端点
       timeout: 120000, // 增加超时时间到 120 秒
     });
     const client = new LLMClient(config);
