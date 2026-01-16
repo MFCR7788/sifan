@@ -37,6 +37,13 @@ export default function AIImageGenerationPage() {
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
   const { showToast } = useToast();
 
+  // 未登录时重定向（必须在 early return 之前，保持 Hooks 顺序一致）
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [authLoading, isAuthenticated, router]);
+
   // 提前处理加载状态
   if (authLoading) {
     return (
@@ -45,13 +52,6 @@ export default function AIImageGenerationPage() {
       </div>
     );
   }
-
-  // 未登录时重定向
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, router]);
 
   // 1. 主题内容
   const [themeContent, setThemeContent] = useState('');
