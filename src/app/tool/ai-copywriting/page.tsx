@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ToolSidebar from '@/components/tool/ToolSidebar';
+import { useToast } from '@/components/Toast';
 
 // 平台图标组件
 const PlatformIcon = ({ name, selected, onClick }: { name: string; selected: boolean; onClick: () => void }) => {
@@ -61,6 +62,7 @@ const PlatformIcon = ({ name, selected, onClick }: { name: string; selected: boo
 export default function AICopywritingPage() {
   const router = useRouter();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const [selectedPlatform, setSelectedPlatform] = useState('小红书');
   const [contentType, setContentType] = useState('电商');
   const [selectedModel, setSelectedModel] = useState('');
@@ -102,23 +104,25 @@ export default function AICopywritingPage() {
   // 处理生成
   const handleGenerate = async () => {
     if (!inputText.trim()) {
-      alert('请输入产品介绍或创作主题');
+      showToast('error', '请输入产品介绍或创作主题');
       return;
     }
 
     if (!selectedModel) {
-      alert('请选择AI模型');
+      showToast('error', '请选择AI模型');
       return;
     }
 
     if (!selectedWordCount) {
-      alert('请选择字数要求');
+      showToast('error', '请选择字数要求');
       return;
     }
 
     setIsGenerating(true);
 
     try {
+      console.log('开始生成文案...', { inputText, selectedPlatform, contentType, selectedModel, selectedWordCount, generateCount });
+
       // 调用API进行文案生成
       const response = await fetch('/api/tool/ai-copywriting', {
         method: 'POST',
@@ -136,16 +140,29 @@ export default function AICopywritingPage() {
         }),
       });
 
+      console.log('API 响应状态:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error('生成失败');
+        const errorData = await response.json();
+        console.error('API 错误:', errorData);
+        throw new Error(errorData.error || `生成失败 (HTTP ${response.status})`);
       }
 
       const data = await response.json();
 
+      console.log('API 返回数据:', JSON.stringify(data, null, 2).substring(0, 500));
+
+      if (!data.success || !data.content) {
+        console.error('API 返回数据格式错误:', data);
+        throw new Error('API 返回数据格式错误');
+      }
+
+      console.log('文案生成成功，内容长度:', data.content.length);
+
       // 添加到历史记录
       const newRecord = {
         original: inputText,
-        content: data.content || data.result || inputText,
+        content: data.content,
         platform: selectedPlatform,
         type: contentType,
         timestamp: new Date(),
@@ -154,9 +171,11 @@ export default function AICopywritingPage() {
       setHistory([newRecord, ...history]);
       setInputText('');
       setCharCount(0);
+      showToast('success', '文案生成成功！');
     } catch (error) {
       console.error('生成失败:', error);
-      alert('生成失败，请重试');
+      const errorMessage = error instanceof Error ? error.message : '生成失败，请重试';
+      showToast('error', errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -165,7 +184,7 @@ export default function AICopywritingPage() {
   // 复制文案
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert('已复制到剪贴板');
+    showToast('success', '已复制到剪贴板');
   };
 
   if (authLoading) {
