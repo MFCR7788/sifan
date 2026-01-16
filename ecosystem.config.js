@@ -31,7 +31,9 @@ module.exports = {
       COOKIE_SAME_SITE: 'lax',
       // JWT 配置
       JWT_SECRET: 'your-jwt-secret-key-change-in-production',
-      JWT_EXPIRES_IN: '7d'
+      JWT_EXPIRES_IN: '7d',
+      // Coze AI API 配置
+      COZE_WORKLOAD_IDENTITY_API_KEY: 'sat_Gv51DAu3iNSC3eEI2oSswcflVvwpFzIbMdLKNSRrSdgktLsmgnDc6VbwmGkhuXtM'
     },
     env_production: {
       NODE_ENV: 'production',
@@ -55,7 +57,9 @@ module.exports = {
       COOKIE_SAME_SITE: 'lax',
       // JWT 配置
       JWT_SECRET: 'your-jwt-secret-key-change-in-production',
-      JWT_EXPIRES_IN: '7d'
+      JWT_EXPIRES_IN: '7d',
+      // Coze AI API 配置
+      COZE_WORKLOAD_IDENTITY_API_KEY: 'sat_Gv51DAu3iNSC3eEI2oSswcflVvwpFzIbMdLKNSRrSdgktLsmgnDc6VbwmGkhuXtM'
     },
     error_file: './logs/pm2-error.log',
     out_file: './logs/pm2-out.log',
