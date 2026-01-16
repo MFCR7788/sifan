@@ -300,6 +300,7 @@ export default function TitleGenPage() {
               ))}
             </div>
           )}
+            </div>
           </div>
         </div>
       </div>

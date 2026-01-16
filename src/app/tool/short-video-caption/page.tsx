@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import ToolSidebar from '@/components/tool/ToolSidebar';
 
 export default function ShortVideoCaptionPage() {
   const router = useRouter();

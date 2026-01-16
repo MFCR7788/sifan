@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import ToolSidebar from '@/components/tool/ToolSidebar';
 import { useToast } from '@/components/Toast';
 
 // 将比例字符串转换为 Tailwind aspect-ratio 类
@@ -836,7 +835,6 @@ export default function CoverGeneratorPage() {
             </div>
           )}
         </div>
-      </div>
 
       {/* 图片预览弹窗 */}
       {previewImage && (
@@ -914,9 +912,12 @@ export default function CoverGeneratorPage() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
           </div>
         </div>
-          )}
+      </div>
 
       <Footer />
     </div>
