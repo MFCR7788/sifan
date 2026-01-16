@@ -1,61 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { LLMClient, Config } from 'coze-coding-dev-sdk';
 
+/**
+ * 通过 SDK 测试 Coze API（正确方式）
+ * SDK 会自动处理正确的 API 端点和认证
+ */
 export async function POST(request: NextRequest) {
   try {
     const { apiKey = process.env.COZE_WORKLOAD_IDENTITY_API_KEY } = await request.json();
 
-    console.log('直接测试 Coze API，API Key:', apiKey?.substring(0, 7) + '...');
+    console.log('使用 SDK 测试 Coze API，API Key:', apiKey?.substring(0, 7) + '...');
 
-    // 测试正确的 API 端点
-    const response = await fetch('https://api.coze.cn/v3/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'doubao-seed-1-6-251015',
-        messages: [
-          {
-            role: 'system',
-            content: '你是一个测试助手。',
-          },
-          {
-            role: 'user',
-            content: '请回复：测试成功',
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 100,
-      }),
+    // 使用 SDK 配置
+    const config = new Config({
+      apiKey: apiKey,
+      baseUrl: 'https://api.coze.cn', // SDK 端点
+      modelBaseUrl: 'https://api.coze.cn/v3', // 模型 API 端点
+      timeout: 30000,
     });
 
-    console.log('Coze API 响应状态:', response.status);
-    console.log('Coze API 响应头:', Object.fromEntries(response.headers.entries()));
+    const client = new LLMClient(config);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Coze API 错误响应:', errorText);
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Coze API 错误: ${response.status} ${response.statusText}`,
-          details: errorText,
-        },
-        { status: response.status }
-      );
+    console.log('开始 SDK 测试调用...');
+
+    // 简单测试：生成一句话
+    const stream = client.stream([
+      {
+        role: 'system',
+        content: '你是一个测试助手。',
+      },
+      {
+        role: 'user',
+        content: '请回复：测试成功',
+      },
+    ], {
+      model: 'doubao-seed-1-6-251015',
+      temperature: 0.7,
+    });
+
+    let result = '';
+    for await (const chunk of stream) {
+      if (chunk.content) {
+        result += chunk.content.toString();
+      }
     }
 
-    const result = await response.json();
-    console.log('Coze API 响应:', result);
+    console.log('SDK 测试结果:', result);
 
     return NextResponse.json({
       success: true,
       result: result,
       apiKeyPrefix: apiKey?.substring(0, 7),
+      message: 'SDK 调用成功',
     });
   } catch (error) {
-    console.error('直接调用 Coze API 失败:', error);
+    console.error('SDK 测试失败:', error);
     return NextResponse.json(
       {
         success: false,

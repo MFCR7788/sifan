@@ -9,7 +9,8 @@ export async function POST(request: NextRequest) {
 
     const config = new Config({
       apiKey: apiKey,
-      baseUrl: 'https://api.coze.cn',
+      baseUrl: 'https://api.coze.cn', // SDK 端点
+      modelBaseUrl: 'https://api.coze.cn/v3', // 模型 API 端点
       timeout: 30000,
     });
 
