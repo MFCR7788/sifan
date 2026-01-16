@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ImageGenerationClient, Config } from 'coze-coding-dev-sdk';
+import { ImageGenerationClient, Config, S3Storage } from 'coze-coding-dev-sdk';
 
 // 平台到尺寸的映射
 const PLATFORM_SIZE_MAP: Record<string, string> = {
@@ -71,6 +71,15 @@ async function generateCover(text: string, platform: string, style: string, rati
     const config = new Config();
     const client = new ImageGenerationClient(config);
 
+    // 初始化对象存储
+    const storage = new S3Storage({
+      endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
+      accessKey: '',
+      secretKey: '',
+      bucketName: process.env.COZE_BUCKET_NAME,
+      region: 'cn-beijing',
+    });
+
     // 构建生图 prompt
     const prompt = buildPrompt(platform, style, text, ratio);
 
@@ -105,11 +114,29 @@ async function generateCover(text: string, platform: string, style: string, rati
       throw new Error('未获取到图片 URL');
     }
 
-    console.log('封面图生成成功:', helper.imageUrls[0]);
+    const generatedImageUrl = helper.imageUrls[0];
+    console.log('封面图生成成功:', generatedImageUrl);
+
+    // 将图片保存到对象存储
+    console.log('开始将封面图保存到对象存储...');
+    const fileName = `cover-images/${platform}_${Date.now()}_${ratio.replace(':', 'x')}.png`;
+    const fileKey = await storage.uploadFromUrl({
+      url: generatedImageUrl,
+      timeout: 30000,
+    });
+    console.log('封面图已保存到对象存储，key:', fileKey);
+
+    // 生成签名 URL（有效期 7 天）
+    const signedUrl = await storage.generatePresignedUrl({
+      key: fileKey,
+      expireTime: 604800, // 7 天
+    });
+    console.log('已生成签名 URL');
 
     return {
       success: true,
-      imageUrl: helper.imageUrls[0],
+      imageUrl: signedUrl,
+      imageKey: fileKey,
       prompt,
       platform,
       style,
