@@ -161,36 +161,76 @@ async function generateImage(
 
     const generatedImageUrl = helper.imageUrls[0];
     console.log('AI图像生成成功:', generatedImageUrl);
-
-    // 将图片保存到对象存储
     console.log('开始将图片保存到对象存储...');
-    const fileName = `ai-images/${Date.now()}_${ratio.replace(':', 'x')}.png`;
-    const fileKey = await storage.uploadFromUrl({
-      url: generatedImageUrl,
-      timeout: 30000,
-    });
-    console.log('图片已保存到对象存储，key:', fileKey);
 
-    // 生成签名 URL（有效期 7 天）
-    const signedUrl = await storage.generatePresignedUrl({
-      key: fileKey,
-      expireTime: 604800, // 7 天
-    });
-    console.log('已生成签名 URL');
+    // 检查对象存储配置
+    if (!process.env.COZE_BUCKET_ENDPOINT_URL || !process.env.COZE_BUCKET_NAME) {
+      console.error('对象存储环境变量未配置');
+      console.error('COZE_BUCKET_ENDPOINT_URL:', process.env.COZE_BUCKET_ENDPOINT_URL);
+      console.error('COZE_BUCKET_NAME:', process.env.COZE_BUCKET_NAME);
+      throw new Error('对象存储配置缺失，请联系管理员配置环境变量');
+    }
 
-    return {
-      success: true,
-      imageUrl: signedUrl,
-      imageKey: fileKey,
-      prompt,
-      themeContent,
-      style,
-      detailRequirement,
-      quality,
-      lighting,
-      ratio,
-      size: imageSize,
-    };
+    // 验证生成的图片 URL 格式
+    if (!generatedImageUrl || typeof generatedImageUrl !== 'string' || !generatedImageUrl.startsWith('http')) {
+      console.error('生成的图片 URL 格式无效:', generatedImageUrl);
+      throw new Error('生成的图片 URL 格式无效');
+    }
+
+    try {
+      const fileName = `ai-images/${Date.now()}_${ratio.replace(':', 'x')}.png`;
+      const fileKey = await storage.uploadFromUrl({
+        url: generatedImageUrl,
+        timeout: 30000,
+      });
+      console.log('图片已保存到对象存储，key:', fileKey);
+
+      // 生成签名 URL（有效期 7 天）
+      const signedUrl = await storage.generatePresignedUrl({
+        key: fileKey,
+        expireTime: 604800, // 7 天
+      });
+      console.log('已生成签名 URL:', signedUrl);
+
+      // 验证生成的签名 URL
+      if (!signedUrl || typeof signedUrl !== 'string' || !signedUrl.startsWith('http')) {
+        throw new Error('生成的签名 URL 格式无效');
+      }
+
+      return {
+        success: true,
+        imageUrl: signedUrl,
+        imageKey: fileKey,
+        prompt,
+        themeContent,
+        style,
+        detailRequirement,
+        quality,
+        lighting,
+        ratio,
+        size: imageSize,
+      };
+    } catch (storageError) {
+      console.error('对象存储操作失败:', storageError);
+      if (storageError instanceof Error) {
+        console.error('存储错误详情:', storageError.message);
+      }
+      // 如果对象存储失败，尝试返回原始 URL
+      console.log('尝试返回原始生成的图片 URL');
+      return {
+        success: true,
+        imageUrl: generatedImageUrl,
+        imageKey: null,
+        prompt,
+        themeContent,
+        style,
+        detailRequirement,
+        quality,
+        lighting,
+        ratio,
+        size: imageSize,
+      };
+    }
   } catch (error) {
     console.error('生成AI图像失败:', error);
     if (error instanceof Error) {
