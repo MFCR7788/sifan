@@ -110,7 +110,7 @@ async function generateCover(text: string, platform: string, style: string, rati
       responseFormat: 'url',
     });
 
-    console.log('生图 API 响应:', JSON.stringify(response, null, 2).substring(0, 500));
+    console.log('生图 API 原始响应:', JSON.stringify(response, null, 2));
 
     // 解析响应
     const helper = client.getResponseHelper(response);
@@ -120,20 +120,44 @@ async function generateCover(text: string, platform: string, style: string, rati
       throw new Error(helper.errorMessages.join(', '));
     }
 
+    console.log('生图成功，imageUrls:', helper.imageUrls);
+    console.log('imageUrls 类型:', typeof helper.imageUrls);
+    console.log('imageUrls 长度:', helper.imageUrls?.length);
+
     if (!helper.imageUrls || helper.imageUrls.length === 0) {
       throw new Error('未获取到图片 URL');
     }
 
     const generatedImageUrl = helper.imageUrls[0];
-    console.log('封面图生成成功:', generatedImageUrl);
+    console.log('提取到的图片 URL:', generatedImageUrl);
+    console.log('URL 类型:', typeof generatedImageUrl);
+    console.log('URL 是否为字符串:', typeof generatedImageUrl === 'string');
+
+    // 验证 URL 格式
+    if (!generatedImageUrl || typeof generatedImageUrl !== 'string') {
+      console.error('生成的图片 URL 类型无效:', {
+        value: generatedImageUrl,
+        type: typeof generatedImageUrl,
+        isString: typeof generatedImageUrl === 'string',
+      });
+      throw new Error(`生成的图片 URL 类型无效: ${typeof generatedImageUrl}`);
+    }
+
+    if (!generatedImageUrl.startsWith('http://') && !generatedImageUrl.startsWith('https://')) {
+      console.error('生成的图片 URL 格式无效:', generatedImageUrl);
+      console.error('URL 不以 http:// 或 https:// 开头');
+      throw new Error(`生成的图片 URL 格式无效: ${generatedImageUrl.substring(0, 100)}`);
+    }
+
+    console.log('封面图生成成功，URL 验证通过:', generatedImageUrl);
     console.log('开始将封面图保存到对象存储...');
 
     // 检查对象存储配置
     if (!process.env.COZE_BUCKET_ENDPOINT_URL || !process.env.COZE_BUCKET_NAME) {
-      console.error('对象存储环境变量未配置');
-      console.error('COZE_BUCKET_ENDPOINT_URL:', process.env.COZE_BUCKET_ENDPOINT_URL);
-      console.error('COZE_BUCKET_NAME:', process.env.COZE_BUCKET_NAME);
-      throw new Error('对象存储配置缺失，请联系管理员配置环境变量');
+      console.log('对象存储环境变量未配置');
+      console.log('COZE_BUCKET_ENDPOINT_URL:', process.env.COZE_BUCKET_ENDPOINT_URL);
+      console.log('COZE_BUCKET_NAME:', process.env.COZE_BUCKET_NAME);
+      console.log('将直接使用生成的图片 URL');
     }
 
     // 验证生成的图片 URL 格式
@@ -142,10 +166,29 @@ async function generateCover(text: string, platform: string, style: string, rati
       throw new Error('生成的图片 URL 格式无效');
     }
 
+    console.log('生成的图片 URL 格式验证通过');
+
     try {
-      console.log('开始上传封面图到对象存储...');
-      const fileName = `cover-images/${platform}_${Date.now()}_${ratio.replace(':', 'x')}.png`;
-      console.log('文件名:', fileName);
+      console.log('开始上传图片到对象存储...');
+      console.log('对象存储配置:', {
+        endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
+        bucketName: process.env.COZE_BUCKET_NAME,
+      });
+
+      if (!process.env.COZE_BUCKET_ENDPOINT_URL || !process.env.COZE_BUCKET_NAME) {
+        console.warn('对象存储环境变量未配置，将跳过上传步骤');
+        console.warn('直接使用生成的图片 URL');
+        return {
+          success: true,
+          imageUrl: generatedImageUrl,
+          imageKey: null,
+          prompt,
+          platform,
+          style,
+          ratio,
+          size: imageSize,
+        };
+      }
 
       const fileKey = await storage.uploadFromUrl({
         url: generatedImageUrl,
@@ -168,7 +211,17 @@ async function generateCover(text: string, platform: string, style: string, rati
       // 验证生成的签名 URL
       if (!signedUrl || typeof signedUrl !== 'string' || !signedUrl.startsWith('http')) {
         console.error('生成的签名 URL 格式无效:', signedUrl);
-        throw new Error('生成的签名 URL 格式无效');
+        console.error('降级使用原始生成的图片 URL');
+        return {
+          success: true,
+          imageUrl: generatedImageUrl,
+          imageKey: fileKey,
+          prompt,
+          platform,
+          style,
+          ratio,
+          size: imageSize,
+        };
       }
 
       console.log('对象存储操作成功，返回签名 URL');

@@ -188,7 +188,7 @@ export default function CoverGeneratorPage() {
   // 处理生成
   const handleGenerate = async () => {
     if (!inputText.trim()) {
-      alert('请输入文案内容或关键词');
+      showToast('error', '请输入文案内容或关键词');
       return;
     }
 
@@ -234,8 +234,11 @@ export default function CoverGeneratorPage() {
 
       const data = await response.json();
 
-      console.log('API 返回数据:', JSON.stringify(data, null, 2).substring(0, 1000));
-      console.log('生成的 prompt:', data.data?.prompt?.substring(0, 200));
+      console.log('========== API 返回完整数据 ==========');
+      console.log('Success:', data.success);
+      console.log('Data:', JSON.stringify(data.data, null, 2));
+      console.log('Error:', data.error);
+      console.log('=======================================');
 
       if (!response.ok) {
         console.error('API 错误:', data);
@@ -254,6 +257,13 @@ export default function CoverGeneratorPage() {
       }
 
       console.log('图片 URL:', data.data.imageUrl);
+      console.log('图片 URL 类型:', typeof data.data.imageUrl);
+
+      // 验证 URL 格式
+      if (!data.data.imageUrl.startsWith('http://') && !data.data.imageUrl.startsWith('https://')) {
+        console.error('图片 URL 格式无效:', data.data.imageUrl);
+        throw new Error(`图片 URL 格式无效: ${data.data.imageUrl}`);
+      }
 
       // 进度条到 100%
       setProgress(100);
@@ -286,7 +296,7 @@ export default function CoverGeneratorPage() {
     } catch (error) {
       console.error('生成失败:', error);
       const errorMessage = error instanceof Error ? error.message : '生成失败，请重试';
-      alert(errorMessage);
+      showToast('error', errorMessage);
       setProgress(0);
       clearInterval(progressInterval);
     } finally {
@@ -305,9 +315,10 @@ export default function CoverGeneratorPage() {
       link.download = filename;
       link.click();
       window.URL.revokeObjectURL(url);
+      showToast('success', '下载成功');
     } catch (error) {
       console.error('下载失败:', error);
-      alert('下载失败，请重试');
+      showToast('error', '下载失败，请重试');
     }
   };
 
@@ -327,10 +338,10 @@ export default function CoverGeneratorPage() {
   const handleCopyPrompt = async (prompt: string) => {
     try {
       await navigator.clipboard.writeText(prompt);
-      alert('提示词已复制到剪贴板');
+      showToast('success', '提示词已复制到剪贴板');
     } catch (error) {
       console.error('复制失败:', error);
-      alert('复制失败，请重试');
+      showToast('error', '复制失败，请重试');
     }
   };
 
@@ -358,15 +369,15 @@ export default function CoverGeneratorPage() {
 
       const data = await response.json();
       if (data.success) {
-        alert('删除成功');
+        showToast('success', '删除成功');
         // 重新加载图片列表
         loadSavedImages();
       } else {
-        alert(data.error || '删除失败');
+        showToast('error', data.error || '删除失败');
       }
     } catch (error) {
       console.error('删除失败:', error);
-      alert('删除失败，请重试');
+      showToast('error', '删除失败，请重试');
     }
   };
 
