@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import ToolSidebar from '@/components/tool/ToolSidebar';
 
 // 平台图标组件
 const PlatformIcon = ({ name, selected, onClick }: { name: string; selected: boolean; onClick: () => void }) => {
@@ -150,18 +151,24 @@ export default function TitleGenPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Navigation />
 
-      {/* 主体内容 */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* 功能标签 */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-6 bg-blue-600 rounded"></div>
-            <h1 className="text-2xl font-semibold text-gray-900">标题生成</h1>
-          </div>
-          <span className="px-3 py-1 bg-blue-50 text-blue-600 text-sm font-medium rounded-full">
-            一键体验标题生成
-          </span>
-        </div>
+      {/* 主体内容 - 两栏布局 */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-8">
+          {/* 左侧导航栏 */}
+          <ToolSidebar currentPath="/tool/title-gen" />
+
+          {/* 右侧内容区 */}
+          <div className="flex-1 min-w-0">
+            {/* 功能标签 */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-6 bg-blue-600 rounded"></div>
+                <h1 className="text-2xl font-semibold text-gray-900">标题生成</h1>
+              </div>
+              <span className="px-3 py-1 bg-blue-50 text-blue-600 text-sm font-medium rounded-full">
+                一键体验标题生成
+              </span>
+            </div>
 
         {/* 功能操作区 */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
@@ -293,10 +300,10 @@ export default function TitleGenPage() {
               ))}
             </div>
           )}
+          </div>
         </div>
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

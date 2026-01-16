@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import ToolSidebar from '@/components/tool/ToolSidebar';
 
 export default function ComingSoonPage() {
   const router = useRouter();
@@ -37,15 +38,21 @@ export default function ComingSoonPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Navigation />
 
-      {/* 主体内容 */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* 功能标签 */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-6 bg-blue-600 rounded"></div>
-            <h1 className="text-2xl font-semibold text-gray-900">功能开发中</h1>
-          </div>
-        </div>
+      {/* 主体内容 - 两栏布局 */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-8">
+          {/* 左侧导航栏 */}
+          <ToolSidebar currentPath="/tool/coming-soon" />
+
+          {/* 右侧内容区 */}
+          <div className="flex-1 min-w-0">
+            {/* 功能标签 */}
+            <div className="flex items-center gap-3 mb-8">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-6 bg-blue-600 rounded"></div>
+                <h1 className="text-2xl font-semibold text-gray-900">功能开发中</h1>
+              </div>
+            </div>
 
         {/* 开发中提示卡片 */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
@@ -133,6 +140,8 @@ export default function ComingSoonPage() {
             如有疑问，请<span onClick={() => router.push('/contact')} className="text-blue-600 hover:text-blue-700 cursor-pointer font-medium">联系我们</span>
           </p>
         </div>
+          </div>
+          </div>
       </div>
 
       <Footer />

@@ -1,10 +1,12 @@
 'use client';
+import ToolSidebar from '@/components/tool/ToolSidebar';
 
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import ToolSidebar from '@/components/tool/ToolSidebar';
 
 export default function ShortVideoCaptionPage() {
   const router = useRouter();
@@ -150,8 +152,14 @@ export default function ShortVideoCaptionPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Navigation />
 
-      {/* 主体内容 */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* 主体内容 - 两栏布局 */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-8">
+          {/* 左侧导航栏 */}
+          <ToolSidebar currentPath="/tool/short-video-caption" />
+
+          {/* 右侧内容区 */}
+          <div className="flex-1 min-w-0">
         {/* 功能标签 */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center gap-2">
@@ -316,6 +324,8 @@ export default function ShortVideoCaptionPage() {
               ))}
             </div>
           )}
+          </div>
+          </div>
         </div>
       </div>
 
