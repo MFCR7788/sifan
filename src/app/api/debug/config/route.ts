@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// 仅允许开发环境使用，生产环境会自动禁用
-if (process.env.NODE_ENV === 'production') {
-  return NextResponse.json(
-    { error: '此接口仅限开发环境使用' },
-    { status: 403 }
-  );
-}
-
 export async function GET(request: NextRequest) {
+  // 仅允许开发环境使用，生产环境会自动禁用
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: '此接口仅限开发环境使用' },
+      { status: 403 }
+    );
+  }
+
   const config = {
     // 非敏感配置
     NODE_ENV: process.env.NODE_ENV,
