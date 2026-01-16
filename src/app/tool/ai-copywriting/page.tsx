@@ -143,12 +143,24 @@ export default function AICopywritingPage() {
       console.log('API 响应状态:', response.status, response.statusText);
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('API 错误:', errorData);
-        throw new Error(errorData.error || `生成失败 (HTTP ${response.status})`);
+        let errorMessage = `生成失败 (HTTP ${response.status})`;
+        try {
+          const errorText = await response.text();
+          console.error('API 错误响应:', errorText);
+          errorMessage = errorText || errorMessage;
+        } catch (e) {
+          console.error('解析错误响应失败:', e);
+        }
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error('解析 JSON 响应失败:', e);
+        throw new Error('API 返回数据格式错误');
+      }
 
       console.log('API 返回数据:', JSON.stringify(data, null, 2).substring(0, 500));
 
