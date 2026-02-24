@@ -9,10 +9,9 @@ import RechargeDialog from './RechargeDialog';
 
 const navItems = [
   { name: '首页', href: '/' },
-  { name: '产品', href: '/pricing' },
-  { name: '工具', href: '/magic-ai' },
-  { name: '资源', href: '/resources' },
   { name: '加盟', href: '/franchise' },
+  { name: '产品', href: '/pricing' },
+  { name: '资源', href: '/resources' },
   { name: '联系', href: '/contact' },
 ];
 
@@ -287,149 +286,7 @@ function ResourcesDropdown() {
   );
 }
 
-function ToolsDropdown() {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 工具分类
-  const toolCategories = [
-    {
-      category: '文案创作',
-      items: [
-        { name: '文案改写', href: '/tool/rewrite' },
-        { name: '标题生成', href: '/tool/title-gen' },
-        { name: 'AI文案创作', href: '/tool/ai-copywriting' },
-        { name: '短视频提文案', href: '/tool/short-video-caption' },
-      ],
-    },
-    {
-      category: '内容安全',
-      items: [
-        { name: '违禁词', href: '/tool/forbidden-words' },
-      ],
-    },
-    {
-      category: '视觉创作',
-      items: [
-        { name: 'AI图像生成', href: '/tool/ai-image-generation', hasSubmenu: true },
-        { name: 'AI视频生成', href: '/video-gen' },
-        { name: '封面图制作', href: '/tool/cover-generator' },
-        { name: '图文提取', href: '/tool/coming-soon' },
-      ],
-    },
-    {
-      category: '智能分析',
-      items: [
-        { name: '账号AI分析', href: '/tool/coming-soon' },
-      ],
-    },
-  ];
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setShowDropdown(false);
-    }, 150);
-  };
-
-  const handleDropdownMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  };
-
-  return (
-    <div
-      className="relative"
-      onMouseEnter={() => {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-          timeoutRef.current = null;
-        }
-        setShowDropdown(true);
-      }}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* 触发区域 - 工具链接 */}
-      <Link
-        href="/magic-ai"
-        className="text-xs transition-colors hover:opacity-60"
-        onClick={(e) => e.preventDefault()}
-      >
-        工具
-      </Link>
-
-      {/* 下拉菜单 - 两列分类布局 */}
-      {showDropdown && (
-        <div
-          className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-max"
-          onMouseEnter={handleDropdownMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="grid grid-cols-2 divide-x divide-gray-100">
-            {/* 左列 */}
-            <div className="divide-y divide-gray-100">
-              {toolCategories.slice(0, 2).map((category) => (
-                <div key={category.category}>
-                  {/* 分类标题 */}
-                  <div className="px-5 py-2 bg-gray-50">
-                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                      {category.category}
-                    </span>
-                  </div>
-                  {/* 分类项 */}
-                  {category.items.map((item, index) => (
-                    <Link
-                      key={`tool-${category.category}-${index}`}
-                      href={item.href}
-                      className="block px-5 py-2.5 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            {/* 右列 */}
-            <div className="divide-y divide-gray-100">
-              {toolCategories.slice(2, 4).map((category) => (
-                <div key={category.category}>
-                  {/* 分类标题 */}
-                  <div className="px-5 py-2 bg-gray-50">
-                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                      {category.category}
-                    </span>
-                  </div>
-                  {/* 分类项 */}
-                  {category.items.map((item, index) => (
-                    <Link
-                      key={`tool-${category.category}-${index}`}
-                      href={item.href}
-                      className="block px-5 py-2.5 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function ContactHoverCard() {
   const [showCard, setShowCard] = useState(false);
@@ -791,10 +648,7 @@ export default function Navigation() {
                 if (item.name === '产品') {
                   return <ProductDropdown key={item.href} />;
                 }
-                // 为"工具"项使用下拉菜单组件
-                if (item.name === '工具') {
-                  return <ToolsDropdown key={item.href} />;
-                }
+
                 // 为"资源"项使用下拉菜单组件
                 if (item.name === '资源') {
                   return <ResourcesDropdown key={item.href} />;
@@ -962,38 +816,7 @@ export default function Navigation() {
                   </div>
                 );
               }
-              // 为"工具"项显示为标题和子菜单
-              if (item.name === '工具') {
-                const mobileToolItems = [
-                  { name: '文案改写', href: '/tool/rewrite' },
-                  { name: '标题生成', href: '/tool/title-gen' },
-                  { name: '违禁词', href: '/tool/forbidden-words' },
-                  { name: '图文提取', href: '/tool/coming-soon' },
-                  { name: '短视频提文案', href: '/tool/short-video-caption' },
-                  { name: 'AI文案创作', href: '/tool/ai-copywriting' },
-                  { name: 'AI视频生成', href: '/video-gen' },
-                  { name: '封面图制作', href: '/tool/coming-soon' },
-                  { name: '账号AI分析', href: '/tool/coming-soon' },
-                ];
 
-                return (
-                  <div key={item.href}>
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-900 border-b border-gray-100">
-                      工具
-                    </div>
-                    {mobileToolItems.map((tool, index) => (
-                      <Link
-                        key={`mobile-tool-${index}`}
-                        href={tool.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
-                      >
-                        {tool.name}
-                      </Link>
-                    ))}
-                  </div>
-                );
-              }
               // 为"资源"项显示为标题和子菜单
               if (item.name === '资源') {
                 return (
