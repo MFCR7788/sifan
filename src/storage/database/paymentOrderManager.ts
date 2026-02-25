@@ -99,6 +99,9 @@ export async function getPaymentOrderByOrderNo(orderNo: string) {
         description: '测试订单',
         metadata: {},
         status: 'pending' as const,
+        tradeNo: null,
+        transactionId: null,
+        paidAt: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -119,6 +122,9 @@ export async function getPaymentOrderByOrderNo(orderNo: string) {
       description: '测试订单',
       metadata: {},
       status: 'pending' as const,
+      tradeNo: null,
+      transactionId: null,
+      paidAt: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
