@@ -47,9 +47,9 @@ export default function Home() {
         </div>
 
         {/* Content Overlay */}
-        <div className={`relative z-10 text-center mt-[135px] md:mt-[171px] transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`relative z-10 text-center mt-[100px] sm:mt-[135px] md:mt-[171px] transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h2
-            className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight"
+            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight"
             style={{
               textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2)'
             }}
@@ -57,20 +57,20 @@ export default function Home() {
             3.0
           </h2>
           <h1
-            className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight mt-2"
+            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-semibold text-white tracking-tight mt-2"
             style={{
               textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2)'
             }}
           >
             魔法超人
           </h1>
-          <p className="mt-4 text-white font-semibold text-xl md:text-2xl max-w-2xl mx-auto">
+          <p className="mt-4 text-white font-semibold text-base sm:text-xl md:text-2xl max-w-2xl mx-auto">
             智能驱动，未来已来
           </p>
           <div className="mt-8 flex justify-center items-center">
             <Link
               href="/pricing"
-              className="group px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
+              className="group px-8 py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200 min-h-[44px] flex items-center"
             >
               了解产品
             </Link>

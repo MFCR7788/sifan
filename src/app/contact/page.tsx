@@ -56,12 +56,12 @@ export default function ContactPage() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="py-24 md:py-32 px-4">
+      <section className="py-16 sm:py-24 md:py-32 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
             联系我们
           </h1>
-          <p className="text-xl text-gray-600 mt-6">
+          <p className="text-base sm:text-xl text-gray-600 mt-6">
             期待与您的合作
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function ContactPage() {
                     id="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900"
+                    className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 min-h-[44px]"
                     placeholder="请输入您的姓名"
                     required
                   />
@@ -140,7 +140,7 @@ export default function ContactPage() {
                     id="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900"
+                    className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 min-h-[44px]"
                     placeholder="请输入您的联系电话"
                     required
                   />
@@ -155,7 +155,7 @@ export default function ContactPage() {
                     id="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900"
+                    className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 min-h-[44px]"
                     placeholder="请输入您的邮箱"
                     required
                   />
@@ -170,7 +170,7 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={handleChange}
                     rows={5}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900"
+                    className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 min-h-[120px]"
                     placeholder="请输入您的问题或建议"
                     required
                   />
@@ -191,7 +191,7 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
+                  className="w-full py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 min-h-[44px] flex items-center justify-center"
                 >
                   {isSubmitting ? '提交中...' : '提交留言'}
                 </button>

@@ -95,12 +95,12 @@ export default function PricingPage() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="py-24 md:py-32 px-4">
+      <section className="py-16 sm:py-24 md:py-32 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
             产品报价
           </h1>
-          <p className="text-xl text-gray-600 mt-6">
+          <p className="text-base sm:text-xl text-gray-600 mt-6">
             选择最适合您的方案
           </p>
         </div>
@@ -109,8 +109,8 @@ export default function PricingPage() {
       {/* Comparison Table */}
       <section className="pb-24 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto -mx-4 px-4">
+            <table className="w-full min-w-[800px]">
               {/* Table Header */}
               <thead>
                 <tr>

@@ -43,7 +43,7 @@ export default function Footer() {
     <footer className="bg-gray-50">
       <div className="max-w-[980px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Menu Links */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 mb-16">
           {footerSections.map((section) => (
             <div key={section.title} className="flex flex-col space-y-6">
               <h3 className="text-sm font-semibold text-gray-900">
@@ -58,7 +58,7 @@ export default function Footer() {
                       href={link.href}
                       target={isExternal ? '_blank' : undefined}
                       rel={isExternal ? 'noopener noreferrer' : undefined}
-                      className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      className="text-sm text-gray-600 hover:text-gray-900 transition-colors py-2 min-h-[44px] flex items-center"
                     >
                       {link.name}
                     </Link>

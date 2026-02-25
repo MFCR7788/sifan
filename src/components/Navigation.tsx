@@ -116,7 +116,7 @@ function ProductDropdown() {
           {productItems.map((item) => {
             const linkProps = {
               href: item.href,
-              className: 'block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl',
+              className: 'block px-5 py-4 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl min-h-[44px] flex items-center',
               onClick: () => setShowDropdown(false),
             };
 
@@ -194,7 +194,7 @@ function AboutDropdown() {
             <Link
               key={item.href}
               href={item.href}
-              className="block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl"
+              className="block px-5 py-4 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 first:rounded-t-xl last:rounded-b-xl min-h-[44px] flex items-center"
               onClick={() => setShowDropdown(false)}
             >
               {item.name}
@@ -270,7 +270,7 @@ function ResourcesDropdown() {
             <Link
               key={`resource-${index}`}
               href={item.href}
-              className={`block px-5 py-3 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 ${
+              className={`block px-5 py-4 text-sm text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 min-h-[44px] flex items-center ${
                 index === 0 ? 'rounded-t-xl' : ''
               } ${
                 index === resourceItems.length - 1 ? 'rounded-b-xl' : ''
@@ -507,7 +507,7 @@ function UserHoverCard({ user, onLogout, onOpenRecharge }: UserHoverCardProps) {
       onMouseLeave={handleMouseLeave}
     >
       {/* 触发按钮 */}
-      <button className="text-xs text-gray-600 transition-colors hover:opacity-60 focus:outline-none">
+      <button className="text-xs text-gray-600 transition-colors hover:opacity-60 focus:outline-none px-4 py-2">
         {user?.name || '个人中心'}
       </button>
 
@@ -662,7 +662,7 @@ export default function Navigation() {
                     key={item.href}
                     href={item.href}
                     className={`
-                      text-xs transition-colors hover:opacity-60
+                      text-xs transition-colors hover:opacity-60 px-4 py-2
                       ${isActive
                         ? 'text-gray-900 font-semibold'
                         : 'text-gray-600'
@@ -717,13 +717,13 @@ export default function Navigation() {
                   <>
                     <Link
                       href="/login"
-                      className="text-xs text-gray-900 border border-gray-900 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors"
+                      className="text-xs text-gray-900 border border-gray-900 px-6 py-3 rounded-full hover:bg-gray-100 transition-colors min-h-[44px] flex items-center"
                     >
                       登录
                     </Link>
                     <Link
                       href="/register"
-                      className="text-xs bg-gray-900 text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors"
+                      className="text-xs bg-gray-900 text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-colors min-h-[44px] flex items-center"
                     >
                       注册
                     </Link>
@@ -772,28 +772,28 @@ export default function Navigation() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       产品介绍
                     </a>
                     <Link
                       href="/pricing"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       产品报价
                     </Link>
                     <Link
                       href="/configurator"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       定制方案
                     </Link>
                     <Link
                       href="/general-web"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       数字转型
                     </Link>
@@ -802,14 +802,14 @@ export default function Navigation() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       系统登录
                     </a>
                     <Link
                       href="/mobile-admin"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       手机后台
                     </Link>
@@ -827,28 +827,28 @@ export default function Navigation() {
                     <Link
                       href="/resources/industry"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       行业动态
                     </Link>
                     <Link
                       href="/resources/news"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       前沿资讯
                     </Link>
                     <Link
                       href="/resources/changelog"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       升级日志
                     </Link>
                     <Link
                       href="/resources/academy"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       魔法学院
                     </Link>
@@ -865,21 +865,21 @@ export default function Navigation() {
                     <Link
                       href="/about"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       关于我们
                     </Link>
                     <Link
                       href="/qualifications"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       公司资质
                     </Link>
                     <Link
                       href="/franchise"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-6 py-3 text-sm transition-colors border-b border-gray-100 text-gray-600"
+                      className="block px-6 py-4 text-sm transition-colors border-b border-gray-100 text-gray-600 min-h-[44px] flex items-center"
                     >
                       招商加盟
                     </Link>
@@ -910,7 +910,7 @@ export default function Navigation() {
                 href="/admin"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`
-                  block px-3 py-3 text-sm transition-colors border-b border-gray-100
+                  block px-3 py-4 text-sm transition-colors border-b border-gray-100 min-h-[44px] flex items-center
                   ${pathname === '/admin'
                     ? 'text-gray-900 font-semibold'
                     : 'text-gray-600'
@@ -925,8 +925,8 @@ export default function Navigation() {
             {isLoading ? (
               // 加载时显示占位符
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="px-3 py-3 h-10 bg-gray-100 rounded animate-pulse mb-2" />
-                <div className="px-3 py-3 h-10 bg-gray-100 rounded animate-pulse" />
+                <div className="px-3 py-4 h-10 bg-gray-100 rounded animate-pulse mb-2" />
+                <div className="px-3 py-4 h-10 bg-gray-100 rounded animate-pulse" />
               </div>
             ) : (
               <div className="mt-4 pt-4 border-t border-gray-200">
@@ -935,7 +935,7 @@ export default function Navigation() {
                     <Link
                       href="/profile"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-3 py-3 text-sm text-gray-600 border-b border-gray-100"
+                      className="block px-3 py-4 text-sm text-gray-600 border-b border-gray-100 min-h-[44px] flex items-center"
                     >
                       {user?.name || '个人中心'}
                     </Link>
@@ -945,14 +945,14 @@ export default function Navigation() {
                     <Link
                       href="/login"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-3 py-3 text-sm text-gray-900 border-b border-gray-100"
+                      className="block px-3 py-4 text-sm text-gray-900 border-b border-gray-100 min-h-[44px] flex items-center"
                     >
                       登录
                     </Link>
                     <Link
                       href="/register"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-3 py-3 text-sm text-gray-900 font-semibold"
+                      className="block px-3 py-4 text-sm text-gray-900 font-semibold min-h-[44px] flex items-center"
                     >
                       注册
                     </Link>
