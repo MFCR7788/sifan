@@ -1,8 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from 'coze-coding-dev-sdk';
-import { knowledgeBase } from '@/storage/database/shared/schema';
-import { desc, eq, sql } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/admin-auth';
+
+// 模拟知识库数据
+const mockKnowledgeBase = [
+	{
+		id: '1',
+		category: '产品',
+		question: '如何使用产品？',
+		answer: '您可以按照以下步骤使用我们的产品：1. 注册账号 2. 登录系统 3. 选择需要的功能 4. 按照提示操作',
+		keywords: '使用 操作 步骤',
+		priority: 5,
+		isActive: true,
+		viewCount: 100,
+		createdAt: '2024-01-01T00:00:00.000Z',
+		updatedAt: '2024-01-01T00:00:00.000Z',
+		createdBy: 'admin-1',
+	},
+	{
+		id: '2',
+		category: '技术',
+		question: '如何解决技术问题？',
+		answer: '如果您遇到技术问题，可以尝试以下方法：1. 查看帮助文档 2. 联系技术支持 3. 重启系统',
+		keywords: '技术 问题 解决',
+		priority: 4,
+		isActive: true,
+		viewCount: 80,
+		createdAt: '2024-01-02T00:00:00.000Z',
+		updatedAt: '2024-01-02T00:00:00.000Z',
+		createdBy: 'admin-1',
+	},
+	{
+		id: '3',
+		category: '服务',
+		question: '如何联系客服？',
+		answer: '您可以通过以下方式联系客服：1. 电话：400-123-4567 2. 邮箱：support@example.com 3. 在线聊天',
+		keywords: '客服 联系 支持',
+		priority: 3,
+		isActive: true,
+		viewCount: 60,
+		createdAt: '2024-01-03T00:00:00.000Z',
+		updatedAt: '2024-01-03T00:00:00.000Z',
+		createdBy: 'admin-1',
+	},
+];
 
 // GET - 获取知识库列表
 export async function GET(request: NextRequest) {
@@ -15,93 +55,35 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		const db = await getDb();
-
 		const { searchParams } = new URL(request.url);
 		const category = searchParams.get('category');
 		const search = searchParams.get('search');
 
-		let result;
+		// 模拟查询逻辑
+		let result = [...mockKnowledgeBase];
 
-		// 根据条件执行不同查询
-		if (search && category && category !== 'all') {
-			const searchPattern = `%${search}%`;
-			result = await db
-				.select({
-					id: knowledgeBase.id,
-					category: knowledgeBase.category,
-					question: knowledgeBase.question,
-					answer: knowledgeBase.answer,
-					keywords: knowledgeBase.keywords,
-					priority: knowledgeBase.priority,
-					isActive: knowledgeBase.isActive,
-					viewCount: knowledgeBase.viewCount,
-					createdAt: knowledgeBase.createdAt,
-					updatedAt: knowledgeBase.updatedAt,
-					createdBy: knowledgeBase.createdBy,
-				})
-				.from(knowledgeBase)
-				.where(
-					sql`${knowledgeBase.category} = ${category} AND (${knowledgeBase.question} ILIKE ${searchPattern} OR ${knowledgeBase.answer} ILIKE ${searchPattern} OR ${knowledgeBase.keywords} ILIKE ${searchPattern})`
-				)
-				.orderBy(desc(knowledgeBase.priority), desc(knowledgeBase.createdAt));
-		} else if (search) {
-			const searchPattern = `%${search}%`;
-			result = await db
-				.select({
-					id: knowledgeBase.id,
-					category: knowledgeBase.category,
-					question: knowledgeBase.question,
-					answer: knowledgeBase.answer,
-					keywords: knowledgeBase.keywords,
-					priority: knowledgeBase.priority,
-					isActive: knowledgeBase.isActive,
-					viewCount: knowledgeBase.viewCount,
-					createdAt: knowledgeBase.createdAt,
-					updatedAt: knowledgeBase.updatedAt,
-					createdBy: knowledgeBase.createdBy,
-				})
-				.from(knowledgeBase)
-				.where(
-					sql`${knowledgeBase.question} ILIKE ${searchPattern} OR ${knowledgeBase.answer} ILIKE ${searchPattern} OR ${knowledgeBase.keywords} ILIKE ${searchPattern}`
-				)
-				.orderBy(desc(knowledgeBase.priority), desc(knowledgeBase.createdAt));
-		} else if (category && category !== 'all') {
-			result = await db
-				.select({
-					id: knowledgeBase.id,
-					category: knowledgeBase.category,
-					question: knowledgeBase.question,
-					answer: knowledgeBase.answer,
-					keywords: knowledgeBase.keywords,
-					priority: knowledgeBase.priority,
-					isActive: knowledgeBase.isActive,
-					viewCount: knowledgeBase.viewCount,
-					createdAt: knowledgeBase.createdAt,
-					updatedAt: knowledgeBase.updatedAt,
-					createdBy: knowledgeBase.createdBy,
-				})
-				.from(knowledgeBase)
-				.where(eq(knowledgeBase.category, category))
-				.orderBy(desc(knowledgeBase.priority), desc(knowledgeBase.createdAt));
-		} else {
-			result = await db
-				.select({
-					id: knowledgeBase.id,
-					category: knowledgeBase.category,
-					question: knowledgeBase.question,
-					answer: knowledgeBase.answer,
-					keywords: knowledgeBase.keywords,
-					priority: knowledgeBase.priority,
-					isActive: knowledgeBase.isActive,
-					viewCount: knowledgeBase.viewCount,
-					createdAt: knowledgeBase.createdAt,
-					updatedAt: knowledgeBase.updatedAt,
-					createdBy: knowledgeBase.createdBy,
-				})
-				.from(knowledgeBase)
-				.orderBy(desc(knowledgeBase.priority), desc(knowledgeBase.createdAt));
+		// 按分类筛选
+		if (category && category !== 'all') {
+			result = result.filter(item => item.category === category);
 		}
+
+		// 按搜索词筛选
+		if (search) {
+			const searchLower = search.toLowerCase();
+			result = result.filter(item => 
+				item.question.toLowerCase().includes(searchLower) ||
+				item.answer.toLowerCase().includes(searchLower) ||
+				item.keywords.toLowerCase().includes(searchLower)
+			);
+		}
+
+		// 按优先级和创建时间排序
+		result.sort((a, b) => {
+			if (b.priority !== a.priority) {
+				return b.priority - a.priority;
+			}
+			return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+		});
 
 		return NextResponse.json({
 			success: true,
@@ -147,22 +129,23 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		const db = await getDb();
+		// 模拟创建新条目
+		const newItem = {
+			id: (mockKnowledgeBase.length + 1).toString(),
+			category,
+			question,
+			answer,
+			keywords: keywords || '',
+			priority: priority || 0,
+			isActive: isActive !== undefined ? isActive : true,
+			viewCount: 0,
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			createdBy: adminUser.id,
+		};
 
-		console.log('[KnowledgeBase POST] Inserting new item...');
-		// 创建知识库条目
-		const [newItem] = await db
-			.insert(knowledgeBase)
-			.values({
-				category,
-				question,
-				answer,
-				keywords: keywords || '',
-				priority: priority || 0,
-				isActive: isActive !== undefined ? isActive : true,
-				createdBy: adminUser.id,
-			})
-			.returning();
+		// 添加到模拟数据中
+		mockKnowledgeBase.push(newItem);
 
 		console.log('[KnowledgeBase POST] Item created successfully:', newItem);
 

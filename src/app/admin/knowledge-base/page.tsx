@@ -58,34 +58,34 @@ export default function KnowledgeBasePage() {
 	];
 
 	// 获取认证头（用于解决嵌入式页面 Cookie 不传递的问题）
-	const getAuthHeaders = () => {
-		const headers: Record<string, string> = {};
-		if (user?.id) {
-			headers['x-user-id'] = user.id;
-		}
-		return headers;
-	};
+const getAuthHeaders = useCallback(() => {
+	const headers: Record<string, string> = {};
+	if (user?.id) {
+		headers['x-user-id'] = user.id;
+	}
+	return headers;
+}, [user]);
 
-	const fetchItems = useCallback(async () => {
-		setLoading(true);
-		try {
-			const url = selectedCategory === 'all'
-				? '/api/admin/knowledge-base'
-				: `/api/admin/knowledge-base?category=${selectedCategory}`;
-			const response = await fetch(url, {
-				credentials: 'include',
-				headers: getAuthHeaders(),
-			});
-			if (response.ok) {
-				const data = await response.json();
-				setItems(data.items || []);
-			}
-		} catch (error) {
-			console.error('Failed to fetch knowledge base:', error);
-		} finally {
-			setLoading(false);
+const fetchItems = useCallback(async () => {
+	setLoading(true);
+	try {
+		const url = selectedCategory === 'all'
+			? '/api/admin/knowledge-base'
+			: `/api/admin/knowledge-base?category=${selectedCategory}`;
+		const response = await fetch(url, {
+			credentials: 'include',
+			headers: getAuthHeaders(),
+		});
+		if (response.ok) {
+			const data = await response.json();
+			setItems(data.items || []);
 		}
-	}, [selectedCategory, getAuthHeaders]);
+	} catch (error) {
+		console.error('Failed to fetch knowledge base:', error);
+	} finally {
+		setLoading(false);
+	}
+}, [selectedCategory, getAuthHeaders]);
 
 	useEffect(() => {
 		fetchItems();

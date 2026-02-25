@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 				name: 'Admin',
 				isAdmin: true,
 				isActive: true,
-				createdAt: new Date().toISOString(),
+				createdAt: '2024-01-01T00:00:00.000Z', // 固定时间戳，避免每次返回不同对象
 			};
 			return NextResponse.json({ user: adminUser });
 		}
