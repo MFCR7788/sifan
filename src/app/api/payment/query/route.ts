@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
           order: {
             orderNo: updatedOrder?.orderNo || order.orderNo,
             amount: updatedOrder?.amount || order.amount,
-            paidAt: updatedOrder?.paidAt,
+            paidAt: updatedOrder?.paidAt || new Date().toISOString(),
           },
         });
       } catch (markError: any) {
