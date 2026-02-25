@@ -3,6 +3,7 @@ import { createWechatNativePay } from '@/services/wechatPay';
 import { createAlipayQrPay } from '@/services/alipay';
 import QRCode from 'qrcode';
 import { createPaymentOrder } from '@/storage/database/paymentOrderManager';
+import { memberManager } from '@/storage/database/memberManager';
 import { useAuth } from '@/contexts/AuthContext';
 
 // 类型守卫：检查error是否为Error对象
@@ -77,9 +78,13 @@ export async function POST(request: NextRequest) {
     let qrCodeUrl = '';
     let transactionId = '';
 
+    // 确保会员存在并获取会员ID
+    const member = await memberManager.ensureMemberExists(userId);
+
     // 创建支付订单
     const order = await createPaymentOrder({
       userId,
+      memberId: member.id,
       orderType: type,
       amount: Math.round(amount * 100), // 转换为分
       paymentMethod,
