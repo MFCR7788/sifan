@@ -29,7 +29,7 @@ jobs:
         with:
           host: ${{ secrets.ALIYUN_HOST }}
           username: ${{ secrets.ALIYUN_USERNAME }}
-          password: ${{ secrets.ALIYUN_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
             cd /root/sifan
