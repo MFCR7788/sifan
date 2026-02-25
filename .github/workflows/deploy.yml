@@ -1,9 +1,11 @@
-name: Deploy to Alibaba Cloud
+# 已禁用：避免与 deploy-build-and-upload.yml 重复触发部署
+# 保留此文件作为备份
+
+name: Deploy to Alibaba Cloud (Disabled)
 
 on:
-  push:
-    branches:
-      - main
+  # 禁用自动触发
+  workflow_dispatch:
 
 jobs:
   deploy:
