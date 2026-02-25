@@ -32,8 +32,27 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /root/sifan
+            echo "开始部署..."
+            cd /root/sifan || exit 1
+            # 拉取最新代码
+            echo "拉取最新代码..."
             git pull origin main
+            # 安装依赖
+            echo "安装依赖..."
             npm install
+            # 构建项目
+            echo "构建项目..."
             npm run build
-            pm2 restart sifan || pm2 start npm --name sifan -- start
+            # 重启服务（如果进程不存在则启动）
+            echo "重启服务..."
+            if pm2 describe enterprise-website > /dev/null 2>&1; then
+                pm2 restart enterprise-website
+                echo "✓ 服务已重启"
+            else
+                echo "服务不存在，正在启动..."
+                pm2 start ecosystem.config.js
+                echo "✓ 服务已启动"
+            fi
+            # 保存 PM2 配置
+            pm2 save
+            echo "✓ 部署完成！"
