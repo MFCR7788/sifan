@@ -25,6 +25,16 @@ jobs:
         run: npm run build
 
       - name: Deploy to Alibaba Cloud
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.ALIYUN_HOST }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: '.next/**'
+          target: '/root/sifan/.next'
+
+      - name: Restart service
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.ALIYUN_HOST }}
@@ -40,9 +50,6 @@ jobs:
             # 安装依赖
             echo "安装依赖..."
             npm install
-            # 构建项目
-            echo "构建项目..."
-            npm run build
             # 重启服务（如果进程不存在则启动）
             echo "重启服务..."
             if pm2 describe enterprise-website > /dev/null 2>&1; then
