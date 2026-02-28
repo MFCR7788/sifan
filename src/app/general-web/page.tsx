@@ -10,16 +10,13 @@ export default function GeneralWebPage() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4">
+      <section className="py-24 md:py-32 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
             数字转型
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mt-8">
+          <p className="text-xl text-gray-600 mt-6">
             校服行业数字化解决方案
-          </p>
-          <p className="text-lg text-gray-500 mt-4">
-            赋能门店赢在数字时代
           </p>
         </div>
       </section>
