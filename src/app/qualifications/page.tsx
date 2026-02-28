@@ -59,16 +59,13 @@ export default function QualificationsPage() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4">
+      <section className="py-24 md:py-32 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold text-gray-900 tracking-tight">
             公司资质
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mt-8">
+          <p className="text-xl text-gray-600 mt-6">
             浙江思杋服饰有限公司
-          </p>
-          <p className="text-lg text-gray-500 mt-4">
-            专业可靠，品质保证
           </p>
         </div>
       </section>

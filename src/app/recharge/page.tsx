@@ -60,32 +60,67 @@ export default function RechargePage() {
 	// 轮询支付状态
 	useEffect(() => {
 		let pollingInterval: NodeJS.Timeout | null = null;
+		let pollingCount = 0;
+		const maxPollingCount = 450; // 最多轮询15分钟（450次 * 2秒）
 
 		if (isPolling && orderNo) {
 			pollingInterval = setInterval(async () => {
+				// 检查是否超过最大轮询次数
+				if (pollingCount >= maxPollingCount) {
+					clearInterval(pollingInterval!);
+					setIsPolling(false);
+					setErrorMessage('支付超时，请重新发起充值');
+					return;
+				}
+
 				try {
 					const response = await fetch(`/api/payment/query?orderNo=${orderNo}`);
+					
+					// 检查响应状态
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					
 					const data = await response.json();
 
-					if (data.success && data.isPaid) {
-						// 支付成功
-						setIsPolling(false);
-						setPaymentSuccess(true);
+					if (data.success) {
+						if (data.isPaid) {
+							// 支付成功
+							clearInterval(pollingInterval!);
+							setIsPolling(false);
+							setPaymentSuccess(true);
 
-						// 刷新用户信息和会员信息
-						await Promise.all([
-							refreshUser(),
-							fetchMemberInfo(),
-						]);
+							// 刷新用户信息和会员信息
+							await Promise.all([
+								refreshUser(),
+								fetchMemberInfo(),
+							]);
 
-						// 3秒后跳转到个人中心
-						setTimeout(() => {
-							router.push('/profile');
-						}, 3000);
+							// 3秒后跳转到个人中心
+							setTimeout(() => {
+								router.push('/profile');
+							}, 3000);
+						} else if (data.status === 'cancelled') {
+							// 支付取消
+							clearInterval(pollingInterval!);
+							setIsPolling(false);
+							setErrorMessage('支付已取消');
+						} else if (data.status === 'failed') {
+							// 支付失败
+							clearInterval(pollingInterval!);
+							setIsPolling(false);
+							setErrorMessage('支付失败，请重试');
+						}
+					} else {
+						// API返回失败
+						console.error('查询支付状态API失败:', data.error);
 					}
 				} catch (error) {
 					console.error('查询支付状态失败:', error);
+					// 继续轮询，不中断
 				}
+				
+				pollingCount++;
 			}, 2000); // 每2秒查询一次
 		}
 
@@ -238,36 +273,59 @@ export default function RechargePage() {
 
 		setIsCheckingPayment(true);
 		setPaymentCheckMessage('');
+		setErrorMessage('');
 
 		try {
 			const response = await fetch(`/api/payment/query?orderNo=${orderNo}`);
+			
+			// 检查响应状态
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			
 			const data = await response.json();
 
-			if (data.success && data.isPaid) {
-				// 支付成功
-				setPaymentCheckSuccess(true);
-				setPaymentCheckMessage('支付成功！');
+			if (data.success) {
+				if (data.isPaid) {
+					// 支付成功
+					setPaymentCheckSuccess(true);
+					setPaymentCheckMessage('支付成功！');
 
-				// 停止轮询
-				setIsPolling(false);
+					// 停止轮询
+					setIsPolling(false);
 
-				// 刷新用户信息和会员信息
-				await Promise.all([
-					refreshUser(),
-					fetchMemberInfo(),
-				]);
+					// 刷新用户信息和会员信息
+					await Promise.all([
+						refreshUser(),
+						fetchMemberInfo(),
+					]);
 
-				// 设置支付成功状态
-				setPaymentSuccess(true);
+					// 设置支付成功状态
+					setPaymentSuccess(true);
 
-				// 3秒后跳转到个人中心
-				setTimeout(() => {
-					router.push('/profile');
-				}, 3000);
+					// 3秒后跳转到个人中心
+					setTimeout(() => {
+						router.push('/profile');
+					}, 3000);
+				} else if (data.status === 'cancelled') {
+					// 支付取消
+					setPaymentCheckSuccess(false);
+					setPaymentCheckMessage('支付已取消');
+					setIsPolling(false);
+				} else if (data.status === 'failed') {
+					// 支付失败
+					setPaymentCheckSuccess(false);
+					setPaymentCheckMessage('支付失败，请重试');
+					setIsPolling(false);
+				} else {
+					// 支付未完成
+					setPaymentCheckSuccess(false);
+					setPaymentCheckMessage('支付处理中，请稍后再试');
+				}
 			} else {
-				// 支付未成功
+				// 查询失败
 				setPaymentCheckSuccess(false);
-				setPaymentCheckMessage('充值失败，请确认支付状态后重试');
+				setPaymentCheckMessage('查询支付状态失败，请稍后重试');
 			}
 		} catch (err: any) {
 			setPaymentCheckSuccess(false);

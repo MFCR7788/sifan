@@ -102,36 +102,41 @@ export class MemberManager {
     const balanceAfter = balanceBefore + amount;
     const totalRechargeAfter = member.totalRecharge + amount;
 
-    const [updatedMember] = await db
-      .update(members)
-      .set({
-        balance: balanceAfter,
-        totalRecharge: totalRechargeAfter,
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(members.userId, userId))
-      .returning();
+    try {
+      const [updatedMember] = await db
+        .update(members)
+        .set({
+          balance: balanceAfter,
+          totalRecharge: totalRechargeAfter,
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(members.userId, userId))
+        .returning();
 
-    // 创建交易记录
-    const [transaction] = await db
-      .insert(memberTransactions)
-      .values({
-        memberId: updatedMember.id,
-        transactionType: 'recharge',
-        amount,
-        balanceBefore,
-        balanceAfter,
-        pointsBefore: member.points,
-        pointsAfter: member.points,
-        description,
-        status: 'completed',
-        paymentMethod,
-        paymentTransactionId,
-        completedAt: new Date().toISOString(),
-      })
-      .returning();
+      // 创建交易记录
+      const [transaction] = await db
+        .insert(memberTransactions)
+        .values({
+          memberId: updatedMember.id,
+          transactionType: 'recharge',
+          amount,
+          balanceBefore,
+          balanceAfter,
+          pointsBefore: member.points,
+          pointsAfter: member.points,
+          description,
+          status: 'completed',
+          paymentMethod,
+          paymentTransactionId,
+          completedAt: new Date().toISOString(),
+        })
+        .returning();
 
-    return { member: updatedMember, transaction };
+      return { member: updatedMember, transaction };
+    } catch (error) {
+      console.error('充值余额失败:', error);
+      throw error;
+    }
   }
 
   /**
@@ -153,35 +158,40 @@ export class MemberManager {
     const pointsBefore = member.points;
     const pointsAfter = pointsBefore + points;
 
-    const [updatedMember] = await db
-      .update(members)
-      .set({
-        points: pointsAfter,
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(members.userId, userId))
-      .returning();
+    try {
+      const [updatedMember] = await db
+        .update(members)
+        .set({
+          points: pointsAfter,
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(members.userId, userId))
+        .returning();
 
-    // 创建交易记录
-    const [transaction] = await db
-      .insert(memberTransactions)
-      .values({
-        memberId: updatedMember.id,
-        transactionType: 'points_recharge',
-        amount,
-        balanceBefore: member.balance,
-        balanceAfter: member.balance,
-        pointsBefore,
-        pointsAfter,
-        description,
-        status: 'completed',
-        paymentMethod,
-        paymentTransactionId,
-        completedAt: new Date().toISOString(),
-      })
-      .returning();
+      // 创建交易记录
+      const [transaction] = await db
+        .insert(memberTransactions)
+        .values({
+          memberId: updatedMember.id,
+          transactionType: 'points_recharge',
+          amount,
+          balanceBefore: member.balance,
+          balanceAfter: member.balance,
+          pointsBefore,
+          pointsAfter,
+          description,
+          status: 'completed',
+          paymentMethod,
+          paymentTransactionId,
+          completedAt: new Date().toISOString(),
+        })
+        .returning();
 
-    return { member: updatedMember, transaction };
+      return { member: updatedMember, transaction };
+    } catch (error) {
+      console.error('充值积分失败:', error);
+      throw error;
+    }
   }
 
   /**
@@ -232,38 +242,43 @@ export class MemberManager {
       expiresAt = new Date(currentExpires.getTime() + planDuration);
     }
 
-    const [updatedMember] = await db
-      .update(members)
-      .set({
-        memberLevel,
-        expiresAt: expiresAt ? expiresAt.toISOString() : null,
-        memberStatus: 'active',
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(members.userId, userId))
-      .returning();
+    try {
+      const [updatedMember] = await db
+        .update(members)
+        .set({
+          memberLevel,
+          expiresAt: expiresAt ? expiresAt.toISOString() : null,
+          memberStatus: 'active',
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(members.userId, userId))
+        .returning();
 
-    // 创建交易记录
-    const [transaction] = await db
-      .insert(memberTransactions)
-      .values({
-        memberId: updatedMember.id,
-        transactionType: 'membership_purchase',
-        amount,
-        balanceBefore: member.balance,
-        balanceAfter: member.balance,
-        pointsBefore: member.points,
-        pointsAfter: member.points,
-        description,
-        status: 'completed',
-        paymentMethod,
-        paymentTransactionId,
-        metadata: { planId, memberLevel },
-        completedAt: new Date().toISOString(),
-      })
-      .returning();
+      // 创建交易记录
+      const [transaction] = await db
+        .insert(memberTransactions)
+        .values({
+          memberId: updatedMember.id,
+          transactionType: 'membership_purchase',
+          amount,
+          balanceBefore: member.balance,
+          balanceAfter: member.balance,
+          pointsBefore: member.points,
+          pointsAfter: member.points,
+          description,
+          status: 'completed',
+          paymentMethod,
+          paymentTransactionId,
+          metadata: { planId, memberLevel },
+          completedAt: new Date().toISOString(),
+        })
+        .returning();
 
-    return { member: updatedMember, transaction };
+      return { member: updatedMember, transaction };
+    } catch (error) {
+      console.error('购买会员失败:', error);
+      throw error;
+    }
   }
 
   /**
