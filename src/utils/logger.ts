@@ -84,10 +84,19 @@ export class Logger {
   /**
    * 错误日志
    */
-  error(message: string, error?: Error, data?: any): void {
+  error(message: string, errorOrData?: Error | any, data?: any): void {
     if (this.shouldLog(LogLevel.ERROR)) {
+      let error: Error | undefined;
+      let logData: any = data;
+      
+      if (errorOrData instanceof Error) {
+        error = errorOrData;
+      } else if (errorOrData) {
+        logData = errorOrData;
+      }
+      
       this.log(LogLevel.ERROR, message, {
-        ...data,
+        ...logData,
         error: error?.message,
         stack: error?.stack,
       });
@@ -97,10 +106,19 @@ export class Logger {
   /**
    * 致命错误日志
    */
-  fatal(message: string, error?: Error, data?: any): void {
+  fatal(message: string, errorOrData?: Error | any, data?: any): void {
     if (this.shouldLog(LogLevel.FATAL)) {
+      let error: Error | undefined;
+      let logData: any = data;
+      
+      if (errorOrData instanceof Error) {
+        error = errorOrData;
+      } else if (errorOrData) {
+        logData = errorOrData;
+      }
+      
       this.log(LogLevel.FATAL, message, {
-        ...data,
+        ...logData,
         error: error?.message,
         stack: error?.stack,
       });

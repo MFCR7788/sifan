@@ -34,7 +34,7 @@ export interface AlertData {
   message: string;
   details?: any;
   timestamp: Date;
-  correlationId?: string;
+  correlationId?: string | null;
 }
 
 /**
@@ -97,7 +97,7 @@ export async function sendPaymentCallbackAlert(
   level: AlertLevel,
   message: string,
   details?: any,
-  correlationId?: string
+  correlationId?: string | null
 ): Promise<void> {
   await monitorService.sendAlert({
     level,
@@ -116,7 +116,7 @@ export async function sendPaymentQueryAlert(
   level: AlertLevel,
   message: string,
   details?: any,
-  correlationId?: string
+  correlationId?: string | null
 ): Promise<void> {
   await monitorService.sendAlert({
     level,

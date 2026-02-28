@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
         await markOrderAsPaid(outTradeNo, tradeNo || '', tradeNo || '');
       }, 30000, 3, 1000);
       webhookLogger.webhook('订单已更新为已支付', { outTradeNo });
-    } else if (['CLOSED', 'REFUND', 'PAYMENT_REFUSED'].includes(tradeState)) {
+    } else if (tradeState && ['CLOSED', 'REFUND', 'PAYMENT_REFUSED'].includes(tradeState)) {
       webhookLogger.webhook('交易失败，更新订单状态', { outTradeNo, tradeState });
       // 使用重试机制更新订单状态为失败
       await retryWithTimeout(async () => {

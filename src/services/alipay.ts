@@ -3,7 +3,7 @@ import { AlipaySdk } from 'alipay-sdk';
 /**
  * 获取支付宝 SDK 实例（延迟初始化）
  */
-function getAlipaySdk(): AlipaySdk {
+export function getAlipaySdk(): AlipaySdk {
   if (!process.env.ALIPAY_APPID || !process.env.ALIPAY_PRIVATE_KEY || !process.env.ALIPAY_PUBLIC_KEY) {
     throw new Error('支付宝配置不完整，请检查 .env.local 文件中的 ALIPAY_APPID、ALIPAY_PRIVATE_KEY 和 ALIPAY_PUBLIC_KEY');
   }

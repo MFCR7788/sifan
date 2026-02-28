@@ -12,7 +12,7 @@ export async function retry<T>(
   delay: number = 1000,
   backoffFactor: number = 2
 ): Promise<T> {
-  let lastError: Error;
+  let lastError: Error | undefined;
   
   for (let i = 0; i <= maxRetries; i++) {
     try {
@@ -33,7 +33,8 @@ export async function retry<T>(
     }
   }
   
-  throw lastError;
+  // 如果循环正常结束（理论上不会发生），抛出一个默认错误
+  throw lastError || new Error('重试失败');
 }
 
 /**
