@@ -35,6 +35,9 @@ export default function RechargePage() {
 	const [isCheckingPayment, setIsCheckingPayment] = useState(false);
 	const [paymentCheckMessage, setPaymentCheckMessage] = useState('');
 	const [paymentCheckSuccess, setPaymentCheckSuccess] = useState(false);
+	const [paymentOrderInfo, setPaymentOrderInfo] = useState<any>(null);
+	const [pollingCount, setPollingCount] = useState(0);
+	const [isLoading, setIsLoading] = useState(false);
 
 	// 倒计时（15分钟）
 	const [countdown, setCountdown] = useState(900);
@@ -60,8 +63,8 @@ export default function RechargePage() {
 	// 轮询支付状态
 	useEffect(() => {
 		let pollingInterval: NodeJS.Timeout | null = null;
-		let pollingCount = 0;
-		const maxPollingCount = 450; // 最多轮询15分钟（450次 * 2秒）
+		const maxPollingCount = 10; // 最多轮询10次
+		const pollingIntervalMs = 3000; // 每3秒查询一次
 
 		if (isPolling && orderNo) {
 			pollingInterval = setInterval(async () => {
@@ -69,14 +72,16 @@ export default function RechargePage() {
 				if (pollingCount >= maxPollingCount) {
 					clearInterval(pollingInterval!);
 					setIsPolling(false);
-					setErrorMessage('支付超时，请重新发起充值');
+					setErrorMessage('支付查询超时，请点击下方按钮手动刷新');
 					return;
 				}
 
+				setPollingCount(prev => prev + 1);
+
 				try {
+					setIsLoading(true);
 					const response = await fetch(`/api/payment/query?orderNo=${orderNo}`);
 					
-					// 检查响应状态
 					if (!response.ok) {
 						throw new Error(`HTTP error! status: ${response.status}`);
 					}
@@ -85,43 +90,33 @@ export default function RechargePage() {
 
 					if (data.success) {
 						if (data.isPaid) {
-							// 支付成功
 							clearInterval(pollingInterval!);
 							setIsPolling(false);
+							setPaymentOrderInfo(data.order);
 							setPaymentSuccess(true);
 
-							// 刷新用户信息和会员信息
 							await Promise.all([
 								refreshUser(),
 								fetchMemberInfo(),
 							]);
-
-							// 3秒后跳转到个人中心
-							setTimeout(() => {
-								router.push('/profile');
-							}, 3000);
 						} else if (data.status === 'cancelled') {
-							// 支付取消
 							clearInterval(pollingInterval!);
 							setIsPolling(false);
 							setErrorMessage('支付已取消');
 						} else if (data.status === 'failed') {
-							// 支付失败
 							clearInterval(pollingInterval!);
 							setIsPolling(false);
 							setErrorMessage('支付失败，请重试');
 						}
 					} else {
-						// API返回失败
 						console.error('查询支付状态API失败:', data.error);
 					}
 				} catch (error) {
 					console.error('查询支付状态失败:', error);
-					// 继续轮询，不中断
+				} finally {
+					setIsLoading(false);
 				}
-				
-				pollingCount++;
-			}, 2000); // 每2秒查询一次
+			}, pollingIntervalMs);
 		}
 
 		return () => {
@@ -129,7 +124,7 @@ export default function RechargePage() {
 				clearInterval(pollingInterval);
 			}
 		};
-	}, [isPolling, orderNo, refreshUser, router]);
+	}, [isPolling, orderNo, refreshUser, router, pollingCount]);
 
 	const fetchMemberInfo = async () => {
 		try {
@@ -262,6 +257,9 @@ export default function RechargePage() {
 		setCountdown(900);
 		setPaymentCheckMessage('');
 		setPaymentCheckSuccess(false);
+		setPaymentOrderInfo(null);
+		setPollingCount(0);
+		setIsLoading(false);
 	};
 
 	// 检查支付状态
@@ -269,16 +267,17 @@ export default function RechargePage() {
 		if (!orderNo) {
 			setErrorMessage('订单号不存在');
 			return;
-		}
+			}
 
 		setIsCheckingPayment(true);
 		setPaymentCheckMessage('');
 		setErrorMessage('');
+		setPollingCount(0);
 
 		try {
+			setIsLoading(true);
 			const response = await fetch(`/api/payment/query?orderNo=${orderNo}`);
 			
-			// 检查响应状态
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
@@ -287,43 +286,31 @@ export default function RechargePage() {
 
 			if (data.success) {
 				if (data.isPaid) {
-					// 支付成功
 					setPaymentCheckSuccess(true);
 					setPaymentCheckMessage('支付成功！');
+					setPaymentOrderInfo(data.order);
 
-					// 停止轮询
 					setIsPolling(false);
 
-					// 刷新用户信息和会员信息
 					await Promise.all([
 						refreshUser(),
 						fetchMemberInfo(),
 					]);
 
-					// 设置支付成功状态
 					setPaymentSuccess(true);
-
-					// 3秒后跳转到个人中心
-					setTimeout(() => {
-						router.push('/profile');
-					}, 3000);
 				} else if (data.status === 'cancelled') {
-					// 支付取消
 					setPaymentCheckSuccess(false);
 					setPaymentCheckMessage('支付已取消');
 					setIsPolling(false);
 				} else if (data.status === 'failed') {
-					// 支付失败
 					setPaymentCheckSuccess(false);
 					setPaymentCheckMessage('支付失败，请重试');
 					setIsPolling(false);
 				} else {
-					// 支付未完成
 					setPaymentCheckSuccess(false);
 					setPaymentCheckMessage('支付处理中，请稍后再试');
 				}
 			} else {
-				// 查询失败
 				setPaymentCheckSuccess(false);
 				setPaymentCheckMessage('查询支付状态失败，请稍后重试');
 			}
@@ -332,6 +319,7 @@ export default function RechargePage() {
 			setPaymentCheckMessage('查询支付状态失败：' + (err.message || '未知错误'));
 		} finally {
 			setIsCheckingPayment(false);
+			setIsLoading(false);
 		}
 	};
 
@@ -351,14 +339,33 @@ export default function RechargePage() {
 		);
 	}
 
+	// 格式化日期时间
+	const formatDateTime = (dateString: string | Date) => {
+		const date = new Date(dateString);
+		return date.toLocaleString('zh-CN', {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit'
+		});
+	};
+
 	// 支付成功状态
 	if (paymentSuccess) {
 		return (
 			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
-				<div className="text-center max-w-md mx-auto px-4">
+				<div className="text-center max-w-md mx-auto px-4" style={{ opacity: 0, animation: 'fadeIn 0.5s ease-out forwards' }}>
 					{/* Success Icon */}
 					<div className="mb-8">
-						<div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+						<div 
+							className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto"
+							style={{ 
+								animation: 'bounce 1s ease-in-out infinite',
+								animationDelay: '0.2s'
+							}}
+						>
 							<svg
 								className="w-12 h-12 text-green-600"
 								fill="none"
@@ -376,14 +383,40 @@ export default function RechargePage() {
 					</div>
 
 					{/* Success Message */}
-					<h1 className="text-4xl font-semibold text-gray-900 mb-4">支付成功</h1>
-					<p className="text-xl text-gray-600 mb-8">
+					<h1 
+						className="text-4xl font-semibold text-gray-900 mb-4"
+						style={{ 
+							opacity: 0,
+							transform: 'translateY(20px)',
+							animation: 'slideUp 0.5s ease-out forwards',
+							animationDelay: '0.3s'
+						}}
+					>
+						支付成功
+					</h1>
+					<p 
+						className="text-xl text-gray-600 mb-8"
+						style={{ 
+							opacity: 0,
+							transform: 'translateY(20px)',
+							animation: 'slideUp 0.5s ease-out forwards',
+							animationDelay: '0.4s'
+						}}
+					>
 						充值金额：¥{getActualAmount()}
 					</p>
 
 					{/* Order Info */}
-					<div className="bg-white rounded-2xl p-6 mb-8 text-left">
-						<div className="space-y-3">
+					<div 
+						className="bg-white rounded-2xl p-6 mb-8 text-left shadow-sm"
+						style={{ 
+							opacity: 0,
+							transform: 'translateY(20px)',
+							animation: 'slideUp 0.5s ease-out forwards',
+							animationDelay: '0.5s'
+						}}
+					>
+						<div className="space-y-4">
 							<div className="flex justify-between">
 								<span className="text-gray-600">充值金额</span>
 								<span className="font-medium text-gray-900">¥{getActualAmount()}</span>
@@ -396,7 +429,23 @@ export default function RechargePage() {
 									</span>
 								</div>
 							)}
-							<div className="border-t border-gray-200" />
+							{paymentOrderInfo?.orderNo && (
+								<div className="flex justify-between">
+									<span className="text-gray-600">订单号</span>
+									<span className="font-mono text-sm text-gray-900 break-all">
+										{paymentOrderInfo.orderNo}
+									</span>
+								</div>
+							)}
+							{paymentOrderInfo?.paidAt && (
+								<div className="flex justify-between">
+									<span className="text-gray-600">支付时间</span>
+									<span className="font-medium text-gray-900 text-sm">
+										{formatDateTime(paymentOrderInfo.paidAt)}
+									</span>
+								</div>
+							)}
+							<div className="border-t border-gray-200 pt-4" />
 							<div className="flex justify-between">
 								<span className="text-gray-600">当前余额</span>
 								<span className="font-medium text-gray-900">
@@ -406,7 +455,54 @@ export default function RechargePage() {
 						</div>
 					</div>
 
-					<p className="text-sm text-gray-500">3秒后自动跳转到个人中心...</p>
+					{/* Action Buttons */}
+					<div 
+						className="space-y-3"
+						style={{ 
+							opacity: 0,
+							transform: 'translateY(20px)',
+							animation: 'slideUp 0.5s ease-out forwards',
+							animationDelay: '0.6s'
+						}}
+					>
+						<button
+							onClick={() => router.push('/profile')}
+							className="w-full py-3 px-6 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-all duration-200 active:scale-95"
+						>
+							查看订单
+						</button>
+						<button
+							onClick={() => router.push('/')}
+							className="w-full py-3 px-6 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 active:scale-95"
+						>
+							返回首页
+						</button>
+					</div>
+
+					{/* Global animation styles */}
+					<script dangerouslySetInnerHTML={{__html: `
+						(function() {
+							const style = document.createElement('style');
+							style.textContent = \`
+								@keyframes fadeIn {
+									from { opacity: 0; }
+									to { opacity: 1; }
+								}
+								@keyframes slideUp {
+									from { opacity: 0; transform: translateY(20px); }
+									to { opacity: 1; transform: translateY(0); }
+								}
+								@keyframes bounce {
+									0%, 100% { transform: scale(1); }
+									50% { transform: scale(1.1); }
+								}
+							\`;
+							if (!document.querySelector('#payment-animations')) {
+								style.id = 'payment-animations';
+								document.head.appendChild(style);
+							}
+						})();
+					`}} />
 				</div>
 			</div>
 		);
@@ -436,6 +532,16 @@ export default function RechargePage() {
 							扫码完成支付
 						</p>
 					</div>
+
+					{/* Loading overlay */}
+					{isLoading && (
+						<div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+							<div className="bg-white rounded-2xl p-8 text-center">
+								<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+								<p className="mt-4 text-gray-600">处理中...</p>
+							</div>
+						</div>
+					)}
 
 					{/* Payment Status */}
 					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -479,9 +585,19 @@ export default function RechargePage() {
 										</div>
 										{/* Polling Status */}
 										{isPolling && (
-											<div className="flex items-center justify-center gap-2 text-sm text-blue-600">
-												<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-												<span>正在等待支付结果...</span>
+											<div className="mt-4 mb-4">
+												<div className="flex items-center justify-center gap-2 text-sm text-blue-600 mb-2">
+													<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+													<span>正在等待支付结果... ({pollingCount}/10)</span>
+												</div>
+												<div className="w-64 mx-auto">
+													<div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+														<div 
+															className="h-full bg-blue-600 transition-all duration-300"
+															style={{ width: `${Math.min(pollingCount * 10, 100)}%` }}
+														></div>
+													</div>
+												</div>
 											</div>
 										)}
 									</div>
