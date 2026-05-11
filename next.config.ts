@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    // 允许的图片域名
     remotePatterns: [
       {
         protocol: 'https',
@@ -18,13 +16,33 @@ const nextConfig: NextConfig = {
         hostname: 'zjsifan.com',
       },
     ],
-    // 优先使用 WebP 格式
     formats: ['image/webp', 'image/avif'],
-    // 图片优化配置
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // 启用缓存
-    minimumCacheTTL: 60,
+    minimumCacheTTL: 31536000,
+  },
+  experimental: {
+    optimizeCss: true,
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          ...config.optimization.splitChunks,
+          cacheGroups: {
+            ...config.optimization.splitChunks?.cacheGroups,
+            images: {
+              name: 'images',
+              chunks: 'all',
+              test: /\.(png|jpg|jpeg|gif|webp|avif|svg)$/i,
+              priority: 10,
+            },
+          },
+        },
+      };
+    }
+    return config;
   },
 };
 
