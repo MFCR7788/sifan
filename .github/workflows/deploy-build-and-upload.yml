@@ -72,7 +72,7 @@ jobs:
 
             # 重启服务（如果进程不存在则启动）
             echo "重启服务..."
-            if pm2 describe enterprise-website > /dev/null 2>&; then
+            if pm2 describe enterprise-website > /dev/null 2>&1; then
                 pm2 restart enterprise-website
                 echo "✓ 服务已重启"
             else
