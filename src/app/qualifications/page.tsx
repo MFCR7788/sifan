@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import LazyImage from '@/components/LazyImage';
 
 const isoCertificates = [
   {
@@ -41,7 +42,7 @@ export default function QualificationsPage() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % isoCertificates.length);
-    }, 3000); // 每3秒切换一次
+    }, 3000);
 
     return () => clearInterval(timer);
   }, []);
@@ -89,10 +90,10 @@ export default function QualificationsPage() {
               onClick={() => setSelectedImage(qualificationImages[0])}
             >
               <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
-                <img
+                <LazyImage
                   src="/images/business-license.jpg"
                   alt="营业执照"
-                  className="w-full h-full object-contain rounded-lg"
+                  className="w-full h-full"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
@@ -108,10 +109,10 @@ export default function QualificationsPage() {
               onClick={() => setSelectedImage(qualificationImages[1])}
             >
               <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
-                <img
+                <LazyImage
                   src="/images/franchise-license.jpg"
                   alt="特许经营许可证"
-                  className="w-full h-full object-contain rounded-lg"
+                  className="w-full h-full"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
@@ -127,10 +128,10 @@ export default function QualificationsPage() {
               onClick={() => setSelectedImage(qualificationImages[2])}
             >
               <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
-                <img
+                <LazyImage
                   src="/images/national-high-tech-certificate.png"
                   alt="国家高新企业证书"
-                  className="w-full h-full object-contain rounded-lg"
+                  className="w-full h-full"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
@@ -146,10 +147,10 @@ export default function QualificationsPage() {
               onClick={() => setSelectedImage(qualificationImages[3])}
             >
               <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
-                <img
+                <LazyImage
                   src="/images/technology-sme.png"
                   alt="科技型中小企业"
-                  className="w-full h-full object-contain rounded-lg"
+                  className="w-full h-full"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
@@ -165,10 +166,10 @@ export default function QualificationsPage() {
               onClick={() => setSelectedImage(isoCertificates[currentSlide])}
             >
               <div className="relative aspect-[4/3] bg-white">
-                <img
+                <LazyImage
                   src={isoCertificates[currentSlide].src}
                   alt={isoCertificates[currentSlide].alt}
-                  className="w-full h-full object-contain p-4 transition-opacity duration-300"
+                  className="w-full h-full"
                 />
                 {/* 轮播控制按钮 */}
                 <button
@@ -212,10 +213,10 @@ export default function QualificationsPage() {
               onClick={() => setSelectedImage(qualificationImages[7])}
             >
               <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
-                <img
+                <LazyImage
                   src="/images/value-added-telecom-license.jpg"
                   alt="增值电信业务经营许可证"
-                  className="w-full h-full object-contain rounded-lg"
+                  className="w-full h-full"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
               </div>
@@ -274,10 +275,10 @@ export default function QualificationsPage() {
           onClick={() => setSelectedImage(null)}
         >
           <div className="relative max-w-6xl max-h-[90vh]">
-            <img
+            <LazyImage
               src={selectedImage.src}
               alt={selectedImage.alt}
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              className="max-w-full max-h-[90vh]"
             />
             <button
               className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
