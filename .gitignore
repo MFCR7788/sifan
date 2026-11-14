@@ -54,3 +54,12 @@ output.log
 *.log
 *.log.*
 logs/
+
+# ==== 凭据安全：禁止提交密钥文件（2026-11-14 添加）====
+.env.local
+.env.production.local
+certs/
+assets/apiclient_key.pem
+assets/apiclient_cert.pem
+*.pem
+.env.production
