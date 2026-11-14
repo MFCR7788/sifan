@@ -35,7 +35,7 @@ export default function GeneralWebPage() {
             description="基于大数据分析的智能选品系统，精准匹配市场需求，提升库存周转率，降低经营风险。"
             image={
               <img
-                src="/images/洞察瞬间-创立场景.png"
+                src="/images/洞察瞬间-创立场景.webp"
                 alt="智能选品"
                 className="w-full h-full object-cover"
               />
@@ -48,7 +48,7 @@ export default function GeneralWebPage() {
             description="全流程在线订货平台，7×24小时随时下单，实时追踪订单状态，让订货更便捷高效。"
             image={
               <img
-                src="/images/全域作战室-团队协作.png"
+                src="/images/全域作战室-团队协作.webp"
                 alt="在线订货"
                 className="w-full h-full object-cover"
               />
@@ -61,7 +61,7 @@ export default function GeneralWebPage() {
             description="可视化数据分析看板，深度洞察销售趋势、客户偏好、库存状况，为经营决策提供数据支撑。"
             image={
               <img
-                src="/images/知识共享-企业文化.png"
+                src="/images/知识共享-企业文化.webp"
                 alt="数据分析"
                 className="w-full h-full object-cover"
               />

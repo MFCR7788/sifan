@@ -30,7 +30,7 @@ export default function Home() {
           >
             {!imageError ? (
               <Image
-                src="/assets/image-4.png"
+                src="/assets/image-4.webp"
                 alt="魔法超人"
                 fill
                 className="object-cover"

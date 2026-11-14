@@ -7,17 +7,17 @@ import LazyImage from '@/components/LazyImage';
 
 const isoCertificates = [
   {
-    src: '/images/iso-quality.png',
+    src: '/images/iso-quality.webp',
     alt: '质量管理体系认证证书',
     title: '质量管理体系认证证书'
   },
   {
-    src: '/images/iso-environment.png',
+    src: '/images/iso-environment.webp',
     alt: '环境管理体系认证证书',
     title: '环境管理体系认证证书'
   },
   {
-    src: '/images/iso-ohs.png',
+    src: '/images/iso-ohs.webp',
     alt: '职业健康安全管理体系认证证书',
     title: '职业健康安全管理体系认证证书'
   },
@@ -25,13 +25,13 @@ const isoCertificates = [
 
 // 所有资质图片（用于预览）
 const qualificationImages = [
-  { src: '/images/business-license.jpg', alt: '营业执照', title: '营业执照' },
+  { src: '/images/business-license.webp', alt: '营业执照', title: '营业执照' },
   { src: '/images/franchise-license.jpg', alt: '特许经营许可证', title: '特许经营许可证' },
-  { src: '/images/national-high-tech-certificate.png', alt: '国家高新企业证书', title: '国家高新企业证书' },
-  { src: '/images/technology-sme.png', alt: '科技型中小企业', title: '科技型中小企业' },
-  { src: '/images/iso-quality.png', alt: '质量管理体系认证证书', title: '质量管理体系认证证书' },
-  { src: '/images/iso-environment.png', alt: '环境管理体系认证证书', title: '环境管理体系认证证书' },
-  { src: '/images/iso-ohs.png', alt: '职业健康安全管理体系认证证书', title: '职业健康安全管理体系认证证书' },
+  { src: '/images/national-high-tech-certificate.webp', alt: '国家高新企业证书', title: '国家高新企业证书' },
+  { src: '/images/technology-sme.webp', alt: '科技型中小企业', title: '科技型中小企业' },
+  { src: '/images/iso-quality.webp', alt: '质量管理体系认证证书', title: '质量管理体系认证证书' },
+  { src: '/images/iso-environment.webp', alt: '环境管理体系认证证书', title: '环境管理体系认证证书' },
+  { src: '/images/iso-ohs.webp', alt: '职业健康安全管理体系认证证书', title: '职业健康安全管理体系认证证书' },
   { src: '/images/value-added-telecom-license.jpg', alt: '增值电信业务经营许可证', title: '增值电信业务经营许可证' },
 ];
 
@@ -91,7 +91,7 @@ export default function QualificationsPage() {
             >
               <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
                 <LazyImage
-                  src="/images/business-license.jpg"
+                  src="/images/business-license.webp"
                   alt="营业执照"
                   className="w-full h-full"
                 />
@@ -129,7 +129,7 @@ export default function QualificationsPage() {
             >
               <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
                 <LazyImage
-                  src="/images/national-high-tech-certificate.png"
+                  src="/images/national-high-tech-certificate.webp"
                   alt="国家高新企业证书"
                   className="w-full h-full"
                 />
@@ -148,7 +148,7 @@ export default function QualificationsPage() {
             >
               <div className="aspect-[4/3] bg-white flex items-center justify-center p-4 relative">
                 <LazyImage
-                  src="/images/technology-sme.png"
+                  src="/images/technology-sme.webp"
                   alt="科技型中小企业"
                   className="w-full h-full"
                 />

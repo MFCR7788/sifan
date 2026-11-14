@@ -66,7 +66,12 @@ set -e
 cd $SERVER_DIR
 TS=\$(date +%Y%m%d_%H%M%S)
 
-echo "[服务器] 备份现有产物..."
+# 记录包内的 BUILD_ID，作为一致性校验基准
+PKG_BUILD_ID=\$(tar -xzOf /tmp/sifan-next.tar.gz .next/BUILD_ID 2>/dev/null || echo "")
+echo "[服务器] 包内 BUILD_ID: \$PKG_BUILD_ID"
+
+echo "[服务器] 停止 sifan 并移走旧产物（彻底替换，避免新旧混合）..."
+pm2 stop sifan >/dev/null 2>&1 || true
 [ -d .next ] && mv .next .next.old.\$TS || true
 [ -d public ] && mv public public.old.\$TS || true
 
@@ -74,19 +79,56 @@ echo "[服务器] 解包..."
 tar -xzf /tmp/sifan-next.tar.gz
 tar -xzf /tmp/sifan-public.tar.gz
 
-echo "[服务器] 重启 sifan..."
+# 校验 1：BUILD_ID 必须与包内一致
+NEW_BUILD_ID=\$(cat .next/BUILD_ID 2>/dev/null || echo "")
+if [ -z "\$NEW_BUILD_ID" ] || [ "\$NEW_BUILD_ID" != "\$PKG_BUILD_ID" ]; then
+  echo "[服务器] ✗ BUILD_ID 不一致（包=\$PKG_BUILD_ID 服务器=\$NEW_BUILD_ID），回滚"
+  rm -rf .next public
+  [ -d .next.old.\$TS ] && mv .next.old.\$TS .next
+  [ -d public.old.\$TS ] && mv public.old.\$TS public
+  pm2 restart sifan --update-env >/dev/null 2>&1 || true
+  exit 1
+fi
+echo "[服务器] ✓ BUILD_ID 一致: \$NEW_BUILD_ID"
+
+echo "[服务器] 启动 sifan..."
 pm2 restart sifan --update-env 2>/dev/null || pm2 start npm --name sifan -- start -- -p $PORT
 pm2 save
+sleep 10
 
-sleep 8
 echo "[服务器] 健康检查..."
-CODE=\$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 http://127.0.0.1:$PORT/)
+CODE=\$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 http://127.0.0.1:$PORT/)
 echo "[服务器] 本地 HTTP 状态: \$CODE"
+
+# 校验 2：抽取首页引用的静态资源，逐个确认不是 500（防止产物混合导致页面卡死）
+echo "[服务器] 静态资源完整性检查..."
+BAD=\$(curl -s --max-time 20 http://127.0.0.1:$PORT/ \
+  | grep -oE '(src|href)="/_next/static/[^"]+"' \
+  | sed -E 's/.*="([^"]+)"/\1/' | sort -u \
+  | while read -r u; do
+      c=\$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "http://127.0.0.1:$PORT\$u")
+      [ "\$c" != "200" ] && echo "\$u=\$c"
+    done)
+if [ -n "\$BAD" ]; then
+  echo "[服务器] ✗ 发现异常静态资源："
+  echo "\$BAD"
+  echo "[服务器] 回滚..."
+  pm2 stop sifan >/dev/null 2>&1 || true
+  rm -rf .next public
+  [ -d .next.old.\$TS ] && mv .next.old.\$TS .next
+  [ -d public.old.\$TS ] && mv public.old.\$TS public
+  pm2 restart sifan --update-env >/dev/null 2>&1 || true
+  exit 1
+fi
+echo "[服务器] ✓ 静态资源全部正常"
+
 if [ "\$CODE" != "200" ]; then
-  echo "[服务器] 健康检查失败，回滚..."
-  [ -d .next.old.\$TS ] && mv .next .next.failed && mv .next.old.\$TS .next
-  [ -d public.old.\$TS ] && mv public public.failed && mv public.old.\$TS public
-  pm2 restart sifan --update-env 2>/dev/null
+  echo "[服务器] ✗ 健康检查失败，回滚..."
+  pm2 stop sifan >/dev/null 2>&1 || true
+  rm -rf .next public
+  [ -d .next.old.\$TS ] && mv .next.old.\$TS .next
+  [ -d public.old.\$TS ] && mv public.old.\$TS public
+  pm2 restart sifan --update-env >/dev/null 2>&1 || true
   exit 1
 fi
 

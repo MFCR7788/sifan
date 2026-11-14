@@ -120,7 +120,7 @@ export default function ChatBox() {
 			>
 				<div className="relative w-12 h-12">
 					<Image
-						src="/小超人.png"
+						src="/小超人.webp"
 						alt="魔法超人AIGC"
 						fill
 						className="object-contain"

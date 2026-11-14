@@ -38,7 +38,7 @@ export default function AboutPage() {
             description="我们深信，一身好校服，是陪伴孩子安心成长、自信向上的 &quot;第二层皮肤&quot;。"
             image={
               <LazyImage
-                src="/images/洞察瞬间-创立场景.png"
+                src="/images/洞察瞬间-创立场景.webp"
                 alt="创立初心"
                 className="w-full h-full"
                 fill
@@ -52,7 +52,7 @@ export default function AboutPage() {
             description="赋能门店赢在数字时代，成为产业首选赋能平台"
             image={
               <LazyImage
-                src="/images/全域作战室-团队协作.png"
+                src="/images/全域作战室-团队协作.webp"
                 alt="使命与愿景"
                 className="w-full h-full"
                 fill
@@ -66,7 +66,7 @@ export default function AboutPage() {
             description="专业可靠、伙伴共赢、极致简单"
             image={
               <LazyImage
-                src="/images/知识共享-企业文化.png"
+                src="/images/知识共享-企业文化.webp"
                 alt="核心价值观"
                 className="w-full h-full"
                 fill

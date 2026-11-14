@@ -134,7 +134,7 @@ export default function CoverGeneratorPage() {
 
   const platforms = [
     { id: '抖音', icon: '/images/douyin-logo.png', title: '抖音封面', description: '输入文案内容帮你生成抖音封面图' },
-    { id: '小红书', icon: '/images/xiaohongshu-logo.png', title: '小红书封面', description: '输入小红书的内容帮你生成小红书的封面图' },
+    { id: '小红书', icon: '/images/xiaohongshu-logo.webp', title: '小红书封面', description: '输入小红书的内容帮你生成小红书的封面图' },
     { id: '公众号', icon: '/images/iwechat-logo.png', title: '公众号封面', description: '输入公众号的内容帮你生成公众号封面头图' },
   ];
 
