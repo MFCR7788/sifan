@@ -50,7 +50,40 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
   log "打包构建产物..."
   tar -czf /tmp/sifan-next.tar.gz --exclude='.next/cache' --exclude='.next/trace' \
       --exclude='.next/types' --exclude='.next/typescript' .next
-  tar -czf /tmp/sifan-public.tar.gz public
+
+  # public 打包：剔除已被 WebP 替代的大原图（源码已改用 .webp 直链）
+  # 判定：图片 >100KB 且存在同名 .webp，或 assets/ 下与 images/ 重复的副本
+  # 注意：tar 的 --exclude 对已存在路径匹配不可靠，改用「暂存目录先剔除再压缩」
+  log "打包静态资源（剔除已 WebP 化的大原图）..."
+  rm -rf /tmp/pub-pkg && mkdir -p /tmp/pub-pkg
+  cp -a public /tmp/pub-pkg/
+  python3 - <<'PYEOF'
+import os
+base = '/tmp/pub-pkg/public'
+removed = 0
+for root, dirs, files in os.walk(base):
+    for fn in files:
+        p = os.path.join(root, fn)
+        low = fn.lower()
+        if not low.endswith(('.png', '.jpg', '.jpeg')):
+            continue
+        try:
+            size = os.path.getsize(p)
+        except OSError:
+            continue
+        has_webp = os.path.exists(p.rsplit('.', 1)[0] + '.webp')
+        dup = False
+        if '/assets/' in p and os.path.exists(os.path.join(base, 'images', fn)):
+            dup = True
+        if (has_webp or dup) and size > 100 * 1024:
+            os.remove(p)
+            removed += 1
+print(f'  已剔除 {removed} 个冗余大原图')
+PYEOF
+  find /tmp/pub-pkg -name '._*' -delete 2>/dev/null || true
+  find /tmp/pub-pkg -name '.DS_Store' -delete 2>/dev/null || true
+  tar -czf /tmp/sifan-public.tar.gz -C /tmp/pub-pkg public
+  rm -rf /tmp/pub-pkg
   ls -lh /tmp/sifan-next.tar.gz /tmp/sifan-public.tar.gz
 fi
 
