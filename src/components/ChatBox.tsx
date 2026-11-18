@@ -1,7 +1,19 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+
+/** 品牌官网页面：这些页面不展示「魔法超人 AIGC」客服入口 */
+const BRAND_PAGES = [
+	'/',
+	'/about',
+	'/solution',
+	'/general-web',
+	'/franchise',
+	'/qualifications',
+	'/contact',
+];
 
 interface Message {
 	role: 'user' | 'assistant';
@@ -10,6 +22,7 @@ interface Message {
 }
 
 export default function ChatBox() {
+	const pathname = usePathname();
 	const [isOpen, setIsOpen] = useState(false);
 	const [input, setInput] = useState('');
 	const [messages, setMessages] = useState<Message[]>([]);
@@ -111,14 +124,18 @@ export default function ChatBox() {
 		}
 	};
 
+	// 品牌官网页不展示客服入口
+	if (pathname && BRAND_PAGES.includes(pathname)) {
+		return null;
+	}
+
 	if (!isOpen) {
 		return (
 			<button
 				onClick={() => setIsOpen(true)}
 				className="fixed bottom-6 right-6 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition-transform z-50 border border-gray-200"
 				aria-label="打开客服聊天"
-			>
-				<div className="relative w-12 h-12">
+			>				<div className="relative w-12 h-12">
 					<Image
 						src="/小超人.webp"
 						alt="魔法超人AIGC"
