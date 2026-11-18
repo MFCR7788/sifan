@@ -16,8 +16,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "魔法超人3.0系统",
-  description: "魔法超人3.0系统 - 智能驱动，未来已来",
+  title: "路耐 LUNAI · 浙江思杋服饰有限公司 | 山高路远·一件路耐",
+  description:
+    "浙江思杋服饰有限公司旗下「路耐 LUNAI」主品牌，下设路耐少年与路耐户外两条产品系列。一个主品牌、两条产品系列、六大运营模块、一个可复制的 50 ㎡ 双品类单店模型。加盟热线 400-0678-558。",
+  keywords: [
+    "路耐",
+    "LUNAI",
+    "浙江思杋服饰",
+    "校服",
+    "冲锋衣",
+    "户外装备",
+    "加盟",
+    "店中店",
+    "智慧零售",
+  ],
+  openGraph: {
+    title: "路耐 LUNAI · 山高路远·一件路耐",
+    description:
+      "一个主品牌，两条产品系列，六大运营模块，一个可复制的单店模型。",
+    url: "https://www.zjsifan.com",
+    siteName: "路耐 LUNAI",
+    locale: "zh_CN",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
