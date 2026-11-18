@@ -3,13 +3,38 @@
 :root {
   --background: #ffffff;
   --foreground: #111827;
+
+  /* ===== 路耐 LUNAI 品牌令牌 ===== */
+  --lunai-ink: #080d18;         /* 最深墨蓝 */
+  --lunai-ink-2: #0d1526;       /* 主背景 */
+  --lunai-ink-3: #131e35;       /* 卡片底 */
+  --lunai-ink-4: #1c2a45;       /* 悬停/描边 */
+  --lunai-gold: #c8a96a;        /* 香槟金 */
+  --lunai-gold-light: #e2cb9a;  /* 浅金 */
+  --lunai-gold-dim: #8a7442;    /* 暗金 */
+  --lunai-snow: #f5f7fa;        /* 冷白 */
+  --lunai-mist: #a8b3c7;        /* 次级文字 */
+  --lunai-line: rgba(200, 169, 106, 0.22); /* 金色分割线 */
+  --lunai-line-soft: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-ink: var(--lunai-ink);
+  --color-ink-2: var(--lunai-ink-2);
+  --color-ink-3: var(--lunai-ink-3);
+  --color-ink-4: var(--lunai-ink-4);
+  --color-gold: var(--lunai-gold);
+  --color-gold-light: var(--lunai-gold-light);
+  --color-gold-dim: var(--lunai-gold-dim);
+  --color-snow: var(--lunai-snow);
+  --color-mist: var(--lunai-mist);
+
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  --font-serif: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", Georgia, serif;
 }
 
 body {
@@ -20,38 +45,105 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* ===== 路耐官网：滚动显现 ===== */
+@keyframes lunai-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes lunai-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes lunai-line {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes lunai-sweep {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(320%) skewX(-18deg); }
+}
+@keyframes lunai-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.85; }
 }
 
-::-webkit-scrollbar-track {
-  background: #f5f5f5;
+.lunai-reveal {
+  opacity: 0;
+  animation: lunai-rise 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.lunai-fade {
+  opacity: 0;
+  animation: lunai-fade 1.4s ease forwards;
+}
+.lunai-line-in {
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: lunai-line 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.lunai-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(200, 169, 106, 0.14), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+  animation: lunai-sweep 3.2s ease-in-out infinite;
+}
+.lunai-pulse {
+  animation: lunai-pulse 3.4s ease-in-out infinite;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 5px;
+/* 衬线标题 */
+.lunai-serif {
+  font-family: var(--font-serif);
+  font-weight: 600;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+/* 等宽数字，避免滚动跳动 */
+.lunai-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* 金色渐变文字 */
+.lunai-grad {
+  background: linear-gradient(135deg, #e2cb9a 0%, #c8a96a 45%, #9a7f4a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-/* Selection style */
+/* 细网格背景纹理 */
+.lunai-grid {
+  background-image:
+    linear-gradient(rgba(200, 169, 106, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 169, 106, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* ===== 滚动条 ===== */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #f5f5f5; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* ===== 基础 ===== */
+html { scroll-behavior: smooth; }
+
 ::selection {
-  background-color: #1f2937;
-  color: #ffffff;
+  background-color: var(--lunai-gold);
+  color: #080d18;
 }
 
-/* Focus styles */
 *:focus-visible {
-  outline: 2px solid #1f2937;
+  outline: 2px solid var(--lunai-gold);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lunai-reveal, .lunai-fade, .lunai-line-in, .lunai-sweep::after, .lunai-pulse {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  html { scroll-behavior: auto; }
 }
