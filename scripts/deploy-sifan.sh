@@ -133,6 +133,27 @@ echo "[服务器] 健康检查..."
 CODE=\$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 http://127.0.0.1:$PORT/)
 echo "[服务器] 本地 HTTP 状态: \$CODE"
 
+# 校验 2：进程加载的 manifest 与磁盘产物必须同批
+# （服务器上存在并行的外部部署流程，可能覆盖 .next 而不重启进程，
+#   导致 HTML 引用旧 hash、磁盘只有新文件 → 静态资源 500）
+echo "[服务器] 进程与磁盘产物一致性检查..."
+LIVE_ID=\$(curl -s --max-time 20 http://127.0.0.1:$PORT/ \\
+  | grep -oE '/_next/static/chunks/main-app-[a-f0-9]+\\.js' | head -1)
+if [ -n "\$LIVE_ID" ]; then
+  if [ ! -f "$SERVER_DIR/.next\$LIVE_ID" ]; then
+    echo "[服务器] ✗ 检测到产物不同批（缺 \$LIVE_ID），重新解包并重启..."
+    pm2 stop sifan >/dev/null 2>&1 || true
+    rm -rf "$SERVER_DIR/.next"
+    tar -xzf /tmp/sifan-next.tar.gz
+    pm2 restart sifan --update-env >/dev/null 2>&1 || pm2 start npm --name sifan -- start -- -p $PORT
+    pm2 save >/dev/null 2>&1
+    sleep 10
+    echo "[服务器] 已重新同步"
+  else
+    echo "[服务器] ✓ 一致: \$LIVE_ID"
+  fi
+fi
+
 # 校验 2：抽取首页引用的静态资源，逐个确认不是 500（防止产物混合导致页面卡死）
 echo "[服务器] 静态资源完整性检查..."
 BAD=\$(curl -s --max-time 20 http://127.0.0.1:$PORT/ \
