@@ -15,7 +15,10 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVER="${SIFAN_SERVER:-zjsifan}"
-SERVER_DIR="/root/sifan"
+# 生产运行目录：/opt/sifan-prod
+# 与 /root/sifan 物理隔离 —— 后者是外部部署流程（.next.backup.* + build-package.tar.gz
+# 风格）的操作目标，会覆盖 .next 但不一定重启进程，导致静态资源 500。
+SERVER_DIR="/opt/sifan-prod"
 PORT="${SIFAN_PORT:-5000}"
 SKIP_BUILD=0
 BUILD_ONLY=0
