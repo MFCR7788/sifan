@@ -120,6 +120,21 @@ body {
   background-size: 72px 72px;
 }
 
+/* ===== 深色外壳内的浅色文字化 =====
+   页面底色改为墨蓝后，原白底设计中用于深色区块的 text-gray-900/800/700 会
+   变成「深底深字」而不可见。此规则只在深色外壳内生效，并排除浅色卡片
+   （bg-white / bg-gray-50 / bg-gray-100 / bg-gray-200）内部的元素，
+   以保证表单、表格、证书卡片等浅色内容仍保持深字浅底的原有可读性。 */
+.bg-ink :where(.text-gray-900, .text-gray-800):not(:where(.bg-white, .bg-gray-50, .bg-gray-100, .bg-gray-200) *) {
+  color: var(--lunai-snow);
+}
+.bg-ink :where(.text-gray-700):not(:where(.bg-white, .bg-gray-50, .bg-gray-100, .bg-gray-200) *) {
+  color: #d8dfea;
+}
+.bg-ink :where(.text-gray-600, .text-gray-500):not(:where(.bg-white, .bg-gray-50, .bg-gray-100, .bg-gray-200) *) {
+  color: #aab4c6;
+}
+
 /* ===== 滚动条 ===== */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: #f5f5f5; }
