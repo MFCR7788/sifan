@@ -35,7 +35,7 @@ export default function SectionHeading({
           <span className="h-px w-10 bg-gold/40" aria-hidden="true" />
         )}
         {eyebrow && (
-          <span className="text-xs uppercase tracking-[0.42em] text-mist/70">
+          <span className="text-xs uppercase tracking-[0.42em] text-mist/92">
             {eyebrow}
           </span>
         )}

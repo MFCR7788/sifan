@@ -296,7 +296,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
               className={`
                 relative p-6 rounded-2xl border-2 transition-all duration-300 text-left
                 ${selectedCount > 0
-                  ? 'border-blue-600 bg-blue-50 shadow-lg'
+                  ? 'border-gold bg-gold/[0.07] shadow-lg'
                   : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                 }
               `}
@@ -305,7 +305,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                 <div
                   className={`
                     w-14 h-14 rounded-xl flex items-center justify-center text-3xl transition-all duration-300 flex-shrink-0
-                    ${selectedCount > 0 ? 'bg-blue-600' : 'bg-gray-100'}
+                    ${selectedCount > 0 ? 'bg-gold' : 'bg-gray-100'}
                   `}
                 >
                   {module.icon}
@@ -335,10 +335,10 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                           className={`
                             text-xs p-3 rounded-lg border-2 transition-all duration-200 text-left relative
                             ${isSelected
-                              ? 'border-blue-600 bg-blue-100'
+                              ? 'border-gold bg-gold/15'
                               : feature.price > 0
-                                ? 'border-gray-200 bg-white hover:border-blue-300'
-                                : 'border-gray-100 bg-gray-50 hover:border-blue-200'
+                                ? 'border-gray-200 bg-white hover:border-gold/45'
+                                : 'border-gray-100 bg-gray-50 hover:border-gold/35'
                             }
                             ${isIncluded ? 'cursor-not-allowed' : (isPremiumOrUltimate && !isOptional ? 'cursor-not-allowed' : 'cursor-pointer')}
                           `}
@@ -346,7 +346,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                           <div className="flex items-start gap-2">
                             <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
                               isSelected
-                                ? 'bg-blue-600 border-blue-600'
+                                ? 'bg-gold border-gold'
                                 : 'border-gray-300'
                             }`}>
                               {isSelected && (
@@ -358,7 +358,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                             <div className="flex-1">
                               <div className="text-gray-900">{feature.name}</div>
                               {feature.price > 0 && (
-                                <div className={`font-medium mt-1 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
+                                <div className={`font-medium mt-1 ${isSelected ? 'text-gold-dim' : 'text-gray-500'}`}>
                                   {isIncluded ? (
                                     <>
                                       {feature.name === '上门陪跑1-2个月' ? `¥${feature.price}/月` : `¥${feature.price * 12}/年`}
@@ -382,7 +382,7 @@ export default function ConfiguratorStep2({ config, updateConfig, onNext, onPrev
                     <div className="text-sm text-gray-600 mb-1">
                       已选{selectedCount}项
                     </div>
-                    <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-2xl font-bold text-gold-dim">
                       {isPremiumOrUltimate ? '已包含' : `¥${modulePrice}`}
                     </div>
                     <div className="text-xs text-gray-500">

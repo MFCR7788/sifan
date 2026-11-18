@@ -16,7 +16,7 @@ export default function DashboardPage() {
 
 	if (isLoading) {
 		return (
-			<div className="min-h-screen flex items-center justify-center bg-gray-50">
+			<div className="min-h-screen flex items-center justify-center bg-ink">
 				<div className="text-gray-600">加载中...</div>
 			</div>
 		);
@@ -27,7 +27,7 @@ export default function DashboardPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+		<div className="min-h-screen bg-gradient-to-br from-ink-2 to-ink">
 			{/* 空白页 */}
 		</div>
 	);

@@ -1,12 +1,12 @@
 'use client';
 
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 
 export default function MagicAIPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <Navigation />
+    <div className="min-h-screen bg-ink text-snow">
+      <LunaiNav />
 
       <div className="max-w-[980px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* 页面内容区域 */}
@@ -16,7 +16,7 @@ export default function MagicAIPage() {
       </div>
 
       {/* Footer */}
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }

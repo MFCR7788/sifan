@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 import { Search, ChevronRight, FileText, Play, ArrowLeft, Menu, X } from 'lucide-react';
 
 interface Category {
@@ -172,8 +172,8 @@ export default function ResourcesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      <Navigation />
+    <div className="min-h-screen bg-ink text-snow">
+      <LunaiNav />
 
       {/* Top Bar - Title & Search */}
       <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b border-gray-200 z-40">
@@ -491,7 +491,7 @@ export default function ResourcesPage() {
         </div>
       </div>
 
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }

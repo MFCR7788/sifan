@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Navigation from '@/components/Navigation';
+import LunaiNav from '@/components/lunai/LunaiNav';
 
 interface OrderData {
 	id: string;
@@ -126,9 +126,9 @@ function PaymentContent() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen bg-white flex items-center justify-center">
+			<div className="min-h-screen bg-ink flex items-center justify-center">
 				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto"></div>
 					<p className="mt-4 text-gray-600">加载中...</p>
 				</div>
 			</div>
@@ -137,10 +137,10 @@ function PaymentContent() {
 
 	if (!order) {
 		return (
-			<div className="min-h-screen bg-white flex items-center justify-center">
+			<div className="min-h-screen bg-ink flex items-center justify-center">
 				<div className="text-center">
 					<h2 className="text-2xl font-semibold text-gray-900 mb-4">订单不存在</h2>
-					<Link href="/configurator" className="text-blue-600 hover:underline">
+					<Link href="/configurator" className="text-gold-dim hover:underline">
 						返回定制页面
 					</Link>
 				</div>
@@ -149,8 +149,8 @@ function PaymentContent() {
 	}
 
 	return (
-		<div className="min-h-screen bg-white">
-			<Navigation />
+		<div className="min-h-screen bg-ink text-snow">
+			<LunaiNav />
 
 			{/* Header */}
 			<div className="bg-gray-50 border-b border-gray-200">
@@ -203,11 +203,11 @@ function PaymentContent() {
 									onClick={() => setPaymentMethod('alipay')}
 									className={`w-full p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 ${
 										paymentMethod === 'alipay'
-											? 'border-blue-600 bg-blue-50'
+											? 'border-gold bg-gold/[0.07]'
 											: 'border-gray-200 hover:border-gray-300'
 									}`}
 								>
-									<div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+									<div className="w-10 h-10 bg-gold rounded-lg flex items-center justify-center">
 										<span className="text-white text-xl">💳</span>
 									</div>
 									<div className="text-left">
@@ -216,7 +216,7 @@ function PaymentContent() {
 									</div>
 									{paymentMethod === 'alipay' && (
 										<div className="ml-auto">
-											<div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+											<div className="w-6 h-6 bg-gold rounded-full flex items-center justify-center">
 												<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
 												</svg>
@@ -321,7 +321,7 @@ function PaymentContent() {
 										</div>
 										<button
 											onClick={handleConfirmPayment}
-											className="w-full max-w-xs py-3 px-6 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+											className="w-full max-w-xs py-3 px-6 bg-gold text-ink rounded-xl font-medium hover:brightness-105 hover:scale-105 transition-all duration-200"
 										>
 											我已完成支付
 										</button>
@@ -409,9 +409,9 @@ function PaymentContent() {
 export default function PaymentPage() {
 	return (
 		<Suspense fallback={
-			<div className="min-h-screen bg-white flex items-center justify-center">
+			<div className="min-h-screen bg-ink flex items-center justify-center">
 				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto"></div>
 					<p className="mt-4 text-gray-600">加载中...</p>
 				</div>
 			</div>

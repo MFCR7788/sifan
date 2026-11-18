@@ -52,7 +52,7 @@ export default function Partnership() {
           title={
             <>
               合作落地进展
-              <span className="text-mist/45"> · 已有实体，不是规划稿</span>
+              <span className="text-mist/72"> · 已有实体，不是规划稿</span>
             </>
           }
           description="浙江、河北两条线均有实体落地，县域拓展与品牌露出授权同步推进。"
@@ -75,7 +75,7 @@ export default function Partnership() {
                   />
                 </div>
 
-                <div className="mt-6 text-[0.6rem] uppercase tracking-[0.26em] text-mist/40">
+                <div className="mt-6 text-[0.6rem] uppercase tracking-[0.26em] text-mist/62">
                   合作对象
                 </div>
                 <h3 className="lunai-serif mt-2 text-lg leading-snug text-snow">
@@ -84,18 +84,18 @@ export default function Partnership() {
 
                 <div className="mt-5 space-y-3 border-t border-white/10 pt-5">
                   <div>
-                    <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/40">
+                    <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/62">
                       落地形态
                     </div>
                     <p className="mt-1.5 text-sm leading-relaxed text-mist/80">{l.form}</p>
                   </div>
                   <div>
-                    <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/40">
+                    <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/62">
                       状态
                     </div>
                     <p
                       className={`mt-1.5 text-sm leading-relaxed ${
-                        l.done ? 'text-gold/85' : 'text-mist/65'
+                        l.done ? 'text-gold/85' : 'text-mist/88'
                       }`}
                     >
                       {l.status}
@@ -134,7 +134,7 @@ export default function Partnership() {
                   >
                     <td className="px-5 py-4 text-sm text-snow/85">{c.type}</td>
                     <td className="px-5 py-4 text-sm text-mist/80">{c.partner}</td>
-                    <td className="px-5 py-4 text-sm text-mist/70">{c.model}</td>
+                    <td className="px-5 py-4 text-sm text-mist/92">{c.model}</td>
                     <td className="px-5 py-4 text-sm text-gold/80">{c.status}</td>
                   </tr>
                 ))}

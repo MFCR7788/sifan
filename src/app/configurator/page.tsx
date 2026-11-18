@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 import ConfiguratorStep1 from '@/components/configurator/ConfiguratorStep1';
 import ConfiguratorStep2 from '@/components/configurator/ConfiguratorStep2';
 import ConfiguratorStep3 from '@/components/configurator/ConfiguratorStep3';
@@ -43,8 +43,8 @@ export default function ConfiguratorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navigation />
+    <div className="min-h-screen bg-ink text-snow">
+      <LunaiNav />
 
       {/* Header */}
       <div className="bg-gray-50 border-b border-gray-200">
@@ -77,7 +77,7 @@ export default function ConfiguratorPage() {
                   className={`
                     w-12 h-12 rounded-full flex items-center justify-center font-semibold text-lg transition-all duration-300
                     ${config.step >= step
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-gold text-ink'
                       : 'bg-gray-200 text-gray-600'
                     }
                   `}
@@ -88,7 +88,7 @@ export default function ConfiguratorPage() {
                   <div
                     className={`
                       flex-1 h-1 mx-4 rounded-full transition-all duration-300
-                      ${config.step > step ? 'bg-blue-600' : 'bg-gray-200'}
+                      ${config.step > step ? 'bg-gold' : 'bg-gray-200'}
                     `}
                   />
                 )}
@@ -154,7 +154,7 @@ export default function ConfiguratorPage() {
       </div>
 
       {/* Footer */}
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }

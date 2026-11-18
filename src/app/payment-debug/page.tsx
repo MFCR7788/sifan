@@ -119,14 +119,14 @@ export default function PaymentDebugPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-ink p-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-gray-900">支付功能调试页面</h1>
             <button
               onClick={runTests}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-gold text-ink rounded-lg hover:brightness-105 transition-colors"
             >
               重新测试
             </button>

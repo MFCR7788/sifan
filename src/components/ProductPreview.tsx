@@ -51,7 +51,7 @@ export default function ProductPreview() {
               className={`
                 relative p-8 rounded-3xl border-2 transition-all duration-300
                 ${product.popular
-                  ? 'bg-blue-600 border-blue-600 shadow-2xl scale-105'
+                  ? 'bg-gold border-gold shadow-2xl scale-105'
                   : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-xl'
                 }
                 ${hoveredProduct === product.id && !product.popular ? 'scale-105' : ''}
@@ -76,7 +76,7 @@ export default function ProductPreview() {
               <div className="space-y-4 mb-8">
                 {product.features.map((feature, index) => (
                   <div key={index} className={`flex items-start gap-3 ${product.popular ? 'text-white' : 'text-gray-600'}`}>
-                    <span className={`mt-1 ${product.popular ? 'text-blue-200' : 'text-blue-600'}`}>
+                    <span className={`mt-1 ${product.popular ? 'text-gold' : 'text-gold-dim'}`}>
                       ✓
                     </span>
                     <span className="text-lg">{feature}</span>
@@ -100,7 +100,7 @@ export default function ProductPreview() {
                   href="/pricing?plan=premium"
                   className={`
                     block w-full py-3 px-6 rounded-full font-medium transition-all duration-200 text-center
-                    bg-white text-blue-600 hover:bg-gray-100 hover:scale-105
+                    bg-white text-gold-dim hover:bg-gray-100 hover:scale-105
                   `}
                 >
                   了解更多

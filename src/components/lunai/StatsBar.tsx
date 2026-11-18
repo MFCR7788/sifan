@@ -58,7 +58,7 @@ function Stat({
       </div>
       <div className="mt-4 text-sm tracking-wide text-snow/85">{label}</div>
       {note && (
-        <div className="mt-1.5 text-xs leading-relaxed text-mist/55">{note}</div>
+        <div className="mt-1.5 text-xs leading-relaxed text-mist/78">{note}</div>
       )}
     </Reveal>
   );

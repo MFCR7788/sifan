@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Navigation from '@/components/Navigation';
+import LunaiNav from '@/components/lunai/LunaiNav';
 
 interface OrderData {
 	id: string;
@@ -76,9 +76,9 @@ function PaymentSuccessContent() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen bg-white flex items-center justify-center">
+			<div className="min-h-screen bg-ink flex items-center justify-center">
 				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto"></div>
 					<p className="mt-4 text-gray-600">加载中...</p>
 				</div>
 			</div>
@@ -86,8 +86,8 @@ function PaymentSuccessContent() {
 	}
 
 	return (
-		<div className="min-h-screen bg-white">
-			<Navigation />
+		<div className="min-h-screen bg-ink text-snow">
+			<LunaiNav />
 
 			<div className="max-w-2xl mx-auto px-4 py-16">
 				{/* Success Icon */}
@@ -140,7 +140,7 @@ function PaymentSuccessContent() {
 				)}
 
 				{/* Next Steps */}
-				<div className="bg-blue-50 rounded-2xl p-6 mb-8">
+				<div className="bg-gold/[0.07] rounded-2xl p-6 mb-8">
 					<h2 className="text-xl font-semibold text-gray-900 mb-4">后续步骤</h2>
 					<div className="space-y-3">
 						{order?.paymentMethod === 'bank_transfer' && (
@@ -152,7 +152,7 @@ function PaymentSuccessContent() {
 							</div>
 						)}
 						<div className="flex items-start gap-3">
-							<div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+							<div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
 								1
 							</div>
 							<div>
@@ -161,7 +161,7 @@ function PaymentSuccessContent() {
 							</div>
 						</div>
 						<div className="flex items-start gap-3">
-							<div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+							<div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
 								2
 							</div>
 							<div>
@@ -170,7 +170,7 @@ function PaymentSuccessContent() {
 							</div>
 						</div>
 						<div className="flex items-start gap-3">
-							<div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+							<div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
 								3
 							</div>
 							<div>
@@ -204,9 +204,9 @@ function PaymentSuccessContent() {
 export default function PaymentSuccessPage() {
 	return (
 		<Suspense fallback={
-			<div className="min-h-screen bg-white flex items-center justify-center">
+			<div className="min-h-screen bg-ink flex items-center justify-center">
 				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto"></div>
 					<p className="mt-4 text-gray-600">加载中...</p>
 				</div>
 			</div>

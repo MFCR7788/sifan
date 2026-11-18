@@ -62,7 +62,7 @@ export default function RegisterCompletePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-ink flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
@@ -91,7 +91,7 @@ export default function RegisterCompletePage() {
                 required
                 value={formData.nickname}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                 placeholder="请输入昵称"
               />
             </div>
@@ -107,7 +107,7 @@ export default function RegisterCompletePage() {
                   minLength={6}
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                   placeholder="至少6位密码"
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
@@ -136,7 +136,7 @@ export default function RegisterCompletePage() {
                   minLength={6}
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                   placeholder="请再次输入密码"
                 />
                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
@@ -154,13 +154,13 @@ export default function RegisterCompletePage() {
               </div>
             </div>
 
-            <button type="submit" disabled={isLoading} className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition">
+            <button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-gold-light to-gold text-ink py-3 rounded-lg font-semibold hover:from-gold hover:to-gold focus:ring-4 focus:ring-gold/30 disabled:opacity-50 disabled:cursor-not-allowed transition">
               {isLoading ? '保存中...' : '完成注册'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <Link href="/login" className="text-gray-600 hover:text-blue-600">返回登录</Link>
+            <Link href="/login" className="text-gray-600 hover:text-gold-dim">返回登录</Link>
           </div>
         </div>
       </div>

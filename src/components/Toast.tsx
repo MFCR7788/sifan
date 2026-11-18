@@ -52,7 +52,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             className="flex items-center gap-3 bg-white rounded-xl shadow-lg border border-gray-100 px-6 py-4 min-w-[320px] max-w-md animate-in slide-in-from-right-full fade-in duration-300"
           >
             {toast.type === 'success' ? (
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gold/[0.07]0 flex items-center justify-center">
                 <CheckCircle className="w-5 h-5 text-white" />
               </div>
             ) : (

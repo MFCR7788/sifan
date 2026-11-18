@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Navigation from '@/components/Navigation';
+import LunaiNav from '@/components/lunai/LunaiNav';
 
 interface OrderDetail {
   id: string;
@@ -221,7 +221,7 @@ export default function OrderDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-ink flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">加载中...</p>
@@ -232,7 +232,7 @@ export default function OrderDetailPage() {
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-ink flex items-center justify-center p-4">
         <div className="text-center bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,8 +253,8 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {!printing && <Navigation />}
+    <div className="min-h-screen bg-ink">
+      {!printing && <LunaiNav />}
 
       {/* 打印内容区域 */}
       <div className="print-area py-12 px-4">
@@ -278,7 +278,7 @@ export default function OrderDetailPage() {
                 </button>
                 <button
                   onClick={handlePrint}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-gold text-ink rounded-lg hover:brightness-105 transition-colors flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -300,7 +300,7 @@ export default function OrderDetailPage() {
             {/* 订单基本信息 */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">1</span>
+                <span className="w-8 h-8 bg-gold text-ink rounded-lg flex items-center justify-center text-sm">1</span>
                 订单信息
               </h2>
               <div className="grid grid-cols-2 gap-4 bg-gray-50 rounded-xl p-4">
@@ -334,11 +334,11 @@ export default function OrderDetailPage() {
             {/* 业务场景 */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">2</span>
+                <span className="w-8 h-8 bg-gold text-ink rounded-lg flex items-center justify-center text-sm">2</span>
                 业务场景
               </h2>
-              <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
-                <p className="text-lg font-semibold text-blue-900">{platformNames[order.platform] || order.platform}</p>
+              <div className="bg-gold/[0.07] rounded-xl p-4 border-2 border-gold/35">
+                <p className="text-lg font-semibold text-gold-dim">{platformNames[order.platform] || order.platform}</p>
               </div>
             </div>
 
@@ -346,7 +346,7 @@ export default function OrderDetailPage() {
             {order.selectedFeatures && order.selectedFeatures.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">3</span>
+                  <span className="w-8 h-8 bg-gold text-ink rounded-lg flex items-center justify-center text-sm">3</span>
                   核心功能
                 </h2>
                 <div className="space-y-4">
@@ -360,14 +360,14 @@ export default function OrderDetailPage() {
                             <h3 className="text-lg font-semibold text-gray-900">{module.name}</h3>
                             <p className="text-sm text-gray-600">{module.description}</p>
                           </div>
-                          <div className="ml-auto bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                          <div className="ml-auto bg-gold/15 text-gold-dim text-xs px-2 py-1 rounded-full">
                             {groupedFeatures[module.id].length} 项
                           </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                           {groupedFeatures[module.id].map((feature, index) => (
                             <div key={index} className="flex items-start gap-2 text-sm">
-                              <svg className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 text-gold-dim flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                               </svg>
                               <span className="text-gray-700">{feature}</span>
@@ -384,14 +384,14 @@ export default function OrderDetailPage() {
             {order.valueServices && order.valueServices.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">4</span>
+                  <span className="w-8 h-8 bg-gold text-ink rounded-lg flex items-center justify-center text-sm">4</span>
                   增值服务
                 </h2>
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {order.valueServices.map((service, index) => (
                       <div key={index} className="flex items-start gap-2">
-                        <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-gold-dim flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         <span className="text-gray-900">{getServiceName(service)}</span>
@@ -405,13 +405,13 @@ export default function OrderDetailPage() {
             {/* 价格信息 */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">5</span>
+                <span className="w-8 h-8 bg-gold text-ink rounded-lg flex items-center justify-center text-sm">5</span>
                 价格明细
               </h2>
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
+              <div className="bg-gradient-to-r from-gold/[0.06] to-gold/15 rounded-xl p-6 border-2 border-gold/35">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-gray-700">年度总价</span>
-                  <span className="text-3xl font-bold text-blue-900">¥{order.totalPrice.toLocaleString()}/年</span>
+                  <span className="text-3xl font-bold text-gold-dim">¥{order.totalPrice.toLocaleString()}/年</span>
                 </div>
                 {order.monthlyFee > 0 && (
                   <div className="flex justify-between items-center text-sm">
@@ -426,7 +426,7 @@ export default function OrderDetailPage() {
             {order.notes && (
               <div className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">6</span>
+                  <span className="w-8 h-8 bg-gold text-ink rounded-lg flex items-center justify-center text-sm">6</span>
                   备注说明
                 </h2>
                 <div className="bg-gray-50 rounded-xl p-4">

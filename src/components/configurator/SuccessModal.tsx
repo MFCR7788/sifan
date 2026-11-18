@@ -76,10 +76,10 @@ export default function SuccessModal({ orderNumber, customerName, totalPrice, on
         </div>
 
         {/* 提示信息 */}
-        <div className="bg-blue-50 rounded-lg p-4 mb-6">
+        <div className="bg-gold/[0.07] rounded-lg p-4 mb-6">
           <div className="flex items-start gap-3">
             <svg
-              className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
+              className="w-5 h-5 text-gold-dim flex-shrink-0 mt-0.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -92,8 +92,8 @@ export default function SuccessModal({ orderNumber, customerName, totalPrice, on
               />
             </svg>
             <div className="text-left">
-              <p className="text-sm text-blue-900 font-medium mb-1">客服联系方式</p>
-              <p className="text-sm text-blue-800">
+              <p className="text-sm text-gold-dim font-medium mb-1">客服联系方式</p>
+              <p className="text-sm text-gold-dim">
                 客服将在24小时内与您联系，详细沟通方案细节。
               </p>
             </div>

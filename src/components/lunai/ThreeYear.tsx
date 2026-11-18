@@ -152,7 +152,7 @@ export default function ThreeYear() {
                       { k: '总部地址', v: '杭州市滨江区滨康路 188 号春风集团 6 幢 1 楼' },
                     ].map((c) => (
                       <div key={c.k} className="bg-ink-2/90 px-6 py-6 text-left">
-                        <div className="text-[0.58rem] uppercase tracking-[0.26em] text-mist/40">
+                        <div className="text-[0.58rem] uppercase tracking-[0.26em] text-mist/62">
                           {c.k}
                         </div>
                         <div className="lunai-num mt-2 text-sm leading-relaxed text-gold/90 md:text-[0.95rem]">

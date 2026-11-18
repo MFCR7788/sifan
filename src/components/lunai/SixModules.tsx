@@ -83,7 +83,7 @@ export default function SixModules() {
                   <span className="lunai-num text-2xl font-light text-gold/45 transition-colors duration-500 group-hover:text-gold">
                     {m.no}
                   </span>
-                  <span className="rounded-full border border-white/12 px-3 py-1 text-[0.62rem] tracking-[0.2em] text-mist/55">
+                  <span className="rounded-full border border-white/12 px-3 py-1 text-[0.62rem] tracking-[0.2em] text-mist/78">
                     {m.name}
                   </span>
                 </div>
@@ -94,7 +94,7 @@ export default function SixModules() {
 
                 <ul className="mt-5 space-y-2">
                   {m.points.map((p) => (
-                    <li key={p} className="flex gap-2.5 text-sm leading-relaxed text-mist/75">
+                    <li key={p} className="flex gap-2.5 text-sm leading-relaxed text-mist/95">
                       <span className="mt-[0.6rem] h-px w-2.5 shrink-0 bg-gold/55" />
                       <span>{p}</span>
                     </li>
@@ -102,7 +102,7 @@ export default function SixModules() {
                 </ul>
 
                 <div className="mt-7 border-t border-white/10 pt-4">
-                  <div className="text-[0.6rem] uppercase tracking-[0.26em] text-mist/40">
+                  <div className="text-[0.6rem] uppercase tracking-[0.26em] text-mist/62">
                     载体
                   </div>
                   <div className="mt-1.5 text-xs leading-relaxed text-gold/75">

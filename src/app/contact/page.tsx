@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -52,8 +52,8 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      <Navigation />
+    <div className="min-h-screen bg-ink text-snow">
+      <LunaiNav />
 
       {/* Hero Section */}
       <section className="py-16 sm:py-24 md:py-32 px-4">
@@ -202,7 +202,7 @@ export default function ContactPage() {
       </section>
 
       {/* Footer */}
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navigation from '@/components/Navigation';
+import LunaiNav from '@/components/lunai/LunaiNav';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
@@ -85,7 +85,7 @@ export default function ContactMessagesPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-black text-white">
-        <Navigation />
+        <LunaiNav />
 
       {/* Header */}
       <section className="pt-32 pb-8 px-4 relative">
@@ -102,7 +102,7 @@ export default function ContactMessagesPage() {
                 返回联系我们
               </Link>
               <h1 className="text-4xl md:text-5xl font-bold">
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-400 to-gold bg-clip-text text-transparent">
                   留言管理
                 </span>
               </h1>

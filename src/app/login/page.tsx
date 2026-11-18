@@ -211,7 +211,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-ink flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
@@ -222,19 +222,19 @@ export default function LoginPage() {
           <div className="flex gap-2 mb-6">
             <button
               onClick={() => setLoginMethod('password')}
-              className={`flex-1 py-2 rounded-lg font-medium transition-all ${loginMethod === 'password' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`flex-1 py-2 rounded-lg font-medium transition-all ${loginMethod === 'password' ? 'bg-gold text-ink' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               密码登录
             </button>
             <button
               onClick={() => setLoginMethod('code')}
-              className={`flex-1 py-2 rounded-lg font-medium transition-all ${loginMethod === 'code' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`flex-1 py-2 rounded-lg font-medium transition-all ${loginMethod === 'code' ? 'bg-gold text-ink' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               验证码登录
             </button>
             <button
               onClick={() => setLoginMethod('qrcode')}
-              className={`flex-1 py-2 rounded-lg font-medium transition-all ${loginMethod === 'qrcode' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`flex-1 py-2 rounded-lg font-medium transition-all ${loginMethod === 'qrcode' ? 'bg-gold text-ink' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               微信登录
             </button>
@@ -257,7 +257,7 @@ export default function LoginPage() {
                   maxLength={11}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                   placeholder="请输入手机号"
                 />
               </div>
@@ -270,7 +270,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                   placeholder="••••••••"
                 />
               </div>
@@ -281,12 +281,12 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-gold-dim border-gray-300 rounded focus:ring-gold/200"
                 />
                 <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">记住我</label>
               </div>
 
-              <button type="submit" disabled={isLoading} className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition">
+              <button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-gold-light to-gold text-ink py-3 rounded-lg font-semibold hover:from-gold hover:to-gold focus:ring-4 focus:ring-gold/30 disabled:opacity-50 disabled:cursor-not-allowed transition">
                 {isLoading ? '登录中...' : '登录'}
               </button>
             </form>
@@ -301,7 +301,7 @@ export default function LoginPage() {
                   maxLength={11}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                   placeholder="请输入手机号"
                 />
               </div>
@@ -316,21 +316,21 @@ export default function LoginPage() {
                     maxLength={6}
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                     placeholder="请输入验证码"
                   />
                   <button
                     type="button"
                     onClick={handleSendCode}
                     disabled={isSendingCode || countdown > 0}
-                    className="px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
+                    className="px-4 py-3 bg-gradient-to-r from-gold-light to-gold text-ink rounded-lg font-semibold hover:from-gold hover:to-gold disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
                   >
                     {countdown > 0 ? `${countdown}秒` : (isSendingCode ? '发送中...' : '获取验证码')}
                   </button>
                 </div>
               </div>
 
-              <button type="submit" disabled={isLoading} className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition">
+              <button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-gold-light to-gold text-ink py-3 rounded-lg font-semibold hover:from-gold hover:to-gold focus:ring-4 focus:ring-gold/30 disabled:opacity-50 disabled:cursor-not-allowed transition">
                 {isLoading ? '登录中...' : '登录'}
               </button>
             </form>
@@ -340,7 +340,7 @@ export default function LoginPage() {
                 {qrCodeStatus === 'loading' ? (
                   <div className="w-64 h-64 bg-gray-100 rounded-xl flex items-center justify-center">
                     <div className="text-center">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
                       <p className="text-gray-600">生成二维码中...</p>
                     </div>
                   </div>
@@ -348,7 +348,7 @@ export default function LoginPage() {
                   <div className="w-64 h-64 bg-gray-100 rounded-xl flex items-center justify-center">
                     <div className="text-center">
                       <p className="text-gray-600 mb-4">二维码已过期</p>
-                      <button onClick={handleQrCodeLogin} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                      <button onClick={handleQrCodeLogin} className="px-6 py-2 bg-gold text-ink rounded-lg hover:brightness-105">
                         刷新二维码
                       </button>
                     </div>
@@ -383,7 +383,7 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                <p className="text-center text-gray-600 text-sm mt-4">请使用微信扫描二维码登录</p>
+                <p className="text-center text-mist/95 text-sm mt-4">请使用微信扫描二维码登录</p>
               </div>
             </div>
           )}
@@ -391,7 +391,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               还没有账户？{' '}
-              <Link href="/register" className="text-blue-600 hover:text-blue-700 font-medium">
+              <Link href="/register" className="text-gold-dim hover:text-gold-dim font-medium">
                 立即注册
               </Link>
             </p>
@@ -399,8 +399,8 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-6 text-center space-y-3">
-          <p className="text-gray-500 text-sm">忘记密码？请联系管理员</p>
-          <Link href="/" className="text-gray-500 hover:text-gray-700 text-sm">← 返回首页</Link>
+          <p className="text-mist/85 text-sm">忘记密码？请联系管理员</p>
+          <Link href="/" className="text-mist/85 hover:text-gold text-sm">← 返回首页</Link>
         </div>
       </div>
     </div>

@@ -65,7 +65,7 @@ export default function CookieDebugPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-ink p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Cookie 调试工具</h1>
 
@@ -121,7 +121,7 @@ export default function CookieDebugPage() {
             <button
               onClick={testCookie}
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 bg-gold text-ink rounded hover:brightness-105 disabled:opacity-50"
             >
               重新测试
             </button>
@@ -135,9 +135,9 @@ export default function CookieDebugPage() {
           </div>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4 text-blue-900">常见问题</h2>
-          <ul className="space-y-2 text-blue-800">
+        <div className="bg-gold/[0.07] border border-gold/35 rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gold-dim">常见问题</h2>
+          <ul className="space-y-2 text-gold-dim">
             <li>1. 如果浏览器有 cookie 但后端收不到，可能是浏览器的隐私设置阻止了第三方 cookie</li>
             <li>2. localhost 开发环境可能存在 cookie 安全策略问题</li>
             <li>3. 尝试清除浏览器缓存和 cookie 后重新登录</li>

@@ -78,7 +78,7 @@ export default function SupplyChain() {
                     : 'border-white/10 bg-ink-3/50'
                 }`}
               >
-                <div className="text-[0.62rem] uppercase tracking-[0.3em] text-mist/45">
+                <div className="text-[0.62rem] uppercase tracking-[0.3em] text-mist/72">
                   {c.cat}
                 </div>
                 <h3 className="lunai-serif mt-3 text-[clamp(1.35rem,2.6vw,1.85rem)] text-snow">
@@ -88,7 +88,7 @@ export default function SupplyChain() {
                   <span className="h-1 w-1 rounded-full bg-gold/80" />
                   <span className="text-xs tracking-wide text-mist/80">{c.mode}</span>
                 </div>
-                <p className="mt-6 border-t border-white/10 pt-5 text-sm leading-relaxed text-mist/70">
+                <p className="mt-6 border-t border-white/10 pt-5 text-sm leading-relaxed text-mist/92">
                   {c.note}
                 </p>
               </article>
@@ -109,13 +109,13 @@ export default function SupplyChain() {
             <dl className="mt-9 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
               {metrics.map((m) => (
                 <div key={m.k} className="bg-ink-2 p-6">
-                  <dt className="text-[0.6rem] uppercase tracking-[0.26em] text-mist/45">
+                  <dt className="text-[0.6rem] uppercase tracking-[0.26em] text-mist/72">
                     {m.k}
                   </dt>
                   <dd className="lunai-num lunai-serif mt-3 text-lg leading-tight text-gold md:text-xl">
                     {m.v}
                   </dd>
-                  <dd className="mt-2.5 text-xs leading-relaxed text-mist/60">{m.d}</dd>
+                  <dd className="mt-2.5 text-xs leading-relaxed text-mist/85">{m.d}</dd>
                 </div>
               ))}
             </dl>
@@ -125,7 +125,7 @@ export default function SupplyChain() {
         {/* 校服落地前提 */}
         <Reveal delay={220} className="mt-8">
           <div className="border-l-2 border-gold/45 bg-gold/[0.04] py-5 pl-6">
-            <p className="text-sm leading-relaxed text-mist/75">
+            <p className="text-sm leading-relaxed text-mist/95">
               <span className="text-gold/85">校服端的落地前提</span>
               ：与当地具备校服生产与服务能力的企业完成洽谈，由其承接生产与交付，
               品牌方负责版型、面料、工艺与质量标准的制定及订单组织。

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 import LazyImage from '@/components/LazyImage';
 
 const isoCertificates = [
@@ -56,8 +56,8 @@ export default function QualificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      <Navigation />
+    <div className="min-h-screen bg-ink text-snow">
+      <LunaiNav />
 
       {/* Hero Section */}
       <section className="py-24 md:py-32 px-4">
@@ -299,7 +299,7 @@ export default function QualificationsPage() {
       )}
 
       {/* Footer */}
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }

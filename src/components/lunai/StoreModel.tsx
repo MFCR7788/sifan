@@ -124,13 +124,13 @@ export default function StoreModel() {
                       ¥{t.sales.toLocaleString()}
                     </td>
                     <td className="lunai-num px-5 py-5 text-sm text-snow/85">{t.rate}%</td>
-                    <td className="lunai-num px-5 py-5 text-sm text-mist/70">
+                    <td className="lunai-num px-5 py-5 text-sm text-mist/92">
                       ¥{t.gross.toLocaleString()}
                     </td>
-                    <td className="lunai-num px-5 py-5 text-sm text-mist/70">
+                    <td className="lunai-num px-5 py-5 text-sm text-mist/92">
                       ¥{t.commission.toLocaleString()}
                     </td>
-                    <td className="lunai-num px-5 py-5 text-sm text-mist/70">
+                    <td className="lunai-num px-5 py-5 text-sm text-mist/92">
                       ¥{t.labor.toLocaleString()}
                     </td>
                     <td className="lunai-num px-5 py-5">
@@ -143,14 +143,14 @@ export default function StoreModel() {
                       </span>
                     </td>
                     <td className="px-5 py-5">
-                      <span className="text-xs tracking-wide text-mist/70">{t.payback}</span>
+                      <span className="text-xs tracking-wide text-mist/92">{t.payback}</span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="mt-4 text-xs leading-relaxed text-mist/45">
+          <p className="mt-4 text-xs leading-relaxed text-mist/72">
             测算口径：50 ㎡ 双品类卖场，2 人编制（主 + 副）含五险；店租、水电与物料维护按门店实际分摊计入。
           </p>
         </Reveal>
@@ -164,7 +164,7 @@ export default function StoreModel() {
             <h3 className="lunai-serif mt-4 text-[clamp(1.6rem,3vw,2.25rem)] leading-snug text-snow">
               365 天无淡季
             </h3>
-            <p className="mt-4 text-sm leading-relaxed text-mist/75">
+            <p className="mt-4 text-sm leading-relaxed text-mist/95">
               开学季与秋冬两个主推节点排布开店批次，避免同期集中开业。
               每周日门店与区域双视角复盘，输出下周行动表。
             </p>
@@ -183,7 +183,7 @@ export default function StoreModel() {
                 >
                   <span
                     className={`lunai-num min-w-[7.5rem] text-sm ${
-                      s.strong ? 'text-gold' : 'text-mist/55'
+                      s.strong ? 'text-gold' : 'text-mist/78'
                     }`}
                   >
                     {s.time}
@@ -191,7 +191,7 @@ export default function StoreModel() {
                   <span className="lunai-serif text-base text-snow/90 sm:min-w-[7rem]">
                     {s.title}
                   </span>
-                  <span className="text-sm text-mist/65">{s.desc}</span>
+                  <span className="text-sm text-mist/88">{s.desc}</span>
                 </Reveal>
               ))}
             </ol>
@@ -213,9 +213,9 @@ export default function StoreModel() {
                   <span className="h-px w-5 bg-gold/35" />
                 </div>
                 <h4 className="lunai-serif mt-4 text-lg text-snow">{p.stage}</h4>
-                <p className="mt-2.5 text-sm leading-relaxed text-mist/75">{p.action}</p>
+                <p className="mt-2.5 text-sm leading-relaxed text-mist/95">{p.action}</p>
                 <div className="mt-4 border-t border-white/10 pt-3">
-                  <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/40">
+                  <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/62">
                     验证标准
                   </div>
                   <p className="mt-1.5 text-xs leading-relaxed text-gold/70">{p.verify}</p>

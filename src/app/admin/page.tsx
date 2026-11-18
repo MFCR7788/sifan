@@ -62,8 +62,8 @@ export default function AdminDashboard() {
 									<p className="text-sm text-gray-600 mb-1">定制定单</p>
 									<p className="text-3xl font-bold text-gray-900">{stats.totalOrders}</p>
 								</div>
-								<div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-									<svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<div className="w-12 h-12 bg-gold/15 rounded-lg flex items-center justify-center">
+									<svg className="w-6 h-6 text-gold-dim" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
 									</svg>
 								</div>

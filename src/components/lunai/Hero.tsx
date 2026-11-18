@@ -118,7 +118,7 @@ export default function Hero() {
                 </span>
               </div>
               <p className="lunai-serif mt-2.5 text-2xl text-snow">{item.cn}</p>
-              <p className="mt-1.5 text-sm text-mist/70">{item.desc}</p>
+              <p className="mt-1.5 text-sm text-mist/92">{item.desc}</p>
             </Link>
           ))}
         </div>

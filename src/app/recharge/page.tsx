@@ -355,7 +355,7 @@ export default function RechargePage() {
 	// 支付成功状态
 	if (paymentSuccess) {
 		return (
-			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
+			<div className="min-h-screen bg-ink flex items-center justify-center">
 				<div className="text-center max-w-md mx-auto px-4" style={{ opacity: 0, animation: 'fadeIn 0.5s ease-out forwards' }}>
 					{/* Success Icon */}
 					<div className="mb-8">
@@ -511,7 +511,7 @@ export default function RechargePage() {
 	// 支付状态
 	if (isPaying && !paymentSuccess) {
 		return (
-			<div className="min-h-screen bg-gray-50">
+			<div className="min-h-screen bg-ink">
 				<div className="max-w-[980px] mx-auto px-4 py-16">
 					{/* Back Link */}
 					<div className="mb-12">
@@ -537,7 +537,7 @@ export default function RechargePage() {
 					{isLoading && (
 						<div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
 							<div className="bg-white rounded-2xl p-8 text-center">
-								<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+								<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto"></div>
 								<p className="mt-4 text-gray-600">处理中...</p>
 							</div>
 						</div>
@@ -559,7 +559,7 @@ export default function RechargePage() {
 											/>
 										) : (
 											<div className="text-center">
-												<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+												<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto"></div>
 												<p className="mt-4 text-gray-600">生成二维码中...</p>
 											</div>
 										)}
@@ -586,14 +586,14 @@ export default function RechargePage() {
 										{/* Polling Status */}
 										{isPolling && (
 											<div className="mt-4 mb-4">
-												<div className="flex items-center justify-center gap-2 text-sm text-blue-600 mb-2">
-													<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+												<div className="flex items-center justify-center gap-2 text-sm text-gold-dim mb-2">
+													<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gold"></div>
 													<span>正在等待支付结果... ({pollingCount}/10)</span>
 												</div>
 												<div className="w-64 mx-auto">
 													<div className="h-2 bg-gray-200 rounded-full overflow-hidden">
 														<div 
-															className="h-full bg-blue-600 transition-all duration-300"
+															className="h-full bg-gold transition-all duration-300"
 															style={{ width: `${Math.min(pollingCount * 10, 100)}%` }}
 														></div>
 													</div>
@@ -698,7 +698,7 @@ export default function RechargePage() {
 
 	// 初始状态 - 选择充值金额
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className="min-h-screen bg-ink">
 			<div className="max-w-[980px] mx-auto px-4 py-16">
 				{/* Back Link */}
 				<div className="mb-12">
@@ -880,7 +880,7 @@ export default function RechargePage() {
 				</div>
 
 				{/* Tips */}
-				<div className="mt-8 bg-blue-50 rounded-xl p-6">
+				<div className="mt-8 bg-gold/[0.07] rounded-xl p-6">
 					<h3 className="font-semibold text-gray-900 mb-2">充值说明</h3>
 					<ul className="space-y-2 text-sm text-gray-600">
 						<li>• 充值金额实时到账，可立即使用</li>

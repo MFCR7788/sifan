@@ -96,7 +96,7 @@ export default function TransactionsPage() {
 
 	const getTransactionTypeColor = (type: string) => {
 		const colorMap: Record<string, string> = {
-			'recharge': 'bg-blue-100 text-blue-800',
+			'recharge': 'bg-gold/15 text-gold-dim',
 			'membership_purchase': 'bg-purple-100 text-purple-800',
 			'points_purchase': 'bg-green-100 text-green-800',
 			'service_use': 'bg-orange-100 text-orange-800',
@@ -240,7 +240,7 @@ export default function TransactionsPage() {
 									<td className="px-6 py-4">
 										<button
 											onClick={() => handleViewDetail(transaction)}
-											className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+											className="text-gold-dim hover:text-gold-dim font-medium text-sm"
 										>
 											查看详情
 										</button>

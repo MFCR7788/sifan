@@ -44,7 +44,7 @@ export default function Timeline() {
           title={
             <>
               从思美杋、魔法超人到路耐
-              <span className="text-mist/45"> · 八年一条主品牌路</span>
+              <span className="text-mist/72"> · 八年一条主品牌路</span>
             </>
           }
           description="每一次升级都不是另起炉灶，而是把上一阶段跑通的能力沉淀进同一个主品牌。"
@@ -68,7 +68,7 @@ export default function Timeline() {
                     <div className="mt-2.5 text-sm tracking-[0.18em] text-snow/80">
                       {m.brand}
                     </div>
-                    <div className="mt-1 text-xs text-mist/55">{m.theme}</div>
+                    <div className="mt-1 text-xs text-mist/78">{m.theme}</div>
                   </div>
 
                   {/* 节点轴线：竖向贯穿全部节点 */}

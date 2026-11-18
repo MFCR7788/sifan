@@ -161,7 +161,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
           <div className="space-y-4">
             {/* Platform */}
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
+              <div className="w-8 h-8 bg-gold/15 rounded-lg flex items-center justify-center text-gold-dim flex-shrink-0">
                 1
               </div>
               <div className="flex-1">
@@ -170,7 +170,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                 {config.step >= 1 && config.platform && (
                   <button
                     onClick={() => onStepChange(1)}
-                    className="text-sm text-blue-600 hover:underline mt-1"
+                    className="text-sm text-gold-dim hover:underline mt-1"
                   >
                     修改
                   </button>
@@ -180,7 +180,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
 
             {/* Core Modules */}
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
+              <div className="w-8 h-8 bg-gold/15 rounded-lg flex items-center justify-center text-gold-dim flex-shrink-0">
                 2
               </div>
               <div className="flex-1">
@@ -201,7 +201,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                     </div>
                     <button
                       onClick={() => onStepChange(2)}
-                      className="text-sm text-blue-600 hover:underline mt-1"
+                      className="text-sm text-gold-dim hover:underline mt-1"
                     >
                       修改
                     </button>
@@ -215,7 +215,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
             {/* Value Services */}
             {config.step >= 3 && (config.valueServices || []).length > 0 && (
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
+                <div className="w-8 h-8 bg-gold/15 rounded-lg flex items-center justify-center text-gold-dim flex-shrink-0">
                   3
                 </div>
                 <div className="flex-1">
@@ -234,7 +234,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                   </div>
                   <button
                     onClick={() => onStepChange(3)}
-                    className="text-sm text-blue-600 hover:underline mt-1"
+                    className="text-sm text-gold-dim hover:underline mt-1"
                   >
                     修改
                   </button>
@@ -270,7 +270,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                   type="text"
                   value={customerInfo.name}
                   onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-600"
                   placeholder="请输入姓名"
                 />
               </div>
@@ -280,7 +280,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                   type="tel"
                   value={customerInfo.phone}
                   onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-600"
                   placeholder="请输入手机号"
                 />
               </div>
@@ -289,7 +289,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
                 <textarea
                   value={customerInfo.notes}
                   onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-600 resize-none"
                   rows={2}
                   placeholder="请输入备注说明（可选）"
                 />
@@ -313,7 +313,7 @@ export default function SummaryPanel({ config, onStepChange, onNext, onPrev }: S
               className={`
                 w-full py-3 px-4 rounded-xl font-medium transition-all duration-200
                 ${isComplete
-                  ? 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 hover:shadow-lg'
+                  ? 'bg-gold text-white hover:brightness-105 hover:scale-105 hover:shadow-lg'
                   : 'bg-gray-900 text-white hover:bg-gray-800 hover:scale-105'
                 }
                 ${config.step === 1 && !config.platform ? 'opacity-50 cursor-not-allowed' : ''}

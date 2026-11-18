@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 import ToolSidebar from '@/components/tool/ToolSidebar';
 
 // 平台图标组件
@@ -37,7 +37,7 @@ const PlatformIcon = ({ name, selected, onClick }: { name: string; selected: boo
         relative px-4 py-2.5 rounded-lg border transition-all duration-200
         flex items-center gap-2 group
         ${selected
-          ? 'border-blue-600 bg-blue-50 shadow-sm'
+          ? 'border-gold bg-gold/[0.07] shadow-sm'
           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
         }
       `}
@@ -50,12 +50,12 @@ const PlatformIcon = ({ name, selected, onClick }: { name: string; selected: boo
           {name.charAt(0)}
         </span>
       </div>
-      <span className={`text-sm font-medium ${selected ? 'text-blue-700' : 'text-gray-700'}`}>
+      <span className={`text-sm font-medium ${selected ? 'text-gold-dim' : 'text-gray-700'}`}>
         {name}
       </span>
       {selected && (
         <div className="absolute top-1 right-1">
-          <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-4 h-4 text-gold-dim" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
         </div>
@@ -153,7 +153,7 @@ export default function RewriteToolPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Navigation />
+      <LunaiNav />
 
       {/* 主体内容 - 两栏布局 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -166,10 +166,10 @@ export default function RewriteToolPage() {
         {/* 功能标签 */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-6 bg-blue-600 rounded"></div>
+            <div className="w-1 h-6 bg-gold rounded"></div>
             <h1 className="text-2xl font-semibold text-gray-900">文案改写</h1>
           </div>
-          <span className="px-3 py-1 bg-blue-50 text-blue-600 text-sm font-medium rounded-full">
+          <span className="px-3 py-1 bg-gold/[0.07] text-gold-dim text-sm font-medium rounded-full">
             一键体验文案改写
           </span>
         </div>
@@ -203,7 +203,7 @@ export default function RewriteToolPage() {
                 maxLength={maxChars}
                 className={`
                   w-full min-h-[200px] px-4 py-3 rounded-xl border-2
-                  focus:outline-none focus:border-blue-500 transition-all duration-200
+                  focus:outline-none focus:border-gold transition-all duration-200
                   resize-none text-gray-900 placeholder-gray-400
                   ${inputText.length > 0 ? 'border-gray-300' : 'border-gray-200'}
                 `}
@@ -218,7 +218,7 @@ export default function RewriteToolPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="text-sm text-gray-500">
               今日剩余
-              <span className="ml-1 text-blue-600 font-medium">未登录用户0次</span>
+              <span className="ml-1 text-gold-dim font-medium">未登录用户0次</span>
             </div>
             <button
               onClick={handleConvert}
@@ -226,8 +226,8 @@ export default function RewriteToolPage() {
               className={`
                 px-8 py-3 rounded-xl font-medium text-white transition-all duration-200
                 ${isConverting || !inputText.trim()
-                  ? 'bg-blue-300 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
+                  ? 'bg-gold-300 cursor-not-allowed'
+                  : 'bg-gold hover:brightness-105 hover:shadow-lg'
                 }
               `}
             >
@@ -258,7 +258,7 @@ export default function RewriteToolPage() {
                   {/* 头部信息 */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded">
+                      <span className="inline-block px-2 py-0.5 text-xs font-medium bg-gold/[0.07] text-gold-dim rounded">
                         {record.platform}
                       </span>
                       <span className="text-xs text-gray-400">
@@ -267,7 +267,7 @@ export default function RewriteToolPage() {
                     </div>
                     <button
                       onClick={() => handleCopy(record.converted)}
-                      className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                      className="text-sm text-gold-dim hover:text-gold-dim transition-colors"
                     >
                       复制
                     </button>
@@ -284,7 +284,7 @@ export default function RewriteToolPage() {
                   {/* 改写结果 */}
                   <div>
                     <p className="text-xs text-gray-500 mb-1">改写结果：</p>
-                    <p className="text-sm text-gray-900 bg-blue-50 rounded-lg p-3">
+                    <p className="text-sm text-gray-900 bg-gold/[0.07] rounded-lg p-3">
                       {record.converted}
                     </p>
                   </div>
@@ -297,7 +297,7 @@ export default function RewriteToolPage() {
         </div>
       </div>
 
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }

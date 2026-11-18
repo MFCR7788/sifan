@@ -92,7 +92,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-ink flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
@@ -116,7 +116,7 @@ export default function RegisterPage() {
                 maxLength={11}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                 placeholder="请输入手机号"
               />
             </div>
@@ -131,14 +131,14 @@ export default function RegisterPage() {
                   maxLength={6}
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold/200 focus:border-transparent outline-none transition"
                   placeholder="请输入验证码"
                 />
                 <button
                   type="button"
                   onClick={handleSendCode}
                   disabled={isSending || countdown > 0}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
+                  className="px-4 py-3 bg-gradient-to-r from-gold-light to-gold text-ink rounded-lg font-semibold hover:from-gold hover:to-gold disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
                 >
                   {countdown > 0 ? `${countdown}秒` : (isSending ? '发送中...' : '获取验证码')}
                 </button>
@@ -148,7 +148,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="w-full bg-gradient-to-r from-gold-light to-gold text-ink py-3 rounded-lg font-semibold hover:from-gold hover:to-gold focus:ring-4 focus:ring-gold/30 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               {isLoading ? '注册中...' : '注册'}
             </button>
@@ -157,7 +157,7 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               已有账户？{' '}
-              <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+              <Link href="/login" className="text-gold-dim hover:text-gold-dim font-medium">
                 立即登录
               </Link>
             </p>
@@ -165,7 +165,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="mt-6 text-center space-y-3">
-          <Link href="/" className="text-gray-500 hover:text-gray-700 text-sm">← 返回首页</Link>
+          <Link href="/" className="text-mist/85 hover:text-gold text-sm">← 返回首页</Link>
         </div>
       </div>
     </div>

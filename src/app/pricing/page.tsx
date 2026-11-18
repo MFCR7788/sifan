@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 import Link from 'next/link';
 
 interface PricingData {
@@ -81,7 +81,7 @@ export default function PricingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-ink flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">加载中...</p>
@@ -91,8 +91,8 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      <Navigation />
+    <div className="min-h-screen bg-ink text-snow">
+      <LunaiNav />
 
       {/* Hero Section */}
       <section className="py-16 sm:py-24 md:py-32 px-4">
@@ -126,16 +126,16 @@ export default function PricingPage() {
                       className={`
                         p-8 pb-12 min-w-[200px] cursor-pointer transition-all duration-300 align-bottom relative
                         ${selectedPlan === plan.id
-                          ? 'border-2 border-blue-600 bg-blue-50 shadow-xl scale-105'
+                          ? 'border-2 border-gold bg-gold/[0.07] shadow-xl scale-105'
                           : hoveredPlan === plan.id
-                          ? 'border-2 border-blue-300 bg-blue-50 shadow-2xl scale-[1.02]'
+                          ? 'border-2 border-gold/50 bg-gold/[0.07] shadow-2xl scale-[1.02]'
                           : 'border-2 border-gray-200 hover:border-gray-300'
                         }
                         ${plan.recommended && selectedPlan !== plan.id && hoveredPlan !== plan.id ? 'bg-gray-50' : ''}
                       `}
                     >
                       {selectedPlan === plan.id && (
-                        <div className="absolute top-4 right-4 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center z-10">
+                        <div className="absolute top-4 right-4 w-6 h-6 bg-gold rounded-full flex items-center justify-center z-10">
                           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
@@ -144,14 +144,14 @@ export default function PricingPage() {
                       <div
                         className={`
                           absolute top-4 right-4 w-2 h-2 rounded-full transition-all duration-300
-                          ${hoveredPlan === plan.id && selectedPlan !== plan.id ? 'bg-blue-600 scale-150' : 'bg-gray-300'}
+                          ${hoveredPlan === plan.id && selectedPlan !== plan.id ? 'bg-gold scale-150' : 'bg-gray-300'}
                         `}
                       />
                       {plan.recommended && (
                         <div className="mb-3">
                           <span className={`px-4 py-1 text-xs font-semibold rounded-full ${
                             selectedPlan === plan.id || hoveredPlan === plan.id
-                              ? 'bg-blue-600 text-white'
+                              ? 'bg-gold text-ink'
                               : 'bg-gray-900 text-white'
                           }`}>
                             推荐
@@ -160,7 +160,7 @@ export default function PricingPage() {
                       )}
                       <div className={`text-2xl font-semibold transition-colors ${
                         selectedPlan === plan.id || hoveredPlan === plan.id
-                          ? 'text-blue-900'
+                          ? 'text-gold-dim'
                           : plan.recommended
                           ? 'text-gray-900'
                           : 'text-gray-700'
@@ -169,7 +169,7 @@ export default function PricingPage() {
                       </div>
                       <div className="text-sm text-gray-500 mb-6">{plan.description}</div>
                       <div className={`text-5xl font-bold transition-colors ${
-                        selectedPlan === plan.id || hoveredPlan === plan.id ? 'text-blue-600' : 'text-gray-900'
+                        selectedPlan === plan.id || hoveredPlan === plan.id ? 'text-gold-dim' : 'text-gray-900'
                       }`}>
                         ¥{plan.price}
                       </div>
@@ -179,9 +179,9 @@ export default function PricingPage() {
                         className={`
                           inline-block w-full py-3 px-6 text-center font-medium rounded-xl transition-all
                           ${selectedPlan === plan.id
-                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                            ? 'bg-gold text-ink hover:brightness-105'
                             : hoveredPlan === plan.id
-                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                            ? 'bg-gold text-ink hover:brightness-105'
                             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                           }
                         `}
@@ -261,7 +261,7 @@ export default function PricingPage() {
       </section>
 
       {/* Footer */}
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }

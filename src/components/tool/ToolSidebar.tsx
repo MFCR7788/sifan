@@ -33,7 +33,7 @@ export default function ToolSidebar({ currentPath }: ToolSidebarProps) {
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                       ${isCurrentTool(tool)
-                        ? 'bg-blue-50 text-blue-700 shadow-sm'
+                        ? 'bg-gold/[0.07] text-gold-dim shadow-sm'
                         : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                       }
                     `}
@@ -51,7 +51,7 @@ export default function ToolSidebar({ currentPath }: ToolSidebarProps) {
                     </div>
 
                     {isCurrentTool(tool) && (
-                      <div className="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0"></div>
+                      <div className="w-2 h-2 rounded-full bg-gold flex-shrink-0"></div>
                     )}
                   </Link>
                 </li>
@@ -60,9 +60,9 @@ export default function ToolSidebar({ currentPath }: ToolSidebarProps) {
           </nav>
         </div>
 
-        <div className="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+        <div className="mt-6 bg-gradient-to-br from-gold/[0.06] to-gold/[0.04] rounded-2xl p-6 border border-gold/25">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gold flex items-center justify-center">
               <span className="text-white text-sm">💡</span>
             </div>
             <div>
@@ -72,15 +72,15 @@ export default function ToolSidebar({ currentPath }: ToolSidebarProps) {
           </div>
           <ul className="space-y-2 text-xs text-gray-600">
             <li className="flex items-start gap-2">
-              <span className="text-blue-600 mt-0.5">•</span>
+              <span className="text-gold-dim mt-0.5">•</span>
               <span>选择合适的平台和风格</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-blue-600 mt-0.5">•</span>
+              <span className="text-gold-dim mt-0.5">•</span>
               <span>详细描述可获得更好效果</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-blue-600 mt-0.5">•</span>
+              <span className="text-gold-dim mt-0.5">•</span>
               <span>历史记录方便再次使用</span>
             </li>
           </ul>

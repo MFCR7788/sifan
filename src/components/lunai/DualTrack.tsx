@@ -69,7 +69,7 @@ export default function DualTrack() {
           title={
             <>
               双赛道 · 双千亿市场
-              <span className="text-mist/45"> · 一套品牌资产</span>
+              <span className="text-mist/72"> · 一套品牌资产</span>
             </>
           }
           description="路耐少年与路耐户外共享同一套供应链、会员体系与「耐」字符号资产。B 端为院校批量采购与招投标准入，C 端为亲子线下零售与全域线上——两者共用同一副底牌。"
@@ -103,7 +103,7 @@ export default function DualTrack() {
                   <h3 className="lunai-serif mt-3 text-[clamp(1.75rem,3.4vw,2.5rem)] text-snow">
                     {t.name}
                   </h3>
-                  <p className="mt-2 text-sm tracking-wide text-mist/75">{t.sub}</p>
+                  <p className="mt-2 text-sm tracking-wide text-mist/95">{t.sub}</p>
 
                   {/* 核心心智 */}
                   <div className="mt-7 rounded-lg border-l-2 border-gold/60 bg-gold/[0.05] py-4 pl-5">
@@ -113,13 +113,13 @@ export default function DualTrack() {
                   {/* 市场与人群 */}
                   <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5">
                     <div>
-                      <dt className="text-[0.62rem] uppercase tracking-[0.28em] text-mist/45">
+                      <dt className="text-[0.62rem] uppercase tracking-[0.28em] text-mist/72">
                         市场规模
                       </dt>
                       <dd className="lunai-num mt-1.5 text-base text-snow/90">{t.market}</dd>
                     </div>
                     <div>
-                      <dt className="text-[0.62rem] uppercase tracking-[0.28em] text-mist/45">
+                      <dt className="text-[0.62rem] uppercase tracking-[0.28em] text-mist/72">
                         覆盖人群
                       </dt>
                       <dd className="lunai-num mt-1.5 text-base text-snow/90">{t.audience}</dd>
@@ -138,7 +138,7 @@ export default function DualTrack() {
 
                   {/* 5+5 产品承诺 */}
                   <div className="mt-9 border-t border-white/10 pt-7">
-                    <div className="text-[0.62rem] uppercase tracking-[0.28em] text-mist/45">
+                    <div className="text-[0.62rem] uppercase tracking-[0.28em] text-mist/72">
                       产品承诺
                     </div>
                     <ul className="mt-4 space-y-2.5">
@@ -151,7 +151,7 @@ export default function DualTrack() {
                             {p.k}
                           </span>
                           <span className="text-sm text-snow/85">{p.v}</span>
-                          <span className="text-xs text-mist/55">{p.d}</span>
+                          <span className="text-xs text-mist/78">{p.d}</span>
                         </li>
                       ))}
                     </ul>
@@ -161,7 +161,7 @@ export default function DualTrack() {
                     <span className="lunai-num text-xs tracking-wide text-gold/80">
                       {t.price}
                     </span>
-                    <span className="text-xs text-mist/55">{t.consumer}</span>
+                    <span className="text-xs text-mist/78">{t.consumer}</span>
                   </div>
                 </div>
               </article>

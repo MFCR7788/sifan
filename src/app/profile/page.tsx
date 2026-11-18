@@ -329,7 +329,7 @@ export default function ProfilePage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-white">
+		<div className="min-h-screen bg-ink text-snow">
 			<div className="max-w-[980px] mx-auto px-4 py-16">
 				{/* Back Link */}
 				<div className="mb-12">

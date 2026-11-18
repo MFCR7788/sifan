@@ -161,7 +161,7 @@ export default function AdminOrdersPage() {
 												order.status === 'completed'
 													? 'bg-green-100 text-green-800'
 													: order.status === 'processing'
-													? 'bg-blue-100 text-blue-800'
+													? 'bg-gold/15 text-gold-dim'
 													: order.status === 'cancelled'
 													? 'bg-red-100 text-red-800'
 													: 'bg-yellow-100 text-yellow-800'
@@ -176,7 +176,7 @@ export default function AdminOrdersPage() {
 									<td className="px-6 py-4">
 										<button
 											onClick={() => handleViewOrder(order)}
-											className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+											className="text-gold-dim hover:text-gold-dim font-medium text-sm"
 										>
 											查看详情
 										</button>
@@ -278,7 +278,7 @@ export default function AdminOrdersPage() {
 									<>
 										<button
 											onClick={() => handleUpdateStatus(selectedOrder.id, 'processing')}
-											className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+											className="flex-1 py-2 bg-gold text-white rounded-lg font-medium hover:brightness-105"
 										>
 											开始处理
 										</button>

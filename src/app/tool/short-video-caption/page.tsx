@@ -4,8 +4,8 @@ import ToolSidebar from '@/components/tool/ToolSidebar';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 
 export default function ShortVideoCaptionPage() {
   const router = useRouter();
@@ -28,19 +28,19 @@ export default function ShortVideoCaptionPage() {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dropZoneRef.current?.classList.add('border-blue-500', 'bg-blue-50');
+    dropZoneRef.current?.classList.add('border-gold', 'bg-gold/[0.07]');
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dropZoneRef.current?.classList.remove('border-blue-500', 'bg-blue-50');
+    dropZoneRef.current?.classList.remove('border-gold', 'bg-gold/[0.07]');
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dropZoneRef.current?.classList.remove('border-blue-500', 'bg-blue-50');
+    dropZoneRef.current?.classList.remove('border-gold', 'bg-gold/[0.07]');
 
     const files = e.dataTransfer.files;
     if (files.length > 0) {
@@ -149,7 +149,7 @@ export default function ShortVideoCaptionPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Navigation />
+      <LunaiNav />
 
       {/* 主体内容 - 两栏布局 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -162,10 +162,10 @@ export default function ShortVideoCaptionPage() {
         {/* 功能标签 */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-6 bg-blue-600 rounded"></div>
+            <div className="w-1 h-6 bg-gold rounded"></div>
             <h1 className="text-2xl font-semibold text-gray-900">短视频提文案</h1>
           </div>
-          <span className="px-3 py-1 bg-blue-50 text-blue-600 text-sm font-medium rounded-full">
+          <span className="px-3 py-1 bg-gold/[0.07] text-gold-dim text-sm font-medium rounded-full">
             一键提取视频文案
           </span>
         </div>
@@ -189,7 +189,7 @@ export default function ShortVideoCaptionPage() {
                 disabled={!!uploadedFile}
                 className={`
                   w-full px-4 py-3 rounded-xl border-2
-                  focus:outline-none focus:border-blue-500 transition-all duration-200
+                  focus:outline-none focus:border-gold transition-all duration-200
                   text-gray-900 placeholder-gray-400
                   ${uploadedFile ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}
                   ${videoUrl.length > 0 ? 'border-gray-300' : 'border-gray-200'}
@@ -215,7 +215,7 @@ export default function ShortVideoCaptionPage() {
                 relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
                 transition-all duration-200
                 ${uploadedFile
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-gold bg-gold/[0.07]'
                   : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                 }
               `}
@@ -230,8 +230,8 @@ export default function ShortVideoCaptionPage() {
 
               {uploadedFile ? (
                 <div>
-                  <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gold/15 rounded-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-gold-dim" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                   </div>
@@ -280,7 +280,7 @@ export default function ShortVideoCaptionPage() {
               w-full font-medium py-3.5 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md
               ${isExtracting || (!videoUrl && !uploadedFile)
                 ? 'bg-gray-400 cursor-not-allowed text-white'
-                : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
+                : 'bg-gradient-to-r from-gold-light to-gold hover:from-gold hover:to-gold-dim text-white'
               }
             `}
           >
@@ -310,7 +310,7 @@ export default function ShortVideoCaptionPage() {
                     </span>
                     <button
                       onClick={() => handleCopy(`${record.title}\n\n${record.content}`)}
-                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-xs text-gold-dim hover:text-gold-dim font-medium"
                     >
                       复制
                     </button>
@@ -328,7 +328,7 @@ export default function ShortVideoCaptionPage() {
         </div>
       </div>
 
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }

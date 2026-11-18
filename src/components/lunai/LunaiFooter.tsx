@@ -41,22 +41,22 @@ export default function LunaiFooter() {
         <div className="grid grid-cols-1 gap-12 py-16 md:grid-cols-12 md:py-20">
           <div className="md:col-span-5">
             <BrandMark size="lg" />
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-mist/65">
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-mist/88">
               浙江思杋服饰有限公司旗下「路耐 LUNAI」主品牌，下设路耐少年与路耐户外两条产品系列。
               以自有源头工厂、柔性供应链与数字化系统，支撑一个可复制的门店模型。
             </p>
             <div className="mt-7 space-y-2.5">
               <div className="flex items-baseline gap-3 text-sm">
-                <span className="w-20 shrink-0 text-mist/40">加盟热线</span>
+                <span className="w-20 shrink-0 text-mist/62">加盟热线</span>
                 <span className="lunai-num text-gold">400-0678-558</span>
               </div>
               <div className="flex items-baseline gap-3 text-sm">
-                <span className="w-20 shrink-0 text-mist/40">官网</span>
+                <span className="w-20 shrink-0 text-mist/62">官网</span>
                 <span className="lunai-num text-snow/80">zjsifan.com</span>
               </div>
               <div className="flex items-baseline gap-3 text-sm">
-                <span className="w-20 shrink-0 text-mist/40">总部</span>
-                <span className="text-mist/75">
+                <span className="w-20 shrink-0 text-mist/62">总部</span>
+                <span className="text-mist/95">
                   杭州市滨江区滨康路 188 号春风集团 6 幢 1 楼
                 </span>
               </div>
@@ -74,7 +74,7 @@ export default function LunaiFooter() {
                     <li key={l.name}>
                       <Link
                         href={l.href}
-                        className="text-sm text-mist/65 transition-colors duration-300 hover:text-gold"
+                        className="text-sm text-mist/88 transition-colors duration-300 hover:text-gold"
                       >
                         {l.name}
                       </Link>
@@ -95,7 +95,7 @@ export default function LunaiFooter() {
             { k: '平台资质', v: '抖音企业号官方服务商' },
           ].map((c) => (
             <div key={c.k} className="bg-ink px-5 py-5">
-              <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/40">
+              <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/62">
                 {c.k}
               </div>
               <div className="lunai-num mt-2 text-xs leading-relaxed text-mist/80">
@@ -106,7 +106,7 @@ export default function LunaiFooter() {
         </div>
 
         {/* 底部版权 */}
-        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 py-8 text-xs text-mist/40 md:flex-row md:items-center md:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 py-8 text-xs text-mist/62 md:flex-row md:items-center md:justify-between">
           <p>
             © {new Date().getFullYear()} 浙江思杋服饰有限公司　保留所有权利
           </p>

@@ -54,7 +54,7 @@ export default function ValueProposition() {
               className={`
                 group relative p-8 rounded-3xl border transition-all duration-300
                 ${hoveredIndex === index
-                  ? 'bg-blue-50 border-blue-300 shadow-2xl scale-[1.02]'
+                  ? 'bg-gold/[0.07] border-gold/45 shadow-2xl scale-[1.02]'
                   : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-lg'
                 }
               `}
@@ -66,7 +66,7 @@ export default function ValueProposition() {
                 className={`
                   w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-6 transition-all duration-300
                   ${hoveredIndex === index
-                    ? 'bg-blue-600 scale-110'
+                    ? 'bg-gold scale-110'
                     : 'bg-gray-100 group-hover:bg-gray-200'
                   }
                 `}
@@ -85,8 +85,8 @@ export default function ValueProposition() {
                 className={`
                   inline-block px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
                   ${hoveredIndex === index
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-blue-50 text-blue-700'
+                    ? 'bg-gold text-white'
+                    : 'bg-gold/[0.07] text-gold-dim'
                   }
                 `}
               >
@@ -97,7 +97,7 @@ export default function ValueProposition() {
               <div
                 className={`
                   absolute top-4 right-4 w-2 h-2 rounded-full transition-all duration-300
-                  ${hoveredIndex === index ? 'bg-blue-600 scale-150' : 'bg-gray-300'}
+                  ${hoveredIndex === index ? 'bg-gold scale-150' : 'bg-gray-300'}
                 `}
               />
             </div>

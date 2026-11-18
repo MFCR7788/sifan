@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import LunaiNav from '@/components/lunai/LunaiNav';
+import LunaiFooter from '@/components/lunai/LunaiFooter';
 
 export default function BusinessSchoolPage() {
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      <Navigation />
+    <div className="min-h-screen bg-ink text-snow">
+      <LunaiNav />
 
       {/* Main Content */}
       <section className="min-h-screen flex items-center justify-center px-4">
@@ -44,7 +44,7 @@ export default function BusinessSchoolPage() {
         </div>
       </section>
 
-      <Footer />
+      <LunaiFooter />
     </div>
   );
 }
