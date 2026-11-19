@@ -103,7 +103,7 @@ upload_with_verify() {
   local local_md5 remote_md5
   local_md5="$(md5 -q "$local_file")"
   for attempt in 1 2 3 4 5; do
-    log "上传 $name（第 $attempt 次）..."
+    log "上传 ${name}（第 ${attempt} 次）..."
     scp -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=6 \
         "$local_file" "$SERVER:$remote_file" || true
     remote_md5="$(ssh -o ConnectTimeout=20 -o BatchMode=yes "$SERVER" \
@@ -125,6 +125,9 @@ upload_with_verify /tmp/sifan-public.tar.gz /tmp/sifan-public.tar.gz || exit 1
 log "服务器部署..."
 ssh -o ConnectTimeout=15 "$SERVER" "bash -s" <<REMOTE
 set -e
+# 远程端显式定义，防止脚本内引用 \$SERVER_DIR / \$PORT 时展开为空
+SERVER_DIR="$SERVER_DIR"
+PORT="$PORT"
 cd $SERVER_DIR
 TS=\$(date +%Y%m%d_%H%M%S)
 
@@ -177,7 +180,7 @@ find $SERVER_DIR/public -depth -name '.DS_Store' -delete 2>/dev/null || true
 # 校验 1：BUILD_ID 必须与包内一致
 NEW_BUILD_ID=\$(cat .next/BUILD_ID 2>/dev/null || echo "")
 if [ -z "\$NEW_BUILD_ID" ] || [ "\$NEW_BUILD_ID" != "\$PKG_BUILD_ID" ]; then
-  echo "[服务器] ✗ BUILD_ID 不一致（包=\$PKG_BUILD_ID 服务器=\$NEW_BUILD_ID），回滚"
+  echo "[服务器] ✗ BUILD_ID 不一致（包=\${PKG_BUILD_ID} 服务器=\${NEW_BUILD_ID}），回滚"
   rm -rf .next public
   [ -d .next.old.\$TS ] && mv .next.old.\$TS .next
   [ -d public.old.\$TS ] && mv public.old.\$TS public
@@ -199,14 +202,27 @@ echo "[服务器] 本地 HTTP 状态: \$CODE"
 # （服务器上存在并行的外部部署流程，可能覆盖 .next 而不重启进程，
 #   导致 HTML 引用旧 hash、磁盘只有新文件 → 静态资源 500）
 echo "[服务器] 进程与磁盘产物一致性检查..."
-LIVE_ID=\$(curl -s --max-time 20 http://127.0.0.1:$PORT/ \\
-  | grep -oE '/_next/static/chunks/main-app-[a-f0-9]+\\.js' | head -1)
+# 说明：pm2 restart 到进程完全加载新 manifest 之间存在数百毫秒窗口，
+# 此时进程仍会返回旧 manifest 的 HTML 引用，若直接比对必然误报。
+# 故先等待进程就绪（连续两次取到的引用一致），再做比对。
+LIVE_ID=""
+for _ in 1 2 3 4 5 6; do
+  CAND=\$(curl -s --max-time 20 http://127.0.0.1:$PORT/ \\
+    | grep -oE '/_next/static/chunks/main-app-[a-f0-9]+\\.js' | head -1)
+  if [ -n "\$CAND" ] && [ "\$CAND" = "\$LIVE_ID" ]; then
+    break
+  fi
+  LIVE_ID="\$CAND"
+  sleep 4
+done
 if [ -n "\$LIVE_ID" ]; then
   # \$LIVE_ID 形如 /_next/static/chunks/main-app-xxx.js
   # 磁盘实际路径是 .next/static/chunks/main-app-xxx.js（去掉 /_next 前缀）
-  DISK_CHUNK="\$SERVER_DIR/.next\${LIVE_ID#/_next}"
+  # 注意：此处必须用未转义的 $SERVER_DIR（本地展开为字面路径）。
+  # 若写成 \$SERVER_DIR，远程端无该变量会展开为空 → 路径变成 /.next/... → 必然误报。
+  DISK_CHUNK="$SERVER_DIR/.next\${LIVE_ID#/_next}"
   if [ ! -f "\$DISK_CHUNK" ]; then
-    echo "[服务器] ✗ 检测到产物不同批（缺 \$LIVE_ID），重新解包并重启..."
+    echo "[服务器] ✗ 检测到产物不同批（缺 \${LIVE_ID}），重新解包并重启..."
     pm2 stop sifan >/dev/null 2>&1 || true
     rm -rf "$SERVER_DIR/.next"
     tar -xzf /tmp/sifan-next.tar.gz

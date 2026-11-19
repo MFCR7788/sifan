@@ -95,7 +95,7 @@ export default function StoreModel() {
                     (h) => (
                       <th
                         key={h}
-                        className="px-5 py-4 text-[0.62rem] font-normal uppercase tracking-[0.2em] text-mist/50"
+                        className="px-5 py-4 text-[0.62rem] font-normal uppercase tracking-[0.2em] text-mist/72"
                       >
                         {h}
                       </th>
