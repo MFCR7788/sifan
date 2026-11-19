@@ -83,8 +83,10 @@ for root, dirs, files in os.walk(base):
             removed += 1
 print(f'  已剔除 {removed} 个冗余大原图')
 PYEOF
-  find /tmp/pub-pkg -name '._*' -delete 2>/dev/null || true
-  find /tmp/pub-pkg -name '.DS_Store' -delete 2>/dev/null || true
+  # 剔除 macOS 元数据（._* / .DS_Store）
+  # 注意：必须用 -depth 后序处理，否则非空目录（._brand 等）会删除失败
+  find /tmp/pub-pkg -depth -name '._*' -delete 2>/dev/null || true
+  find /tmp/pub-pkg -depth -name '.DS_Store' -delete 2>/dev/null || true
   tar -czf /tmp/sifan-public.tar.gz -C /tmp/pub-pkg public
   rm -rf /tmp/pub-pkg
   ls -lh /tmp/sifan-next.tar.gz /tmp/sifan-public.tar.gz
@@ -114,6 +116,20 @@ pm2 stop sifan >/dev/null 2>&1 || true
 echo "[服务器] 解包..."
 tar -xzf /tmp/sifan-next.tar.gz
 tar -xzf /tmp/sifan-public.tar.gz
+
+# 同步静态资源到 nginx 直出目录（/var/www/sifan-public）
+# nginx 直接读盘伺服这些路径，避免回源 Node 进程，并启用 1 年长缓存
+echo "[服务器] 同步静态资源到 nginx 直出目录..."
+rm -rf /var/www/sifan-public
+mkdir -p /var/www/sifan-public
+cp -a public/. /var/www/sifan-public/
+chown -R nginx:nginx /var/www/sifan-public 2>/dev/null || true
+chmod -R 755 /var/www/sifan-public
+find /var/www/sifan-public -type f -exec chmod 644 {} \;
+find /var/www/sifan-public -depth -name '._*' -delete 2>/dev/null || true
+find /var/www/sifan-public -depth -name '.DS_Store' -delete 2>/dev/null || true
+find /root/sifan/public -depth -name '._*' -delete 2>/dev/null || true
+find /root/sifan/public -depth -name '.DS_Store' -delete 2>/dev/null || true
 
 # 校验 1：BUILD_ID 必须与包内一致
 NEW_BUILD_ID=\$(cat .next/BUILD_ID 2>/dev/null || echo "")
