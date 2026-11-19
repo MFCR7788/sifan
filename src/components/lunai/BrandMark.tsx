@@ -1,59 +1,70 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 /**
- * 「耐」字超级符号 + LUNAI 字标
- * PDF 明确提出「耐」字超级符号贯穿两个系列，是品牌资产的核心载体。
+ * 路耐品牌标识
+ *
+ * 使用官方 LOGO（LN 图形 + 「路耐 / LUNAI」字标 + ® 注册标记），
+ * 提供三套配色以适配不同底色：
+ *   gold  —— 深墨蓝底（默认，与品牌主色 #c8a96a 一致）
+ *   white —— 深底强调 / 特殊场景
+ *   dark  —— 浅色底（白卡片、浅色区块内）
+ *
+ * 原始 LOGO 为黑字白底，已去白底并生成透明 PNG（public/brand/）。
  */
 export default function BrandMark({
   size = 'md',
-  dark = true,
-  withText = true,
+  variant = 'gold',
   href = '/',
+  priority = false,
+  className = '',
 }: {
-  size?: 'sm' | 'md' | 'lg';
-  dark?: boolean;
-  withText?: boolean;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  /** 配色版本 */
+  variant?: 'gold' | 'white' | 'dark';
+  /** 传 null 则不渲染为链接 */
   href?: string | null;
+  priority?: boolean;
+  className?: string;
 }) {
-  const box = { sm: 'h-8 w-8 text-base', md: 'h-10 w-10 text-xl', lg: 'h-14 w-14 text-3xl' }[size];
-  const word = { sm: 'text-sm', md: 'text-base', lg: 'text-xl' }[size];
-  const track = { sm: 'tracking-[0.3em]', md: 'tracking-[0.34em]', lg: 'tracking-[0.38em]' }[size];
+  // 官方 LOGO 原始比例 1172 : 448 ≈ 2.616
+  const height = { sm: 30, md: 40, lg: 52, xl: 64 }[size];
+  const width = Math.round(height * 2.616);
 
-  const inner = (
-    <span className="flex items-center gap-3">
-      <span
-        className={`${box} lunai-serif relative flex shrink-0 items-center justify-center rounded-sm border border-gold/45 bg-gradient-to-br from-gold/22 to-transparent text-gold`}
-        aria-hidden="true"
-      >
-        耐
-      </span>
-      {withText && (
-        <span className="flex flex-col leading-none">
-          <span
-            className={`${word} ${track} font-semibold ${
-              dark ? 'text-snow' : 'text-ink'
-            }`}
-          >
-            路耐
-          </span>
-          <span
-            className={`mt-1 text-[0.55rem] ${track} ${
-              dark ? 'text-gold/70' : 'text-gold-dim'
-            }`}
-          >
-            LUNAI
-          </span>
-        </span>
-      )}
+  const src = {
+    gold: '/brand/lunai-logo-gold.png',
+    white: '/brand/lunai-logo-white.png',
+    dark: '/brand/lunai-logo-dark.png',
+  }[variant];
+
+  const mark = (
+    <span
+      className={`relative inline-block shrink-0 ${className}`}
+      style={{ height, width }}
+    >
+      <Image
+        src={src}
+        alt="路耐 LUNAI"
+        width={width}
+        height={height}
+        priority={priority}
+        className="h-full w-full object-contain"
+        sizes={`${width}px`}
+      />
     </span>
   );
 
-  if (!href) return inner;
+  if (!href) return mark;
+
   return (
-    <Link href={href} className="inline-flex transition-opacity hover:opacity-80">
-      {inner}
+    <Link
+      href={href}
+      className="inline-flex items-center transition-opacity duration-300 hover:opacity-80"
+      aria-label="路耐 LUNAI 首页"
+    >
+      {mark}
     </Link>
   );
 }

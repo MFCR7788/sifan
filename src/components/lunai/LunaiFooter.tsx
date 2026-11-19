@@ -40,7 +40,7 @@ export default function LunaiFooter() {
         {/* 上部：品牌 + 链接列 */}
         <div className="grid grid-cols-1 gap-12 py-16 md:grid-cols-12 md:py-20">
           <div className="md:col-span-5">
-            <BrandMark size="lg" />
+            <BrandMark size="xl" variant="gold" />
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-mist/88">
               浙江思杋服饰有限公司旗下「路耐 LUNAI」主品牌，下设路耐少年与路耐户外两条产品系列。
               以自有源头工厂、柔性供应链与数字化系统，支撑一个可复制的门店模型。

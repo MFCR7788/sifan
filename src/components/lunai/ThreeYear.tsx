@@ -169,7 +169,7 @@ export default function ThreeYear() {
           {/* 主体信息 */}
           <Reveal delay={200} className="mt-12">
             <div className="flex flex-col items-center gap-6 text-center">
-              <BrandMark size="lg" />
+              <BrandMark size="lg" variant="gold" />
               <div>
                 <p className="lunai-serif text-base text-snow/90">浙江思杋服饰有限公司</p>
                 <p className="mt-2 text-xs leading-relaxed text-mist/50">

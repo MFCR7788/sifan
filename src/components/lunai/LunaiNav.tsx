@@ -45,7 +45,8 @@ export default function LunaiNav() {
         }`}
       >
         <div className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-6 sm:px-10 md:px-16">
-          <BrandMark size={scrolled ? 'sm' : 'md'} />
+          {/* 官方 LOGO：深墨蓝底使用香槟金版本，与品牌主色统一 */}
+          <BrandMark size="md" variant="gold" priority />
 
           <nav className="hidden items-center gap-9 md:flex">
             {navItems.map((item) => (
@@ -103,6 +104,10 @@ export default function LunaiNav() {
         aria-hidden={!open}
       >
         <div className="flex h-full flex-col px-6 pb-10 pt-[92px]">
+          <div className="mb-8 border-b border-white/10 pb-8">
+            <BrandMark size="lg" variant="gold" />
+          </div>
+
           <nav className="flex flex-col gap-1">
             {navItems.map((item, i) => (
               <Link
