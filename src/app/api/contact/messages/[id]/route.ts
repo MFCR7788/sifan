@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { contactManager } from '@/storage/database/contactManager';
+import { requireAdmin } from '@/lib/admin-auth';
 
 /**
  * DELETE /api/contact/messages/[id]
- * 删除指定留言
+ * 删除指定留言（仅管理员）
  */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const guard = await requireAdmin(request);
+    if (!guard.ok) return guard.response;
+
     const { id } = await params;
 
     const success = await contactManager.deleteMessage(id);

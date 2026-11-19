@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from 'coze-coding-dev-sdk';
 import { coverImages } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { requireAdmin } from '@/lib/admin-auth';
 
 // DELETE - 删除封面图（管理员）
 export async function DELETE(
@@ -13,13 +13,8 @@ export async function DELETE(
     const { id } = await params;
 
     // 验证管理员权限
-    const admin = await verifyAdmin(request);
-    if (!admin) {
-      return NextResponse.json(
-        { error: '无权操作' },
-        { status: 403 }
-      );
-    }
+    const guard = await requireAdmin(request);
+    if (!guard.ok) return guard.response;
 
     const db = await getDb();
 

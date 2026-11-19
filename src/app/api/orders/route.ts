@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { orderManager } from '@/storage/database/orderManager';
 import { insertOrderSchema } from '@/storage/database/shared/schema';
+import { requireAdmin } from '@/lib/admin-auth';
 
 type OrderData = {
 	customerName: string;
@@ -82,6 +83,9 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
 	try {
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
+
 		const searchParams = request.nextUrl.searchParams;
 		const status = searchParams.get('status');
 		const limit = parseInt(searchParams.get('limit') || '10');

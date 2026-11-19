@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from 'coze-coding-dev-sdk';
+import { requireSelfOrAdmin } from '@/lib/api-auth';
 
 // GET - 获取AI图像列表
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+
+    // 用户私有数据：仅本人或管理员可查（userId 参数不再可越权指定他人）
+    const guard = await requireSelfOrAdmin(request, searchParams.get('userId'));
+    if (!guard.ok) return guard.response;
+    const effectiveUserId = guard.user.isAdmin ? searchParams.get('userId') : guard.user.id;
     const style = searchParams.get('style');
-    const userId = searchParams.get('userId');
+    const userId = effectiveUserId;
     const isPublic = searchParams.get('public');
 
     console.log('获取AI图像列表参数:', { style, userId, isPublic });

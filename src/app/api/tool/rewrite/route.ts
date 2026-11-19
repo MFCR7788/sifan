@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LLMClient, Config } from 'coze-coding-dev-sdk';
+import { requireUser } from '@/lib/api-auth';
 
 // 调用大语言模型进行文案改写
 async function rewriteText(text: string, platform: string) {
@@ -54,6 +55,9 @@ async function rewriteText(text: string, platform: string) {
 }
 
 export async function POST(request: NextRequest) {
+
+	const guard = await requireUser(request);
+	if (!guard.ok) return guard.response;
   try {
     const body = await request.json();
     const { text, platform } = body;

@@ -13,6 +13,8 @@ const BRAND_PAGES = [
 	'/franchise',
 	'/qualifications',
 	'/contact',
+	'/apps',
+	'/partner',
 ];
 
 interface Message {

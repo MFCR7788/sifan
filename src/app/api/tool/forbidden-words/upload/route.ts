@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireUser } from '@/lib/api-auth';
 
 // 违禁词库
 const forbiddenWordsLibrary = {
@@ -54,6 +55,9 @@ async function readFileContent(file: File): Promise<string> {
 }
 
 export async function POST(request: NextRequest) {
+
+	const guard = await requireUser(request);
+	if (!guard.ok) return guard.response;
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;

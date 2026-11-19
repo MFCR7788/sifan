@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from 'coze-coding-dev-sdk';
 import { members } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { requireAdmin } from '@/lib/admin-auth';
 
 type MemberUpdateData = {
 	memberLevel?: string;
@@ -18,14 +18,8 @@ export async function PATCH(
 	{ params }: { params: Promise<{ id: string }> }
 ) {
 	try {
-		const adminUser = await verifyAdmin(request);
-		if (!adminUser) {
-			return NextResponse.json(
-				{ success: false, error: '无管理员权限' },
-				{ status: 403 }
-			);
-		}
-
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 		const { id } = await params;
 		const body = await request.json();
 		const updateData: MemberUpdateData = { updatedAt: new Date().toISOString() };

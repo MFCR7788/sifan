@@ -1,20 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from 'coze-coding-dev-sdk';
 import { orders, users, members, memberTransactions } from '@/storage/database/shared/schema';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { requireAdmin } from '@/lib/admin-auth';
 import { sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
 	try {
 		// 验证管理员权限
-		const adminUser = await verifyAdmin(request);
-		if (!adminUser) {
-			return NextResponse.json(
-				{ success: false, error: '无管理员权限' },
-				{ status: 403 }
-			);
-		}
-
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 		const db = await getDb();
 
 		// 获取统计数据 - 使用正确的count聚合函数

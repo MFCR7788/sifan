@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Storage } from 'coze-coding-dev-sdk';
 import { LLMClient, Config } from 'coze-coding-dev-sdk';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/storage/database';
 import { knowledgeBase } from '@/storage/database/shared/schema';
 import mammoth from 'mammoth';
@@ -23,10 +23,8 @@ const FILE_TYPE_TO_CATEGORY: Record<string, string> = {
 export async function POST(request: NextRequest) {
 	try {
 		// 验证管理员权限
-		const adminUser = await verifyAdmin(request);
-		if (!adminUser) {
-			return NextResponse.json({ error: '无权限访问' }, { status: 401 });
-		}
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 
 		const body = await request.json();
 		const { fileKey, fileName, fileType, category } = body;
@@ -149,7 +147,7 @@ export async function POST(request: NextRequest) {
 				priority: qa.priority || 0,
 				isActive: true,
 				viewCount: 0,
-				createdBy: adminUser.id,
+				createdBy: guard.admin.id,
 			}).returning();
 
 			insertedItems.push(result[0]);

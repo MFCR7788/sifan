@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireUser } from '@/lib/api-auth';
 
 export async function POST(request: NextRequest) {
+
+	const guard = await requireUser(request);
+	if (!guard.ok) return guard.response;
   try {
     const formData = await request.formData();
     const url = formData.get('url') as string;

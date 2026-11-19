@@ -63,7 +63,10 @@ export default function FranchisePage() {
         title={
           <>
             加盟合作
-            <span className="text-mist/72"> · 一个可复制的门店模型</span>
+            
+            <span className="mt-2.5 block text-[0.38em] font-normal tracking-[0.05em] text-mist/72">
+              一个可复制的门店模型
+            </span>
           </>
         }
         description="50 ㎡ 双品类单店模型，2 人编制，错峰主推，积分闭环。对合作方而言，这是一套自带品牌力、自带货盘、自带引流能力与自带数据管理的门店单元。"

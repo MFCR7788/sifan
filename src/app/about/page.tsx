@@ -78,7 +78,10 @@ export default function AboutPage() {
         title={
           <>
             关于路耐
-            <span className="text-mist/72"> · 一家自有源头工厂的实体服装企业</span>
+            
+            <span className="mt-2.5 block text-[0.38em] font-normal tracking-[0.05em] text-mist/72">
+              一家自有源头工厂的实体服装企业
+            </span>
           </>
         }
         description="主体概览 · 一家自有源头工厂 + 线上线下双轮驱动的实体服装企业。技术与系统全部自研，无外部依赖。"
@@ -130,7 +133,10 @@ export default function AboutPage() {
           title={
             <>
               核心团队
-              <span className="text-mist/72"> · 四条专业线合成一家公司</span>
+              
+            <span className="mt-2.5 block text-[0.38em] font-normal tracking-[0.05em] text-mist/72">
+              四条专业线合成一家公司
+            </span>
             </>
           }
           description="银行风控 + 招投标准入 + 资本合规 + 品牌方法论。"

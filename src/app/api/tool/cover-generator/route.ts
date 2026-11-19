@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ImageGenerationClient, Config, S3Storage } from 'coze-coding-dev-sdk';
+import { requireUser } from '@/lib/api-auth';
 
 // 平台到尺寸的映射
 const PLATFORM_SIZE_MAP: Record<string, string> = {
@@ -266,6 +267,9 @@ async function generateCover(text: string, platform: string, style: string, rati
 }
 
 export async function POST(request: NextRequest) {
+
+	const guard = await requireUser(request);
+	if (!guard.ok) return guard.response;
   try {
     const body = await request.json();
     const { text, platform, style, ratio } = body;

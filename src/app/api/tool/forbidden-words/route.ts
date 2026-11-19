@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireUser } from '@/lib/api-auth';
 
 // 违禁词库
 const forbiddenWordsLibrary = {
@@ -29,6 +30,9 @@ const forbiddenWordsLibrary = {
 };
 
 export async function POST(request: NextRequest) {
+
+	const guard = await requireUser(request);
+	if (!guard.ok) return guard.response;
   try {
     const { text, platform, mode } = await request.json();
 

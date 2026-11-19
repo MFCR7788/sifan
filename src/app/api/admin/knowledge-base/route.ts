@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { requireAdmin } from '@/lib/admin-auth';
 
 // 模拟知识库数据
 const mockKnowledgeBase = [
@@ -47,14 +47,8 @@ const mockKnowledgeBase = [
 // GET - 获取知识库列表
 export async function GET(request: NextRequest) {
 	try {
-		const adminUser = await verifyAdmin(request);
-		if (!adminUser) {
-			return NextResponse.json(
-				{ success: false, error: '无管理员权限' },
-				{ status: 403 }
-			);
-		}
-
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 		const { searchParams } = new URL(request.url);
 		const category = searchParams.get('category');
 		const search = searchParams.get('search');
@@ -104,16 +98,8 @@ export async function POST(request: NextRequest) {
 	try {
 		console.log('[KnowledgeBase POST] Starting request...');
 
-		const adminUser = await verifyAdmin(request);
-		console.log('[KnowledgeBase POST] Admin user:', adminUser);
-
-		if (!adminUser) {
-			console.log('[KnowledgeBase POST] No admin user found');
-			return NextResponse.json(
-				{ success: false, error: '无管理员权限，请确保您已登录且具有管理员权限' },
-				{ status: 403 }
-			);
-		}
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 
 		const body = await request.json();
 		console.log('[KnowledgeBase POST] Request body:', body);
@@ -141,7 +127,7 @@ export async function POST(request: NextRequest) {
 			viewCount: 0,
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
-			createdBy: adminUser.id,
+			createdBy: guard.admin.id,
 		};
 
 		// 添加到模拟数据中

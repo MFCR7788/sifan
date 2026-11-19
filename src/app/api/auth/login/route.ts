@@ -2,9 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { userManager } from '@/storage/database/userManager';
 import bcrypt from 'bcrypt';
 
-// 硬编码的admin账户
-const ADMIN_PHONE = '15967675767';
-const ADMIN_EMAIL = 'admin@magic-superman.com';
+/**
+ * 账号密码登录
+ *
+ * ⚠️ 安全说明（2026-11-19 修复）：
+ *   旧实现硬编码了 admin 手机号、邮箱与**明文密码**，且仓库为 public，
+ *   任何拿到仓库的人都能获得管理员权限。已改为：
+ *   - 管理员身份标识来自环境变量（ADMIN_PHONE / ADMIN_EMAIL），不写死在代码里
+ *   - 密码一律走数据库 bcrypt 校验，代码中不保留任何明文口令
+ *   - 保留「数据库不可用时仍可登录」的应急能力，但口令来自环境变量而非源码
+ */
+
+/** 管理员身份标识（来自环境变量，未配置则不启用应急登录） */
+const ADMIN_PHONE = process.env.ADMIN_PHONE?.trim() || '';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim() || '';
+
+/** 应急登录口令（来自环境变量；生产环境应留空，强制走数据库） */
+const ADMIN_FALLBACK_PASSWORD = process.env.ADMIN_FALLBACK_PASSWORD || '';
 
 export async function POST(request: NextRequest) {
 	try {
@@ -18,49 +32,43 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		let user;
+		const identifier = phone.trim();
+		let user: Record<string, unknown> | null = null;
 
-		// 检查是否是admin账户（支持手机号或邮箱登录）
-		if (phone === ADMIN_PHONE || phone === ADMIN_EMAIL) {
-			// 优先验证硬编码的admin密码（即使数据库不可用也能登录）
-			if (password === 'Qf229888777') {
+		// 1) 优先走数据库（bcrypt 校验）
+		try {
+			const dbUser =
+				(await userManager.getUserByPhone(identifier)) ||
+				(await userManager.getUserByEmail(identifier));
+
+			if (dbUser) {
+				const isValid = await bcrypt.compare(password, dbUser.password);
+				if (isValid) {
+					const { password: _pw, ...userWithoutPassword } = dbUser;
+					user = userWithoutPassword as unknown as Record<string, unknown>;
+				}
+			}
+		} catch (dbError) {
+			console.error('[auth/login] 数据库查询失败:', dbError);
+		}
+
+		// 2) 应急通道：数据库不可用时，用环境变量中的管理员口令
+		if (!user && ADMIN_FALLBACK_PASSWORD) {
+			const isAdminIdentifier =
+				(ADMIN_PHONE && identifier === ADMIN_PHONE) ||
+				(ADMIN_EMAIL && identifier === ADMIN_EMAIL);
+
+			if (isAdminIdentifier && password === ADMIN_FALLBACK_PASSWORD) {
 				user = {
 					id: 'admin-id',
-					phone: ADMIN_PHONE,
+					phone: ADMIN_PHONE || identifier,
 					email: ADMIN_EMAIL,
 					name: 'Admin',
 					isAdmin: true,
 					isActive: true,
 					createdAt: new Date().toISOString(),
 				};
-				console.log('✅ 管理员硬编码密码验证成功（数据库模式）');
-			} else {
-				// 硬编码密码错误，尝试从数据库验证
-				try {
-					const dbUser = await userManager.getUserByPhone(ADMIN_PHONE);
-					if (dbUser && dbUser.isAdmin) {
-						const isValidPassword = await bcrypt.compare(password, dbUser.password);
-						if (isValidPassword) {
-							const { password: _, ...userWithoutPassword } = dbUser;
-							user = userWithoutPassword;
-							console.log('✅ 管理员数据库密码验证成功');
-						}
-					}
-				} catch (dbError) {
-					console.error('数据库查询失败，使用硬编码验证:', dbError);
-				}
-			}
-		} else {
-			// 普通用户，从数据库验证
-			const dbUser = await userManager.getUserByPhone(phone);
-
-			if (dbUser) {
-				const isValidPassword = await bcrypt.compare(password, dbUser.password);
-
-				if (isValidPassword) {
-					const { password: _, ...userWithoutPassword } = dbUser;
-					user = userWithoutPassword;
-				}
+				console.warn('[auth/login] 管理员走应急通道登录（数据库不可用）');
 			}
 		}
 
@@ -71,48 +79,24 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		// 创建响应并设置 Cookie
+		// 3) 设置会话 Cookie
 		const response = NextResponse.json({
 			message: '登录成功',
 			user,
 		});
 
-		console.log('=== 登录接口日志 ===');
-		console.log('登录用户信息:', user);
-		console.log('用户ID:', user.id);
-		console.log('NODE_ENV:', process.env.NODE_ENV);
-
-		// 根据环境动态设置 Cookie 配置
 		const isProduction = process.env.NODE_ENV === 'production';
 		const cookieSecure = isProduction && process.env.COOKIE_SECURE !== 'false';
 		const cookieDomain = process.env.COOKIE_DOMAIN || (isProduction ? '.zjsifan.com' : undefined);
 
-		console.log('Cookie配置:', {
-			httpOnly: isProduction, // 生产环境 true，开发环境 false
+		response.cookies.set('userId', String(user.id), {
+			httpOnly: isProduction,
 			secure: cookieSecure,
-			sameSite: 'lax',
-			domain: cookieDomain,
-		});
-
-		// 设置用户 ID 到 Cookie（简单实现，生产环境应使用 JWT）
-		response.cookies.set('userId', user.id, {
-			httpOnly: isProduction, // 生产环境设为 true，开发环境设为 false 方便调试
-			secure: cookieSecure, // 生产环境使用 secure，开发环境不使用
 			sameSite: 'lax',
 			path: '/',
 			maxAge: 60 * 60 * 24 * 7, // 7 天
 			domain: cookieDomain,
 		});
-
-		console.log('✅ Cookie已设置，userId:', user.id);
-		console.log('Cookie配置:', {
-			httpOnly: false,
-			secure: false,
-			sameSite: 'lax',
-			path: '/',
-			maxAge: 60 * 60 * 24 * 7,
-		});
-		console.log('==================');
 
 		return response;
 	} catch (error: unknown) {

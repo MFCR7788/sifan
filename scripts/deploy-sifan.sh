@@ -87,15 +87,39 @@ PYEOF
   # 注意：必须用 -depth 后序处理，否则非空目录（._brand 等）会删除失败
   find /tmp/pub-pkg -depth -name '._*' -delete 2>/dev/null || true
   find /tmp/pub-pkg -depth -name '.DS_Store' -delete 2>/dev/null || true
-  tar -czf /tmp/sifan-public.tar.gz -C /tmp/pub-pkg public
+  # COPYFILE_DISABLE=1 阻止 tar 打包 AppleDouble 文件；
+  # --no-xattrs 阻止注入 LIBARCHIVE 扩展头（GNU tar 会告警且污染产物）
+  COPYFILE_DISABLE=1 tar --no-xattrs -czf /tmp/sifan-public.tar.gz -C /tmp/pub-pkg public 2>/dev/null
   rm -rf /tmp/pub-pkg
   ls -lh /tmp/sifan-next.tar.gz /tmp/sifan-public.tar.gz
 fi
 
-# ---------- 2. 上传 ----------
-log "上传产物到服务器 $SERVER ..."
-scp -o ConnectTimeout=15 /tmp/sifan-next.tar.gz "$SERVER:/tmp/sifan-next.tar.gz"
-scp -o ConnectTimeout=15 /tmp/sifan-public.tar.gz "$SERVER:/tmp/sifan-public.tar.gz"
+# ---------- 2. 上传（带 md5 校验与自动重试） ----------
+# 国内网络下 scp 偶发 Broken pipe / Operation timedown，中断会导致
+# 服务器解包出残缺产物（图片 404）。故上传后必须校验 md5，不一致则重传。
+upload_with_verify() {
+  local local_file="$1" remote_file="$2" name
+  name="$(basename "$local_file")"
+  local local_md5 remote_md5
+  local_md5="$(md5 -q "$local_file")"
+  for attempt in 1 2 3 4 5; do
+    log "上传 $name（第 $attempt 次）..."
+    scp -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=6 \
+        "$local_file" "$SERVER:$remote_file" || true
+    remote_md5="$(ssh -o ConnectTimeout=20 -o BatchMode=yes "$SERVER" \
+        "md5sum '$remote_file' 2>/dev/null | cut -d' ' -f1" 2>/dev/null | tr -d '\r\n')"
+    if [ "$remote_md5" = "$local_md5" ]; then
+      log "  ✓ $name 上传完整（md5 一致）"
+      return 0
+    fi
+    log "  ✗ $name 校验不一致（本地 $local_md5 / 服务器 ${remote_md5:-无}），重传"
+  done
+  log "  ✗ $name 连续 5 次上传失败，中止部署"
+  return 1
+}
+
+upload_with_verify /tmp/sifan-next.tar.gz   /tmp/sifan-next.tar.gz   || exit 1
+upload_with_verify /tmp/sifan-public.tar.gz /tmp/sifan-public.tar.gz || exit 1
 
 # ---------- 3. 服务器部署 ----------
 log "服务器部署..."
@@ -114,8 +138,27 @@ pm2 stop sifan >/dev/null 2>&1 || true
 [ -d public ] && mv public public.old.\$TS || true
 
 echo "[服务器] 解包..."
+# 解包前校验包完整性：tar 能完整列出条目数且 BUILD_ID 可读
+if ! tar -xzOf /tmp/sifan-next.tar.gz .next/BUILD_ID >/dev/null 2>&1; then
+  echo "[服务器] ✗ 构建包损坏（BUILD_ID 不可读），中止部署"
+  [ -d .next.old.\$TS ] && mv .next.old.\$TS .next
+  [ -d public.old.\$TS ] && mv public.old.\$TS public
+  pm2 restart sifan --update-env >/dev/null 2>&1 || true
+  exit 1
+fi
 tar -xzf /tmp/sifan-next.tar.gz
+# public 包必须能完整解出（含 brand 目录），否则清空重来，避免新旧混合
+rm -rf public
 tar -xzf /tmp/sifan-public.tar.gz
+if [ ! -d public ] || [ ! -d public/brand ]; then
+  echo "[服务器] ✗ 静态资源包解包异常（缺 public/brand），中止部署"
+  rm -rf .next public
+  [ -d .next.old.\$TS ] && mv .next.old.\$TS .next
+  [ -d public.old.\$TS ] && mv public.old.\$TS public
+  pm2 restart sifan --update-env >/dev/null 2>&1 || true
+  exit 1
+fi
+echo "[服务器] ✓ 产物解包完整（public 文件数 \$(find public -type f | wc -l | tr -d ' ')）"
 
 # 同步静态资源到 nginx 直出目录（/var/www/sifan-public）
 # nginx 直接读盘伺服这些路径，避免回源 Node 进程，并启用 1 年长缓存
@@ -128,8 +171,8 @@ chmod -R 755 /var/www/sifan-public
 find /var/www/sifan-public -type f -exec chmod 644 {} \;
 find /var/www/sifan-public -depth -name '._*' -delete 2>/dev/null || true
 find /var/www/sifan-public -depth -name '.DS_Store' -delete 2>/dev/null || true
-find /root/sifan/public -depth -name '._*' -delete 2>/dev/null || true
-find /root/sifan/public -depth -name '.DS_Store' -delete 2>/dev/null || true
+find $SERVER_DIR/public -depth -name '._*' -delete 2>/dev/null || true
+find $SERVER_DIR/public -depth -name '.DS_Store' -delete 2>/dev/null || true
 
 # 校验 1：BUILD_ID 必须与包内一致
 NEW_BUILD_ID=\$(cat .next/BUILD_ID 2>/dev/null || echo "")
@@ -159,7 +202,10 @@ echo "[服务器] 进程与磁盘产物一致性检查..."
 LIVE_ID=\$(curl -s --max-time 20 http://127.0.0.1:$PORT/ \\
   | grep -oE '/_next/static/chunks/main-app-[a-f0-9]+\\.js' | head -1)
 if [ -n "\$LIVE_ID" ]; then
-  if [ ! -f "$SERVER_DIR/.next\$LIVE_ID" ]; then
+  # \$LIVE_ID 形如 /_next/static/chunks/main-app-xxx.js
+  # 磁盘实际路径是 .next/static/chunks/main-app-xxx.js（去掉 /_next 前缀）
+  DISK_CHUNK="\$SERVER_DIR/.next\${LIVE_ID#/_next}"
+  if [ ! -f "\$DISK_CHUNK" ]; then
     echo "[服务器] ✗ 检测到产物不同批（缺 \$LIVE_ID），重新解包并重启..."
     pm2 stop sifan >/dev/null 2>&1 || true
     rm -rf "$SERVER_DIR/.next"

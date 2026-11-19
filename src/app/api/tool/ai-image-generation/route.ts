@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ImageGenerationClient, Config, S3Storage } from 'coze-coding-dev-sdk';
+import { requireUser } from '@/lib/api-auth';
 
 // 比例到尺寸的映射
 const RATIO_SIZE_MAP: Record<string, string> = {
@@ -264,6 +265,9 @@ async function generateImage(
 }
 
 export async function POST(request: NextRequest) {
+
+	const guard = await requireUser(request);
+	if (!guard.ok) return guard.response;
   try {
     const body = await request.json();
     const {

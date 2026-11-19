@@ -9,6 +9,7 @@ const navItems = [
   { name: '运营模式', href: '/solution' },
   { name: '资质背书', href: '/qualifications' },
   { name: '加盟合作', href: '/franchise' },
+  { name: '应用中心', href: '/apps' },
   { name: '联系我们', href: '/contact' },
 ];
 

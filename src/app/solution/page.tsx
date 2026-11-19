@@ -102,7 +102,10 @@ export default function SolutionPage() {
         title={
           <>
             运营模式
-            <span className="text-mist/72"> · 六大模块</span>
+            
+            <span className="mt-2.5 block text-[0.38em] font-normal tracking-[0.05em] text-mist/72">
+              六大模块
+            </span>
           </>
         }
         description="品牌定内容 · 渠道定场景 · 供应链定交付 · 系统定可复制。六大模块各自有明确的落地载体，不是概念罗列。"

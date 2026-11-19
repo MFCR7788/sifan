@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LLMClient, Config } from 'coze-coding-dev-sdk';
+import { requireUser } from '@/lib/api-auth';
 
 // 调用大语言模型生成文案
 async function generateCopywriting(text: string, platform: string, type: string, wordCount: string, count: number, model: string) {
@@ -80,6 +81,9 @@ ${text}
 }
 
 export async function POST(request: NextRequest) {
+
+	const guard = await requireUser(request);
+	if (!guard.ok) return guard.response;
   try {
     const body = await request.json();
     const { text, platform, type, model, wordCount, count = 1 } = body;

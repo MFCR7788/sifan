@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from 'coze-coding-dev-sdk';
 import { knowledgeBase } from '@/storage/database/shared/schema';
 import { eq } from 'drizzle-orm';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { requireAdmin } from '@/lib/admin-auth';
 
 // GET - 获取单个知识库条目
 export async function GET(
@@ -10,14 +10,8 @@ export async function GET(
 	{ params }: { params: Promise<{ id: string }> }
 ) {
 	try {
-		const adminUser = await verifyAdmin(request);
-		if (!adminUser) {
-			return NextResponse.json(
-				{ success: false, error: '无管理员权限' },
-				{ status: 403 }
-			);
-		}
-
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 		const { id } = await params;
 		const db = await getDb();
 		const [item] = await db.select().from(knowledgeBase).where(eq(knowledgeBase.id, id));
@@ -49,14 +43,8 @@ export async function PUT(
 	{ params }: { params: Promise<{ id: string }> }
 ) {
 	try {
-		const adminUser = await verifyAdmin(request);
-		if (!adminUser) {
-			return NextResponse.json(
-				{ success: false, error: '无管理员权限' },
-				{ status: 403 }
-			);
-		}
-
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 		const { id } = await params;
 		const body = await request.json();
 		const { category, question, answer, keywords, priority, isActive } = body;
@@ -113,14 +101,8 @@ export async function DELETE(
 	{ params }: { params: Promise<{ id: string }> }
 ) {
 	try {
-		const adminUser = await verifyAdmin(request);
-		if (!adminUser) {
-			return NextResponse.json(
-				{ success: false, error: '无管理员权限' },
-				{ status: 403 }
-			);
-		}
-
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 		const { id } = await params;
 		const db = await getDb();
 

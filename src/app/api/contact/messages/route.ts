@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { contactManager } from '@/storage/database/contactManager';
+import { requireAdmin } from '@/lib/admin-auth';
 
 /**
  * GET /api/contact/messages
@@ -7,6 +8,9 @@ import { contactManager } from '@/storage/database/contactManager';
  */
 export async function GET(request: NextRequest) {
   try {
+    const guard = await requireAdmin(request);
+    if (!guard.ok) return guard.response;
+
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = parseInt(searchParams.get('offset') || '0');

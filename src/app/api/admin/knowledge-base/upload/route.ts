@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Storage } from 'coze-coding-dev-sdk';
-import { verifyAdmin } from '@/lib/admin-auth';
+import { requireAdmin } from '@/lib/admin-auth';
 
 // 支持的文件类型
 const ALLOWED_FILE_TYPES = [
@@ -15,10 +15,8 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024;
 export async function POST(request: NextRequest) {
 	try {
 		// 验证管理员权限
-		const adminUser = await verifyAdmin(request);
-		if (!adminUser) {
-			return NextResponse.json({ error: '无权限访问' }, { status: 401 });
-		}
+		const guard = await requireAdmin(request);
+		if (!guard.ok) return guard.response;
 
 		const formData = await request.formData();
 		const file = formData.get('file') as File;
