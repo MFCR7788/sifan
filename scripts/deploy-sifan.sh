@@ -123,7 +123,10 @@ upload_with_verify /tmp/sifan-public.tar.gz /tmp/sifan-public.tar.gz || exit 1
 
 # ---------- 3. 服务器部署 ----------
 log "服务器部署..."
-ssh -o ConnectTimeout=15 "$SERVER" "bash -s" <<REMOTE
+# KeepAlive 必开：本地到服务器的链路会掐掉空闲连接，
+# 缺少 KeepAlive 时部署远程段常在中途静默断开（上传完成后就没输出）
+ssh -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=20 \
+    "$SERVER" "bash -s" <<REMOTE
 set -e
 # 远程段输出同时落盘：SSH 会话可能因网络抖动中断（本地看不到进度），
 # 落盘后可随时 tail -n 50 /root/sifan-deploy.log 确认服务器端执行到哪一步

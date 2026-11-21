@@ -78,13 +78,8 @@ export default function ContactPage() {
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 mb-1">办公地址</h3>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-1">地址</h3>
                   <p className="text-lg">{SITE.officeAddress}</p>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-500 mb-1">公司地址</h3>
-                  <p className="text-lg">{SITE.registeredAddress}</p>
                 </div>
 
                 <div>

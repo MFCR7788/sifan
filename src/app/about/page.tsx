@@ -15,7 +15,6 @@ const overview = [
   { k: '公司全称', v: SITE.company },
   { k: '成立与沿革', v: '2018 思美杋 → 2020 魔法超人 → 2024 品牌升级 → 2026 路耐 LUNAI' },
   { k: '品牌结构', v: '路耐 LUNAI 主品牌，下设路耐户外、路耐少年两条产品系列' },
-  { k: '公司注册地址', v: SITE.registeredAddress },
   { k: '总部地址', v: SITE.headquarters },
   { k: '联系电话', v: `${SITE.hotline}（${SITE.hotlineNote}）` },
   { k: '官网', v: SITE.domain },
