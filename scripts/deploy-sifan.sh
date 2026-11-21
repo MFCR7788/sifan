@@ -125,6 +125,10 @@ upload_with_verify /tmp/sifan-public.tar.gz /tmp/sifan-public.tar.gz || exit 1
 log "服务器部署..."
 ssh -o ConnectTimeout=15 "$SERVER" "bash -s" <<REMOTE
 set -e
+# 远程段输出同时落盘：SSH 会话可能因网络抖动中断（本地看不到进度），
+# 落盘后可随时 tail -n 50 /root/sifan-deploy.log 确认服务器端执行到哪一步
+exec > >(tee -a /root/sifan-deploy.log) 2>&1
+echo "=== 部署开始 $(date '+%F %T') ===" 
 # 远程端显式定义，防止脚本内引用 \$SERVER_DIR / \$PORT 时展开为空
 SERVER_DIR="$SERVER_DIR"
 PORT="$PORT"
