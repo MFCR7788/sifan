@@ -185,7 +185,7 @@ function PaymentSuccessContent() {
 				<div className="space-y-3">
 					<Link
 						href="/"
-						className="block w-full py-3 px-6 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 text-center transition-all duration-200"
+						className="block w-full py-3 px-6 bg-gradient-to-r from-gold-light to-gold text-ink rounded-xl font-semibold hover:brightness-105 text-center transition-all duration-200"
 					>
 						返回首页
 					</Link>

@@ -319,7 +319,7 @@ export default function ProfilePage() {
 					<h1 className="text-4xl font-semibold text-gray-900 mb-4">请先登录</h1>
 					<Link
 						href="/login"
-						className="inline-block bg-gray-900 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200"
+						className="inline-block bg-gradient-to-r from-gold-light to-gold text-ink px-8 py-3 rounded-full text-sm font-semibold hover:brightness-105 transition-all duration-200"
 					>
 						前往登录
 					</Link>
@@ -445,7 +445,7 @@ export default function ProfilePage() {
 								<div className="flex gap-3">
 									<button
 										onClick={handleUpdateProfile}
-										className="bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200"
+										className="bg-gradient-to-r from-gold-light to-gold text-ink px-6 py-3 rounded-full text-sm font-semibold hover:brightness-105 transition-all duration-200"
 									>
 										保存
 									</button>
@@ -507,7 +507,7 @@ export default function ProfilePage() {
 											{(!user?.phone || user.phone.startsWith('WX')) && (
 												<button
 													onClick={() => setShowBindPhoneModal(true)}
-													className="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200"
+													className="px-4 py-2 bg-gold/15 text-gold rounded-full text-sm font-medium hover:bg-gold/25 transition-all duration-200"
 												>
 													绑定手机号
 												</button>
@@ -525,7 +525,7 @@ export default function ProfilePage() {
 								</div>
 								<button
 									onClick={() => setIsEditing(true)}
-									className="bg-gray-900 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
+									className="bg-gradient-to-r from-gold-light to-gold text-ink px-8 py-3 rounded-full text-sm font-semibold hover:brightness-105 hover:scale-105 hover:shadow-lg transition-all duration-200"
 								>
 									编辑资料
 								</button>
@@ -657,7 +657,7 @@ export default function ProfilePage() {
 						</div>
 						<button
 							type="submit"
-							className="bg-gray-900 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-200"
+							className="bg-gradient-to-r from-gold-light to-gold text-ink px-8 py-3 rounded-full text-sm font-semibold hover:brightness-105 hover:scale-105 hover:shadow-lg transition-all duration-200"
 						>
 							修改密码
 						</button>
@@ -840,7 +840,7 @@ export default function ProfilePage() {
 								<button
 									onClick={handleBindPhone}
 									disabled={isBindingPhone}
-									className="flex-1 bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+									className="flex-1 bg-gradient-to-r from-gold-light to-gold text-ink px-6 py-3 rounded-full text-sm font-semibold hover:brightness-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									{isBindingPhone ? '绑定中...' : '确认绑定'}
 								</button>

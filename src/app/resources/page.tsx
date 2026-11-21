@@ -302,7 +302,7 @@ export default function ResourcesPage() {
                       className="group p-5 border border-gray-200 rounded-xl hover:border-gray-900 hover:shadow-md cursor-pointer transition-all"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center">
+                        <div className="flex-shrink-0 w-9 h-9 bg-ink-2 border border-white/10 rounded-lg flex items-center justify-center">
                           {resource.contentType === 'video' ? (
                             <Play className="w-4 h-4 text-white" />
                           ) : (
@@ -356,7 +356,7 @@ export default function ResourcesPage() {
                   </h1>
 
                   {selectedResource.contentType === 'video' && selectedResource.videoUrl && (
-                    <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden mb-8 shadow-lg">
+                    <div className="aspect-video bg-ink-2 border border-white/10 rounded-2xl overflow-hidden mb-8 shadow-lg">
                       <video
                         src={selectedResource.videoUrl}
                         controls
@@ -411,7 +411,7 @@ export default function ResourcesPage() {
                         className="group p-5 border border-gray-200 rounded-xl hover:border-gray-900 hover:shadow-md cursor-pointer transition-all"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center">
+                          <div className="flex-shrink-0 w-9 h-9 bg-ink-2 border border-white/10 rounded-lg flex items-center justify-center">
                             {resource.contentType === 'video' ? (
                               <Play className="w-4 h-4 text-white" />
                             ) : (
@@ -473,7 +473,7 @@ export default function ResourcesPage() {
                       onClick={() => handleCategoryClick(category.id, category.slug)}
                       className="p-5 border border-gray-200 rounded-xl hover:border-gray-900 hover:shadow-md transition-all text-left"
                     >
-                      <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center mb-3">
+                      <div className="w-10 h-10 bg-ink-2 border border-white/10 rounded-lg flex items-center justify-center mb-3">
                         {getIcon(category.icon)}
                       </div>
                       <h3 className="text-sm font-semibold text-gray-900 mb-1">

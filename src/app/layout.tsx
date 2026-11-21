@@ -4,6 +4,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ChatBox from "@/components/ChatBox";
 import { ToastProvider } from "@/components/Toast";
 import "./globals.css";
+import { SITE } from '@/lib/site';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,7 +19,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "路耐 LUNAI · 浙江思杋服饰有限公司 | 山高路远·一件路耐",
   description:
-    "浙江思杋服饰有限公司旗下「路耐 LUNAI」主品牌，下设路耐少年与路耐户外两条产品系列。一个主品牌、两条产品系列、六大运营模块、一个可复制的 50 ㎡ 双品类单店模型。加盟热线 400-0678-558。",
+    `浙江思杋服饰有限公司旗下「路耐 LUNAI」主品牌，下设路耐少年与路耐户外两条产品系列。一个主品牌、两条产品系列、六大运营模块、一个可复制的 50 ㎡ 双品类单店模型。加盟热线 ${SITE.hotline}。`,
   keywords: [
     "路耐",
     "LUNAI",

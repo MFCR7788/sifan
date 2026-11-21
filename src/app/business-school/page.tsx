@@ -36,7 +36,7 @@ export default function BusinessSchoolPage() {
           <div className="mt-12">
             <Link
               href="/"
-              className="inline-flex items-center px-8 py-3 bg-gray-900 text-white text-sm rounded-full hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-gold-light to-gold text-ink text-sm font-semibold rounded-full hover:brightness-105 transition-[filter]"
             >
               返回首页
             </Link>

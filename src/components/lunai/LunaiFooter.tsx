@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import BrandMark from './BrandMark';
+import { SITE } from '@/lib/site';
 
 const columns = [
   {
@@ -42,23 +43,21 @@ export default function LunaiFooter() {
           <div className="md:col-span-5">
             <BrandMark size="xl" variant="gold" />
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-mist/88">
-              浙江思杋服饰有限公司旗下「路耐 LUNAI」主品牌，下设路耐少年与路耐户外两条产品系列。
+              {SITE.company}旗下「{SITE.brand}」主品牌，下设路耐少年与路耐户外两条产品系列。
               以自有源头工厂、柔性供应链与数字化系统，支撑一个可复制的门店模型。
             </p>
             <div className="mt-7 space-y-2.5">
               <div className="flex items-baseline gap-3 text-sm">
                 <span className="w-20 shrink-0 text-mist/62">加盟热线</span>
-                <span className="lunai-num text-gold">400-0678-558</span>
+                <span className="lunai-num text-gold">{SITE.hotline}</span>
               </div>
               <div className="flex items-baseline gap-3 text-sm">
                 <span className="w-20 shrink-0 text-mist/62">官网</span>
-                <span className="lunai-num text-snow/80">zjsifan.com</span>
+                <span className="lunai-num text-snow/80">{SITE.domain}</span>
               </div>
               <div className="flex items-baseline gap-3 text-sm">
                 <span className="w-20 shrink-0 text-mist/62">总部</span>
-                <span className="text-mist/95">
-                  杭州市滨江区滨康路 188 号春风集团 6 幢 1 楼
-                </span>
+                <span className="text-mist/95">{SITE.headquarters}</span>
               </div>
             </div>
           </div>
@@ -89,10 +88,10 @@ export default function LunaiFooter() {
         {/* 资质条 */}
         <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 md:grid-cols-4">
           {[
-            { k: '特许经营备案', v: '1330100112500649' },
-            { k: '增值电信业务许可', v: '浙 B2-20250051' },
-            { k: '区域资质', v: '杭州滨江区高新技术企业' },
-            { k: '平台资质', v: '抖音企业号官方服务商' },
+            { k: '特许经营备案', v: SITE.franchiseFilingNo },
+            { k: '增值电信业务许可', v: SITE.icpFilingNo },
+            { k: '区域资质', v: SITE.regionalQualificationShort },
+            { k: '平台资质', v: SITE.douyinService },
           ].map((c) => (
             <div key={c.k} className="bg-ink px-5 py-5">
               <div className="text-[0.58rem] uppercase tracking-[0.24em] text-mist/62">

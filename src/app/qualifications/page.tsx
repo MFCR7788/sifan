@@ -244,7 +244,7 @@ export default function QualificationsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* 视频卡片 1 */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <div className="aspect-video bg-gray-900 flex items-center justify-center">
+              <div className="aspect-video bg-ink-2 border border-white/10 flex items-center justify-center">
                 <div className="text-gray-400 text-sm">公司介绍视频</div>
               </div>
               <div className="p-6">
@@ -255,7 +255,7 @@ export default function QualificationsPage() {
 
             {/* 视频卡片 2 */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <div className="aspect-video bg-gray-900 flex items-center justify-center">
+              <div className="aspect-video bg-ink-2 border border-white/10 flex items-center justify-center">
                 <div className="text-gray-400 text-sm">产品展示视频</div>
               </div>
               <div className="p-6">

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import LunaiNav from '@/components/lunai/LunaiNav';
+import { SITE } from '@/lib/site';
 
 interface OrderDetail {
   id: string;
@@ -243,7 +244,7 @@ export default function OrderDetailPage() {
           <p className="text-gray-600 mb-6">{error || '订单不存在'}</p>
           <button
             onClick={() => router.push('/configurator')}
-            className="px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-gold-light to-gold text-ink rounded-xl font-semibold hover:brightness-105 transition-colors"
           >
             返回定制页面
           </button>
@@ -261,7 +262,7 @@ export default function OrderDetailPage() {
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* 打印按钮区域（打印时不显示） */}
           {!printing && (
-            <div className="bg-gray-900 text-white px-6 py-4 flex items-center justify-between">
+            <div className="bg-ink-2 text-snow border border-white/10 px-6 py-4 flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-semibold">定制方案订单</h1>
                 <p className="text-sm text-gray-300 mt-1">订单号: {order.orderNumber}</p>
@@ -269,7 +270,7 @@ export default function OrderDetailPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => router.push('/configurator')}
-                  className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-gold/15 text-gold rounded-lg hover:bg-gold/25 transition-colors flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -438,7 +439,7 @@ export default function OrderDetailPage() {
             {/* 公司信息 */}
             <div className="pt-8 border-t-2 border-gray-100 text-center text-sm text-gray-600">
               <p className="font-semibold text-gray-900 mb-2">浙江思杋服饰有限公司 魔法超人团队</p>
-              <p>如有疑问，请联系客服 400-0678-558</p>
+              <p>如有疑问，请联系客服 {SITE.hotline}</p>
               <p className="mt-2 text-xs text-gray-500">本表单由魔法超人系统自动生成</p>
             </div>
           </div>

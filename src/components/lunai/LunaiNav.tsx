@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import BrandMark from './BrandMark';
+import { SITE } from '@/lib/site';
 
 const navItems = [
   { name: '关于路耐', href: '/about' },
@@ -69,7 +70,7 @@ export default function LunaiNav() {
               href="/contact"
               className="lunai-num rounded-full bg-gradient-to-r from-gold-light to-gold px-6 py-2.5 text-sm font-semibold tracking-wide text-ink transition-shadow duration-300 hover:shadow-[0_0_30px_-8px_rgba(200,169,106,0.7)]"
             >
-              400-0678-558
+              {SITE.hotline}
             </Link>
           </nav>
 
@@ -142,7 +143,7 @@ export default function LunaiNav() {
               onClick={() => setOpen(false)}
               className="lunai-num block rounded-full bg-gradient-to-r from-gold-light to-gold px-6 py-3.5 text-center text-sm font-semibold text-ink"
             >
-              400-0678-558
+              {SITE.hotline}
             </Link>
           </div>
         </div>

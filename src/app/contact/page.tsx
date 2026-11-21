@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import LunaiNav from '@/components/lunai/LunaiNav';
 import LunaiFooter from '@/components/lunai/LunaiFooter';
+import { SITE } from '@/lib/site';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -77,23 +78,28 @@ export default function ContactPage() {
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 mb-1">地址</h3>
-                  <p className="text-lg">浙江省杭州市上城区元宇宙基地5幢115室</p>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-1">办公地址</h3>
+                  <p className="text-lg">{SITE.officeAddress}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-1">公司地址</h3>
+                  <p className="text-lg">{SITE.registeredAddress}</p>
                 </div>
 
                 <div>
                   <h3 className="text-sm font-semibold text-gray-500 mb-1">电话</h3>
-                  <p className="text-lg">400-0678-558</p>
+                  <p className="text-lg">{SITE.hotline}</p>
                 </div>
 
                 <div>
                   <h3 className="text-sm font-semibold text-gray-500 mb-1">邮箱</h3>
-                  <p className="text-lg">229888777@qq.com</p>
+                  <p className="text-lg">{SITE.email}</p>
                 </div>
 
                 <div>
                   <h3 className="text-sm font-semibold text-gray-500 mb-1">工作时间</h3>
-                  <p className="text-lg">周一至周五 9:00 - 18:00</p>
+                  <p className="text-lg">{SITE.workTime}</p>
                 </div>
 
                 {/* 客服微信 */}
@@ -191,7 +197,7 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 min-h-[44px] flex items-center justify-center"
+                  className="w-full py-4 bg-gradient-to-r from-gold-light to-gold text-ink rounded-full text-sm font-semibold tracking-wide hover:brightness-105 transition-[filter] disabled:opacity-50 min-h-[44px] flex items-center justify-center"
                 >
                   {isSubmitting ? '提交中...' : '提交留言'}
                 </button>

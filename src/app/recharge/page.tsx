@@ -330,7 +330,7 @@ export default function RechargePage() {
 					<h1 className="text-4xl font-semibold text-gray-900 mb-4">请先登录</h1>
 					<Link
 						href="/login"
-						className="inline-block bg-gray-900 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200"
+						className="inline-block bg-gradient-to-r from-gold-light to-gold text-ink px-8 py-3 rounded-full text-sm font-semibold hover:brightness-105 transition-all duration-200"
 					>
 						前往登录
 					</Link>
@@ -467,7 +467,7 @@ export default function RechargePage() {
 					>
 						<button
 							onClick={() => router.push('/profile')}
-							className="w-full py-3 px-6 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-all duration-200 active:scale-95"
+							className="w-full py-3 px-6 bg-gradient-to-r from-gold-light to-gold text-ink rounded-xl font-semibold hover:brightness-105 transition-all duration-200 active:scale-95"
 						>
 							查看订单
 						</button>
@@ -621,7 +621,7 @@ export default function RechargePage() {
 											className={`py-3 px-6 rounded-xl font-medium transition-all duration-200 ${
 												isCheckingPayment || paymentCheckSuccess
 													? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-													: 'bg-gray-900 text-white hover:bg-gray-800'
+													: 'bg-gradient-to-r from-gold-light to-gold text-ink hover:brightness-105'
 											}`}
 										>
 											{isCheckingPayment ? (
@@ -749,7 +749,7 @@ export default function RechargePage() {
 									onClick={() => handleAmountSelect(preset.amount)}
 									className={`p-4 rounded-xl border-2 transition-all duration-200 ${
 										selectedAmount === preset.amount
-											? 'border-gray-900 bg-gray-900 text-white'
+											? 'border-gold bg-gold text-ink'
 											: 'border-gray-200 hover:border-gray-300'
 									}`}
 								>
@@ -865,7 +865,7 @@ export default function RechargePage() {
 						className={`w-full py-4 px-8 rounded-xl font-medium text-lg transition-all duration-200 ${
 							selectedAmount < 1 || isCreatingOrder
 								? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-								: 'bg-gray-900 text-white hover:bg-gray-800'
+								: 'bg-gradient-to-r from-gold-light to-gold text-ink hover:brightness-105'
 						}`}
 					>
 						{isCreatingOrder ? (

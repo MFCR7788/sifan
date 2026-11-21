@@ -4,6 +4,7 @@ import Link from 'next/link';
 import LunaiShell from '@/components/lunai/LunaiShell';
 import { LunaiHero, LunaiSection } from '@/components/lunai/Blocks';
 import Reveal from '@/components/lunai/Reveal';
+import { SITE } from '@/lib/site';
 
 /**
  * 渠道合作中心（规划中）
@@ -38,7 +39,7 @@ export default function PartnerPage() {
           href="/contact"
           className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-gold-light to-gold px-8 py-3.5 text-sm font-semibold tracking-wide text-ink transition-shadow duration-300 hover:shadow-[0_0_36px_-8px_rgba(200,169,106,0.6)]"
         >
-          洽谈合作：400-0678-558
+          洽谈合作：{SITE.hotline}
         </Link>
       </LunaiHero>
 

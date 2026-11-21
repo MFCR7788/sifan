@@ -4,6 +4,7 @@ import Link from 'next/link';
 import LunaiShell, { LunaiPageHeader } from '@/components/lunai/LunaiShell';
 import { LunaiHero, LunaiSection, LunaiFeatureCard } from '@/components/lunai/Blocks';
 import Reveal from '@/components/lunai/Reveal';
+import { SITE } from '@/lib/site';
 
 /**
  * 关于路耐
@@ -11,15 +12,16 @@ import Reveal from '@/components/lunai/Reveal';
  */
 
 const overview = [
-  { k: '公司全称', v: '浙江思杋服饰有限公司' },
+  { k: '公司全称', v: SITE.company },
   { k: '成立与沿革', v: '2018 思美杋 → 2020 魔法超人 → 2024 品牌升级 → 2026 路耐 LUNAI' },
   { k: '品牌结构', v: '路耐 LUNAI 主品牌，下设路耐户外、路耐少年两条产品系列' },
-  { k: '总部地址', v: '杭州市滨江区滨康路 188 号春风集团 6 幢 1 楼' },
-  { k: '联系电话', v: '400-0678-558（加盟热线 / 商务咨询）' },
-  { k: '官网', v: 'zjsifan.com' },
-  { k: '备案与许可', v: '特许经营备案 1330100112500649 · ICP 浙 B2-20250051' },
-  { k: '区域资质', v: '杭州滨江区高新技术企业认定' },
-  { k: '平台资质', v: '抖音企业号官方服务商（本地推加白）· 特权认证' },
+  { k: '公司注册地址', v: SITE.registeredAddress },
+  { k: '总部地址', v: SITE.headquarters },
+  { k: '联系电话', v: `${SITE.hotline}（${SITE.hotlineNote}）` },
+  { k: '官网', v: SITE.domain },
+  { k: '备案与许可', v: `${SITE.franchiseFiling} · ${SITE.icpFiling}` },
+  { k: '区域资质', v: SITE.regionalQualification },
+  { k: '平台资质', v: `${SITE.douyinService}（本地推加白）· 特权认证` },
 ];
 
 const team = [

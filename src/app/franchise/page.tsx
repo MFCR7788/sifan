@@ -4,6 +4,7 @@ import Link from 'next/link';
 import LunaiShell from '@/components/lunai/LunaiShell';
 import { LunaiHero, LunaiSection } from '@/components/lunai/Blocks';
 import Reveal from '@/components/lunai/Reveal';
+import { SITE } from '@/lib/site';
 
 /**
  * 加盟合作
@@ -73,7 +74,7 @@ const supports = [
 
 /* ── 加盟流程 ─────────────────────────────────────── */
 const flow = [
-  { no: '1', title: '咨询了解', desc: '加盟与商务洽谈，拨打加盟热线 400-0678-558' },
+  { no: '1', title: '咨询了解', desc: `加盟与商务洽谈，拨打加盟热线 ${SITE.hotline}` },
   { no: '2', title: '书面授权', desc: '先授权、后投放，签署渠道授权协议后启动对外投放' },
   { no: '3', title: '落地筹备', desc: '按开学季与秋冬主推节点排布开店批次，区域公司对接' },
   { no: '4', title: '开业运营', desc: '人员与陈列督导到位，开学季与秋冬双节点接力主推' },
@@ -99,7 +100,7 @@ export default function FranchisePage() {
           href="/contact"
           className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-gold-light to-gold px-8 py-3.5 text-sm font-semibold tracking-wide text-ink transition-shadow duration-300 hover:shadow-[0_0_36px_-8px_rgba(200,169,106,0.6)]"
         >
-          联系我们：400-0678-558
+          联系我们：{SITE.hotline}
         </Link>
       </LunaiHero>
 
@@ -376,7 +377,7 @@ export default function FranchisePage() {
                 href="/contact"
                 className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-gold-light to-gold px-9 py-4 text-sm font-semibold tracking-wide text-ink transition-shadow duration-300 hover:shadow-[0_0_36px_-8px_rgba(200,169,106,0.6)]"
               >
-                联系我们：400-0678-558
+                联系我们：{SITE.hotline}
               </Link>
               <Link
                 href="/solution"

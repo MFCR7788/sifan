@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+import { SITE } from '@/lib/site';
 
 /** 品牌官网页面：这些页面不展示「魔法超人 AIGC」客服入口 */
 const BRAND_PAGES = [
@@ -155,7 +156,7 @@ export default function ChatBox() {
 			{/* 头部 */}
 			<div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
 				<div>
-					<h3 className="text-lg font-semibold text-gray-900">智能客服 客服热线：400-0678-558</h3>
+					<h3 className="text-lg font-semibold text-gray-900">智能客服 客服热线：{SITE.hotline}</h3>
 					<p className="text-xs text-gray-500">魔法超人AIGC</p>
 				</div>
 				<button

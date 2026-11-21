@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Reveal from './Reveal';
 import SectionHeading from './Section';
 import BrandMark from './BrandMark';
+import { SITE } from '@/lib/site';
 
 const years = [
   {
@@ -147,9 +148,9 @@ export default function ThreeYear() {
                   {/* 联系方式 */}
                   <div className="mt-12 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 sm:grid-cols-3">
                     {[
-                      { k: '加盟 / 商务热线', v: '400-0678-558' },
-                      { k: '官网', v: 'zjsifan.com' },
-                      { k: '总部地址', v: '杭州市滨江区滨康路 188 号春风集团 6 幢 1 楼' },
+                      { k: '加盟 / 商务热线', v: SITE.hotline },
+                      { k: '官网', v: SITE.domain },
+                      { k: '总部地址', v: SITE.headquarters },
                     ].map((c) => (
                       <div key={c.k} className="bg-ink-2/90 px-6 py-6 text-left">
                         <div className="text-[0.58rem] uppercase tracking-[0.26em] text-mist/62">
@@ -171,12 +172,12 @@ export default function ThreeYear() {
             <div className="flex flex-col items-center gap-6 text-center">
               <BrandMark size="lg" variant="gold" />
               <div>
-                <p className="lunai-serif text-base text-snow/90">浙江思杋服饰有限公司</p>
+                <p className="lunai-serif text-base text-snow/90">{SITE.company}</p>
                 <p className="mt-2 text-xs leading-relaxed text-mist/50">
-                  特许经营备案 1330100112500649 · ICP 浙 B2-20250051
+                  {SITE.franchiseFiling} · {SITE.icpFiling}
                   <br className="sm:hidden" />
                   <span className="hidden sm:inline">　·　</span>
-                  杭州滨江区高新技术企业认定 · 抖音企业号官方服务商
+                  {SITE.regionalQualification} · {SITE.douyinService}
                 </p>
               </div>
             </div>
